@@ -1,0 +1,25 @@
+[
+  {
+    "messageText": "Type instantiation is excessively deep and possibly infinite.",
+    "code": 2589,
+    "category": 1,
+    "length": 36,
+    "start": 4018
+  },
+  {
+    "messageText": {
+      "messageText": "Argument of type 'import(\"/home/anyhowstep/node-projects/tsql/tsql/dist/table/table-impl\").Table<{ lateral: false; tableAlias: \"myOtherTable21\"; columns: { readonly x: import(\"/home/anyhowstep/node-projects/tsql/tsql/dist/column/column-impl\").Column<{ tableAlias: \"myOtherTable21\"; columnAlias: \"x\"; mapper: import(\"/home/anyhowstep/no...' is not assignable to parameter of type 'import(\"/home/anyhowstep/node-projects/tsql/tsql/dist/table/table-impl\").Table<{ lateral: false; tableAlias: \"myOtherTable21\"; columns: { readonly x: import(\"/home/anyhowstep/node-projects/tsql/tsql/dist/column/column-impl\").Column<{ tableAlias: \"myOtherTable21\"; columnAlias: \"x\"; mapper: import(\"/home/anyhowstep/no...'.",
+      "category": 1,
+      "code": 2345,
+      "next": {
+        "messageText": "Property '__compileError' is missing in type 'Table<{ lateral: false; tableAlias: \"myOtherTable21\"; columns: { readonly x: Column<{ tableAlias: \"myOtherTable21\"; columnAlias: \"x\"; mapper: Mapper<unknown, bigint>; }>; readonly y: Column<{ tableAlias: \"myOtherTable21\"; columnAlias: \"y\"; mapper: Mapper<...>; }>; readonly z: Column<...>; }; ... 11 more ...; parents...' but required in type 'CompileError<[\"Table alias\", \"myOtherTable21\", \"already used in current query JOINs\", any]>'.",
+        "category": 1,
+        "code": 2741
+      }
+    },
+    "code": 2345,
+    "category": 1,
+    "length": 14,
+    "start": 4039
+  }
+]
