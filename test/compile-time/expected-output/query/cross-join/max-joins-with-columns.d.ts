@@ -823,6 +823,1606 @@ export declare const query: tsql.Query<{
             readonly primaryKey: undefined;
             readonly deleteEnabled: true;
             readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable21";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable21";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable21";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable21";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable21";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable21";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable21";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable22";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable22";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable22";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable22";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable22";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable22";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable22";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable23";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable23";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable23";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable23";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable23";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable23";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable23";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable24";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable24";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable24";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable24";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable24";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable24";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable24";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable25";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable25";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable25";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable25";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable25";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable25";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable25";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable26";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable26";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable26";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable26";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable26";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable26";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable26";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable27";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable27";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable27";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable27";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable27";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable27";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable27";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable28";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable28";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable28";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable28";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable28";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable28";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable28";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable29";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable29";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable29";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable29";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable29";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable29";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable29";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable30";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable30";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable30";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable30";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable30";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable30";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable30";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable31";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable31";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable31";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable31";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable31";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable31";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable31";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable32";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable32";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable32";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable32";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable32";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable32";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable32";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable33";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable33";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable33";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable33";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable33";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable33";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable33";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable34";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable34";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable34";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable34";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable34";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable34";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable34";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable35";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable35";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable35";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable35";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable35";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable35";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable35";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable36";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable36";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable36";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable36";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable36";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable36";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable36";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable37";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable37";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable37";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable37";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable37";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable37";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable37";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable38";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable38";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable38";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable38";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable38";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable38";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable38";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable39";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable39";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable39";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable39";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable39";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable39";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable39";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable40";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable40";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable40";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable40";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable40";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable40";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable40";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable41";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable41";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable41";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable41";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable41";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable41";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable41";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable42";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable42";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable42";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable42";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable42";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable42";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable42";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable43";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable43";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable43";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable43";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable43";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable43";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable43";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable44";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable44";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable44";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable44";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable44";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable44";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable44";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable45";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable45";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable45";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable45";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable45";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable45";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable45";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable46";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable46";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable46";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable46";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable46";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable46";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable46";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable47";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable47";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable47";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable47";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable47";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable47";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable47";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable48";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable48";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable48";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable48";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable48";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable48";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable48";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable49";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable49";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable49";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable49";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable49";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable49";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable49";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable50";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable50";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable50";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable50";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable50";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable50";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable50";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable51";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable51";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable51";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable51";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable51";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable51";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable51";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable52";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable52";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable52";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable52";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable52";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable52";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable52";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable53";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable53";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable53";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable53";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable53";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable53";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable53";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable54";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable54";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable54";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable54";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable54";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable54";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable54";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable55";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable55";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable55";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable55";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable55";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable55";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable55";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable56";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable56";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable56";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable56";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable56";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable56";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable56";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable57";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable57";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable57";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable57";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable57";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable57";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable57";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable58";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable58";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable58";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable58";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable58";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable58";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable58";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable59";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable59";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable59";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable59";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable59";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable59";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable59";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
+        }> | import("@tsql/tsql/dist/join").Join<{
+            readonly tableAlias: "myOtherTable60";
+            readonly nullable: false;
+            readonly columns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable60";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable60";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable60";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly originalColumns: {
+                readonly x: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable60";
+                    columnAlias: "x";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+                readonly y: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable60";
+                    columnAlias: "y";
+                    mapper: tm.Mapper<unknown, string>;
+                }>;
+                readonly z: import("@tsql/tsql/dist/column").Column<{
+                    tableAlias: "myOtherTable60";
+                    columnAlias: "z";
+                    mapper: tm.Mapper<unknown, boolean>;
+                }>;
+            };
+            readonly primaryKey: undefined;
+            readonly deleteEnabled: true;
+            readonly mutableColumns: readonly [];
         }>)[];
     }>;
 }>;
