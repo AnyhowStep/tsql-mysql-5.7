@@ -1,7 +1,7 @@
 import {IAliasedTable, FromClauseUtil} from "@tsql/tsql";
-import {AfterFromClause} from "../helper-type";
 import {Query} from "../../query-impl";
 import {assertValidJoinTarget, AssertValidCurrentJoin} from "../predicate";
+import {AfterFromClause} from "../helper-type";
 
 /**
  * https://github.com/microsoft/TypeScript/issues/32707#issuecomment-518347966
@@ -11,16 +11,30 @@ import {assertValidJoinTarget, AssertValidCurrentJoin} from "../predicate";
  */
 export type CrossJoinImpl<
     AliasedTableT extends IAliasedTable,
-    FromClauseT extends AfterFromClause["fromClause"]
+    FromClauseT extends AfterFromClause["fromClause"],
+    SelectClauseT extends AfterFromClause["selectClause"],
+    LimitClauseT extends AfterFromClause["limitClause"],
+    UnionClauseT extends AfterFromClause["unionClause"],
+    UnionLimitClauseT extends AfterFromClause["unionLimitClause"],
 > = (
     Query<{
         fromClause : FromClauseUtil.CrossJoin<FromClauseT, AliasedTableT>,
+        selectClause : SelectClauseT,
+
+        limitClause : LimitClauseT,
+
+        unionClause : UnionClauseT,
+        unionLimitClause : UnionLimitClauseT,
     }>
 );
 export type CrossJoin<QueryT extends AfterFromClause, AliasedTableT extends IAliasedTable> = (
     CrossJoinImpl<
         AliasedTableT,
-        QueryT["fromClause"]
+        QueryT["fromClause"],
+        QueryT["selectClause"],
+        QueryT["limitClause"],
+        QueryT["unionClause"],
+        QueryT["unionLimitClause"]
     >
 );
 export function crossJoin<
@@ -37,8 +51,27 @@ export function crossJoin<
 ) {
     assertValidJoinTarget(query, aliasedTable);
 
-    const result : CrossJoin<QueryT, AliasedTableT> = new Query({
-        fromClause : FromClauseUtil.crossJoin(query.fromClause, aliasedTable),
-    });
+    const {
+        //fromClause,
+        selectClause,
+
+        limitClause,
+
+        unionClause,
+        unionLimitClause,
+    } = query;
+
+    const result : CrossJoin<QueryT, AliasedTableT> = new Query(
+        {
+            fromClause : FromClauseUtil.crossJoin(query.fromClause, aliasedTable),
+            selectClause,
+
+            limitClause,
+
+            unionClause,
+            unionLimitClause,
+        },
+        query
+    );
     return result;
 }

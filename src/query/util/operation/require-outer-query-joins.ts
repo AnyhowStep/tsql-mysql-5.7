@@ -8,6 +8,12 @@ export type RequireOuterQueryJoins<
 > = (
     Query<{
         fromClause : FromClauseUtil.RequireOuterQueryJoins<QueryT["fromClause"], AliasedTablesT>,
+        selectClause : QueryT["selectClause"],
+
+        limitClause : QueryT["limitClause"],
+
+        unionClause : QueryT["unionClause"],
+        unionLimitClause : QueryT["unionLimitClause"],
     }>
 );
 export function requireOuterQueryJoins<
@@ -22,14 +28,33 @@ export function requireOuterQueryJoins<
 ) : (
     RequireOuterQueryJoins<QueryT, AliasedTablesT>
 ) {
-    const result : RequireOuterQueryJoins<QueryT, AliasedTablesT> = new Query({
-        fromClause : FromClauseUtil.requireOuterQueryJoins<
-            QueryT["fromClause"],
-            AliasedTablesT
-        >(
-            query.fromClause,
-            ...(aliasedTables as any)
-        ),
-    });
+    const {
+        //fromClause,
+        selectClause,
+
+        limitClause,
+
+        unionClause,
+        unionLimitClause,
+    } = query;
+
+    const result : RequireOuterQueryJoins<QueryT, AliasedTablesT> = new Query(
+        {
+            fromClause : FromClauseUtil.requireOuterQueryJoins<
+                QueryT["fromClause"],
+                AliasedTablesT
+            >(
+                query.fromClause,
+                ...(aliasedTables as any)
+            ),
+            selectClause,
+
+            limitClause,
+
+            unionClause,
+            unionLimitClause,
+        },
+        query
+    );
     return result;
 }

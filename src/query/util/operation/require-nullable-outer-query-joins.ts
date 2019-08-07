@@ -8,6 +8,12 @@ export type RequireNullableOuterQueryJoins<
 > = (
     Query<{
         fromClause : FromClauseUtil.RequireNullableOuterQueryJoins<QueryT["fromClause"], AliasedTablesT>,
+        selectClause : QueryT["selectClause"],
+
+        limitClause : QueryT["limitClause"],
+
+        unionClause : QueryT["unionClause"],
+        unionLimitClause : QueryT["unionLimitClause"],
     }>
 );
 export function requireNullableOuterQueryJoins<
@@ -22,14 +28,33 @@ export function requireNullableOuterQueryJoins<
 ) : (
     RequireNullableOuterQueryJoins<QueryT, AliasedTablesT>
 ) {
-    const result : RequireNullableOuterQueryJoins<QueryT, AliasedTablesT> = new Query({
-        fromClause : FromClauseUtil.requireNullableOuterQueryJoins<
-            QueryT["fromClause"],
-            AliasedTablesT
-        >(
-            query.fromClause,
-            ...(aliasedTables as any)
-        ),
-    });
+    const {
+        //fromClause,
+        selectClause,
+
+        limitClause,
+
+        unionClause,
+        unionLimitClause,
+    } = query;
+
+    const result : RequireNullableOuterQueryJoins<QueryT, AliasedTablesT> = new Query(
+        {
+            fromClause : FromClauseUtil.requireNullableOuterQueryJoins<
+                QueryT["fromClause"],
+                AliasedTablesT
+            >(
+                query.fromClause,
+                ...(aliasedTables as any)
+            ),
+            selectClause,
+
+            limitClause,
+
+            unionClause,
+            unionLimitClause,
+        },
+        query
+    );
     return result;
 }

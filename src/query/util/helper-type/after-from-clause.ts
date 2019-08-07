@@ -1,8 +1,7 @@
-import {FromClauseUtil} from "@tsql/tsql";
+import {QueryBaseUtil} from "@tsql/tsql";
 import {IQuery} from "../../query";
 
 export type AfterFromClause = (
-    IQuery<{
-        fromClause : FromClauseUtil.AfterFromClause,
-    }>
+    & QueryBaseUtil.AfterFromClause
+    & IQuery
 );

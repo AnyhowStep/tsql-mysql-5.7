@@ -6,6 +6,12 @@ import {assertValidJoinTarget, AssertValidCurrentJoin} from "../predicate";
 export type From<QueryT extends BeforeFromClause, AliasedTableT extends IAliasedTable> = (
     Query<{
         fromClause : FromClauseUtil.From<QueryT["fromClause"], AliasedTableT>,
+        selectClause : QueryT["selectClause"],
+
+        limitClause : QueryT["limitClause"],
+
+        unionClause : QueryT["unionClause"],
+        unionLimitClause : QueryT["unionLimitClause"],
     }>
 );
 export function from<
@@ -22,8 +28,27 @@ export function from<
 ) {
     assertValidJoinTarget(query, aliasedTable);
 
-    const result : From<QueryT, AliasedTableT> = new Query({
-        fromClause : FromClauseUtil.from(query.fromClause, aliasedTable),
-    });
+    const {
+        //fromClause,
+        selectClause,
+
+        limitClause,
+
+        unionClause,
+        unionLimitClause,
+    } = query;
+
+    const result : From<QueryT, AliasedTableT> = new Query(
+        {
+            fromClause : FromClauseUtil.from(query.fromClause, aliasedTable),
+            selectClause,
+
+            limitClause,
+
+            unionClause,
+            unionLimitClause,
+        },
+        query
+    );
     return result;
 }

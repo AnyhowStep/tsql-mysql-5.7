@@ -1,13 +1,37 @@
-import {IAliasedTable, FromClauseUtil} from "@tsql/tsql";
-import {QueryData, IQuery} from "./query";
+import {IAliasedTable, FromClauseUtil, WhereClause} from "@tsql/tsql";
+import {QueryData, IQuery, ExtraQueryData} from "./query";
 import * as QueryUtil from "./util";
 
 export class Query<DataT extends QueryData> implements IQuery<DataT> {
+    /*
+        From `IQueryBase`
+    */
     readonly fromClause : DataT["fromClause"];
+    readonly selectClause : DataT["selectClause"];
 
-    constructor (data : DataT) {
+    readonly limitClause : DataT["limitClause"];
+
+    readonly unionClause : DataT["unionClause"];
+    readonly unionLimitClause : DataT["unionLimitClause"];
+
+    /*
+        `IQuery`-specific
+    */
+    readonly whereClause : WhereClause|undefined;
+
+    constructor (data : DataT, extraData : ExtraQueryData) {
         this.fromClause = data.fromClause;
+        this.selectClause = data.selectClause;
+        this.limitClause = data.limitClause;
+        this.unionClause = data.unionClause;
+        this.unionLimitClause = data.unionLimitClause;
+
+        this.whereClause = extraData.whereClause;
     }
+
+    readonly buildExprAst = () => {
+        throw new Error(`Not implemented`);
+    };
 
     requireOuterQueryJoins<
         AliasedTablesT extends readonly IAliasedTable[]

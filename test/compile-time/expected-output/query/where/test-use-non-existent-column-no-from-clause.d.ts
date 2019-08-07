@@ -4,6 +4,10 @@ export declare const query: tsql.Query<{
         outerQueryJoins: undefined;
         currentJoins: undefined;
     }>;
+    selectClause: undefined;
+    limitClause: undefined;
+    unionClause: undefined;
+    unionLimitClause: undefined;
 }>;
 declare type AllowedUsedRef = tsql.FromClauseUtil.AllowedUsedRef<typeof query["fromClause"], {
     isLateral: true;

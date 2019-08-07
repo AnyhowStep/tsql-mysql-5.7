@@ -25,4 +25,8 @@ export declare const query: tsql.Query<{
             readonly mutableColumns: readonly [];
         }>[];
     }>;
+    selectClause: undefined;
+    limitClause: undefined;
+    unionClause: undefined;
+    unionLimitClause: undefined;
 }>;

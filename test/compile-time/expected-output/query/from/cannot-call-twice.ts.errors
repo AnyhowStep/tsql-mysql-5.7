@@ -1,29 +1,34 @@
 [
   {
     "messageText": {
-      "messageText": "The 'this' context of type 'Query<{ fromClause: IFromClause<{ outerQueryJoins: undefined; currentJoins: readonly Join<{ readonly tableAlias: \"myTable\"; readonly nullable: false; readonly columns: { readonly myTableId: Column<{ tableAlias: \"myTable\"; columnAlias: \"myTableId\"; mapper: Mapper<...>; }>; }; readonly originalColumns: { ...; }; reado...' is not assignable to method's 'this' of type 'IQuery<{ fromClause: IFromClause<{ outerQueryJoins: readonly IJoin<JoinData>[] | undefined; currentJoins: undefined; }>; }>'.",
+      "messageText": "The 'this' context of type 'Query<{ fromClause: IFromClause<{ outerQueryJoins: undefined; currentJoins: readonly Join<{ readonly tableAlias: \"myTable\"; readonly nullable: false; readonly columns: { readonly myTableId: Column<{ tableAlias: \"myTable\"; columnAlias: \"myTableId\"; mapper: Mapper<...>; }>; }; readonly originalColumns: { ...; }; reado...' is not assignable to method's 'this' of type 'IQueryBase<{ fromClause: IFromClause<{ outerQueryJoins: readonly IJoin<JoinData>[] | undefined; currentJoins: undefined; }>; selectClause: readonly (IColumn<ColumnData> | ColumnMap | ColumnRef | IExprSelectItem<...>)[] | undefined; limitClause: LimitData | undefined; unionClause: readonly UnionData[] | undefined; un...'.",
       "category": 1,
       "code": 2684,
       "next": {
-        "messageText": "Types of property 'fromClause' are incompatible.",
+        "messageText": "Type 'Query<{ fromClause: IFromClause<{ outerQueryJoins: undefined; currentJoins: readonly Join<{ readonly tableAlias: \"myTable\"; readonly nullable: false; readonly columns: { readonly myTableId: Column<{ tableAlias: \"myTable\"; columnAlias: \"myTableId\"; mapper: Mapper<...>; }>; }; readonly originalColumns: { ...; }; reado...' is not assignable to type 'IQueryBase<{ fromClause: IFromClause<{ outerQueryJoins: readonly IJoin<JoinData>[] | undefined; currentJoins: undefined; }>; selectClause: readonly (IColumn<ColumnData> | ColumnMap | ColumnRef | IExprSelectItem<...>)[] | undefined; limitClause: LimitData | undefined; unionClause: readonly UnionData[] | undefined; un...'.",
         "category": 1,
-        "code": 2326,
+        "code": 2322,
         "next": {
-          "messageText": "Type 'IFromClause<{ outerQueryJoins: undefined; currentJoins: readonly Join<{ readonly tableAlias: \"myTable\"; readonly nullable: false; readonly columns: { readonly myTableId: Column<{ tableAlias: \"myTable\"; columnAlias: \"myTableId\"; mapper: Mapper<...>; }>; }; readonly originalColumns: { ...; }; readonly primaryKey: unde...' is not assignable to type 'IFromClause<{ outerQueryJoins: readonly IJoin<JoinData>[] | undefined; currentJoins: undefined; }>'.",
+          "messageText": "Types of property 'fromClause' are incompatible.",
           "category": 1,
-          "code": 2322,
+          "code": 2326,
           "next": {
-            "messageText": "Type '{ outerQueryJoins: undefined; currentJoins: readonly Join<{ readonly tableAlias: \"myTable\"; readonly nullable: false; readonly columns: { readonly myTableId: Column<{ tableAlias: \"myTable\"; columnAlias: \"myTableId\"; mapper: Mapper<...>; }>; }; readonly originalColumns: { ...; }; readonly primaryKey: undefined; reado...' is not assignable to type '{ outerQueryJoins: readonly IJoin<JoinData>[] | undefined; currentJoins: undefined; }'.",
+            "messageText": "Type 'IFromClause<{ outerQueryJoins: undefined; currentJoins: readonly Join<{ readonly tableAlias: \"myTable\"; readonly nullable: false; readonly columns: { readonly myTableId: Column<{ tableAlias: \"myTable\"; columnAlias: \"myTableId\"; mapper: Mapper<...>; }>; }; readonly originalColumns: { ...; }; readonly primaryKey: unde...' is not assignable to type 'IFromClause<{ outerQueryJoins: readonly IJoin<JoinData>[] | undefined; currentJoins: undefined; }>'.",
             "category": 1,
             "code": 2322,
             "next": {
-              "messageText": "Types of property 'currentJoins' are incompatible.",
+              "messageText": "Type '{ outerQueryJoins: undefined; currentJoins: readonly Join<{ readonly tableAlias: \"myTable\"; readonly nullable: false; readonly columns: { readonly myTableId: Column<{ tableAlias: \"myTable\"; columnAlias: \"myTableId\"; mapper: Mapper<...>; }>; }; readonly originalColumns: { ...; }; readonly primaryKey: undefined; reado...' is not assignable to type '{ outerQueryJoins: readonly IJoin<JoinData>[] | undefined; currentJoins: undefined; }'.",
               "category": 1,
-              "code": 2326,
+              "code": 2322,
               "next": {
-                "messageText": "Type 'readonly Join<{ readonly tableAlias: \"myTable\"; readonly nullable: false; readonly columns: { readonly myTableId: Column<{ tableAlias: \"myTable\"; columnAlias: \"myTableId\"; mapper: Mapper<unknown, bigint>; }>; }; readonly originalColumns: { ...; }; readonly primaryKey: undefined; readonly deleteEnabled: true; readonl...' is not assignable to type 'undefined'.",
+                "messageText": "Types of property 'currentJoins' are incompatible.",
                 "category": 1,
-                "code": 2322
+                "code": 2326,
+                "next": {
+                  "messageText": "Type 'readonly Join<{ readonly tableAlias: \"myTable\"; readonly nullable: false; readonly columns: { readonly myTableId: Column<{ tableAlias: \"myTable\"; columnAlias: \"myTableId\"; mapper: Mapper<unknown, bigint>; }>; }; readonly originalColumns: { ...; }; readonly primaryKey: undefined; readonly deleteEnabled: true; readonl...' is not assignable to type 'undefined'.",
+                  "category": 1,
+                  "code": 2322
+                }
               }
             }
           }
