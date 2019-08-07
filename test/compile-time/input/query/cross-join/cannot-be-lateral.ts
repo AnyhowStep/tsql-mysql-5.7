@@ -8,7 +8,7 @@ const myTable = tsql.table("myTable")
 
 declare const myDerivedTable : tsql.DerivedTable<{
     isLateral : false,
-    tableAlias : "myDerivedTable",
+    alias : "myDerivedTable",
     columns : {
     },
     usedRef : tsql.IUsedRef<{}>,
