@@ -109,6 +109,32 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
         );
     }
 
+    whereIsNotNull<
+        ColumnT extends ColumnUtil.ExtractNullable<
+            ColumnUtil.FromJoinArray<
+                Extract<this, QueryUtil.AfterFromClause>["fromClause"]["currentJoins"]
+            >
+        >
+    > (
+        this : Extract<this, QueryUtil.AfterFromClause>,
+        whereIsNotNullDelegate : FromClauseUtil.WhereIsNotNullDelegate<
+            Extract<this, QueryUtil.AfterFromClause>["fromClause"],
+            ColumnT
+        >
+    ) : (
+        QueryUtil.WhereIsNotNull<
+            Extract<this, QueryUtil.AfterFromClause>,
+            ColumnT
+        >
+    ) {
+        return QueryUtil.whereIsNotNull<
+            Extract<this, QueryUtil.AfterFromClause>,
+            ColumnT
+        >(
+            this,
+            whereIsNotNullDelegate
+        );
+    }
     whereIsNull<
         ColumnT extends ColumnUtil.ExtractNullable<
             ColumnUtil.FromJoinArray<
@@ -117,7 +143,7 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
         >
     > (
         this : Extract<this, QueryUtil.AfterFromClause>,
-        whereDelegate : FromClauseUtil.WhereIsNullDelegate<
+        whereIsNullDelegate : FromClauseUtil.WhereIsNullDelegate<
             Extract<this, QueryUtil.AfterFromClause>["fromClause"],
             ColumnT
         >
@@ -132,7 +158,7 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
             ColumnT
         >(
             this,
-            whereDelegate
+            whereIsNullDelegate
         );
     }
 }

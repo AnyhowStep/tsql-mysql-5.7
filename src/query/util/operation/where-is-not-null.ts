@@ -8,7 +8,7 @@ import {AfterFromClause} from "../helper-type";
  * This hack should only really be reserved for types that are more likely
  * to trigger max depth/max count errors.
  */
-export type WhereIsNullImpl<
+export type WhereIsNotNullImpl<
     ColumnT extends ColumnUtil.ExtractNullable<
         ColumnUtil.FromJoinArray<
             FromClauseT["currentJoins"]
@@ -21,7 +21,7 @@ export type WhereIsNullImpl<
     UnionLimitClauseT extends AfterFromClause["unionLimitClause"],
 > = (
     Query<{
-        fromClause : FromClauseUtil.WhereIsNull<FromClauseT, ColumnT>,
+        fromClause : FromClauseUtil.WhereIsNotNull<FromClauseT, ColumnT>,
         selectClause : SelectClauseT,
 
         limitClause : LimitClauseT,
@@ -30,7 +30,7 @@ export type WhereIsNullImpl<
         unionLimitClause : UnionLimitClauseT,
     }>
 );
-export type WhereIsNull<
+export type WhereIsNotNull<
     QueryT extends AfterFromClause,
     ColumnT extends ColumnUtil.ExtractNullable<
         ColumnUtil.FromJoinArray<
@@ -38,7 +38,7 @@ export type WhereIsNull<
         >
     >
 > = (
-    WhereIsNullImpl<
+    WhereIsNotNullImpl<
         ColumnT,
         QueryT["fromClause"],
         QueryT["selectClause"],
@@ -47,7 +47,7 @@ export type WhereIsNull<
         QueryT["unionLimitClause"]
     >
 );
-export function whereIsNull<
+export function whereIsNotNull<
     QueryT extends AfterFromClause,
     ColumnT extends ColumnUtil.ExtractNullable<
         ColumnUtil.FromJoinArray<
@@ -56,23 +56,23 @@ export function whereIsNull<
     >
 > (
     query : QueryT,
-    whereIsNullDelegate : FromClauseUtil.WhereIsNullDelegate<
+    whereIsNotNullDelegate : FromClauseUtil.WhereIsNotNullDelegate<
         QueryT["fromClause"],
         ColumnT
     >
 ) : (
-    WhereIsNull<QueryT, ColumnT>
+    WhereIsNotNull<QueryT, ColumnT>
 ) {
     const {
         fromClause,
         whereClause,
-    } = FromClauseUtil.whereIsNull<
+    } = FromClauseUtil.whereIsNotNull<
         QueryT["fromClause"],
         ColumnT
     >(
         query.fromClause,
         query.whereClause,
-        whereIsNullDelegate
+        whereIsNotNullDelegate
     );
 
     const {
@@ -85,7 +85,7 @@ export function whereIsNull<
         unionLimitClause,
     } = query;
 
-    const result : WhereIsNull<QueryT, ColumnT> = new Query(
+    const result : WhereIsNotNull<QueryT, ColumnT> = new Query(
         {
             fromClause,
             selectClause,
