@@ -4,25 +4,25 @@ export declare const query: tsql.Query<{
     fromClause: tsql.IFromClause<{
         outerQueryJoins: undefined;
         currentJoins: readonly import("@tsql/tsql/dist/join").Join<{
-            readonly tableAlias: "myTable";
-            readonly nullable: false;
-            readonly columns: {
+            tableAlias: "myTable";
+            nullable: false;
+            columns: {
                 readonly myTableId: tsql.Column<{
                     tableAlias: "myTable";
                     columnAlias: "myTableId";
-                    mapper: tm.Mapper<unknown, bigint>;
+                    mapper: tm.Mapper<unknown, null>;
                 }>;
             };
-            readonly originalColumns: {
+            originalColumns: {
                 readonly myTableId: tsql.Column<{
                     tableAlias: "myTable";
                     columnAlias: "myTableId";
-                    mapper: tm.Mapper<unknown, bigint>;
+                    mapper: tm.Mapper<unknown, bigint | null>;
                 }>;
             };
-            readonly primaryKey: undefined;
-            readonly deleteEnabled: true;
-            readonly mutableColumns: readonly [];
+            primaryKey: undefined;
+            deleteEnabled: true;
+            mutableColumns: readonly [];
         }>[];
     }>;
     selectClause: undefined;
@@ -30,12 +30,3 @@ export declare const query: tsql.Query<{
     unionClause: undefined;
     unionLimitClause: undefined;
 }>;
-declare type AllowedUsedRef = tsql.FromClauseUtil.AllowedUsedRef<typeof query["fromClause"], {
-    isLateral: true;
-}>;
-declare type AllowedExpr = tsql.IExpr<{
-    mapper: () => boolean;
-    usedRef: AllowedUsedRef;
-}>;
-export declare const notAllowed: AllowedExpr;
-export {};

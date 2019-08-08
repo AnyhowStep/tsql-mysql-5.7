@@ -38,9 +38,23 @@ export function from<
         unionLimitClause,
     } = query;
 
-    const result : From<QueryT, AliasedTableT> = new Query(
+    const result : From<QueryT, AliasedTableT> = new Query<{
+        fromClause : FromClauseUtil.From<QueryT["fromClause"], AliasedTableT>,
+        selectClause : QueryT["selectClause"],
+
+        limitClause : QueryT["limitClause"],
+
+        unionClause : QueryT["unionClause"],
+        unionLimitClause : QueryT["unionLimitClause"],
+    }>(
         {
-            fromClause : FromClauseUtil.from(query.fromClause, aliasedTable),
+            fromClause : FromClauseUtil.from<
+                QueryT["fromClause"],
+                AliasedTableT
+            >(
+                query.fromClause,
+                aliasedTable
+            ),
             selectClause,
 
             limitClause,

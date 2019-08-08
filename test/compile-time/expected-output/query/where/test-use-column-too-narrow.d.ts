@@ -7,14 +7,14 @@ export declare const query: tsql.Query<{
             readonly tableAlias: "myTable";
             readonly nullable: false;
             readonly columns: {
-                readonly myTableId: import("@tsql/tsql/dist/column").Column<{
+                readonly myTableId: tsql.Column<{
                     tableAlias: "myTable";
                     columnAlias: "myTableId";
                     mapper: tm.Mapper<unknown, bigint | null>;
                 }>;
             };
             readonly originalColumns: {
-                readonly myTableId: import("@tsql/tsql/dist/column").Column<{
+                readonly myTableId: tsql.Column<{
                     tableAlias: "myTable";
                     columnAlias: "myTableId";
                     mapper: tm.Mapper<unknown, bigint | null>;

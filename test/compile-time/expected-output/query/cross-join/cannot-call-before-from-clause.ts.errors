@@ -1,40 +1,6 @@
 [
   {
-    "messageText": {
-      "messageText": "The 'this' context of type 'Query<{ fromClause: IFromClause<{ outerQueryJoins: undefined; currentJoins: undefined; }>; selectClause: undefined; limitClause: undefined; unionClause: undefined; unionLimitClause: undefined; }>' is not assignable to method's 'this' of type 'IQueryBase<{ fromClause: IFromClause<{ outerQueryJoins: readonly IJoin<JoinData>[] | undefined; currentJoins: readonly IJoin<JoinData>[]; }>; selectClause: readonly (IColumn<ColumnData> | ColumnMap | ColumnRef | IExprSelectItem<...>)[] | undefined; limitClause: LimitData | undefined; unionClause: readonly UnionData[...'.",
-      "category": 1,
-      "code": 2684,
-      "next": {
-        "messageText": "Type 'Query<{ fromClause: IFromClause<{ outerQueryJoins: undefined; currentJoins: undefined; }>; selectClause: undefined; limitClause: undefined; unionClause: undefined; unionLimitClause: undefined; }>' is not assignable to type 'IQueryBase<{ fromClause: IFromClause<{ outerQueryJoins: readonly IJoin<JoinData>[] | undefined; currentJoins: readonly IJoin<JoinData>[]; }>; selectClause: readonly (IColumn<ColumnData> | ColumnMap | ColumnRef | IExprSelectItem<...>)[] | undefined; limitClause: LimitData | undefined; unionClause: readonly UnionData[...'.",
-        "category": 1,
-        "code": 2322,
-        "next": {
-          "messageText": "Types of property 'fromClause' are incompatible.",
-          "category": 1,
-          "code": 2326,
-          "next": {
-            "messageText": "Type 'IFromClause<{ outerQueryJoins: undefined; currentJoins: undefined; }>' is not assignable to type 'IFromClause<{ outerQueryJoins: readonly IJoin<JoinData>[] | undefined; currentJoins: readonly IJoin<JoinData>[]; }>'.",
-            "category": 1,
-            "code": 2322,
-            "next": {
-              "messageText": "Type '{ outerQueryJoins: undefined; currentJoins: undefined; }' is not assignable to type '{ outerQueryJoins: readonly IJoin<JoinData>[] | undefined; currentJoins: readonly IJoin<JoinData>[]; }'.",
-              "category": 1,
-              "code": 2322,
-              "next": {
-                "messageText": "Types of property 'currentJoins' are incompatible.",
-                "category": 1,
-                "code": 2326,
-                "next": {
-                  "messageText": "Type 'undefined' is not assignable to type 'readonly IJoin<JoinData>[]'.",
-                  "category": 1,
-                  "code": 2322
-                }
-              }
-            }
-          }
-        }
-      }
-    },
+    "messageText": "The 'this' context of type 'Query<{ fromClause: IFromClause<{ outerQueryJoins: undefined; currentJoins: undefined; }>; selectClause: undefined; limitClause: undefined; unionClause: undefined; unionLimitClause: undefined; }>' is not assignable to method's 'this' of type 'never'.",
     "code": 2684,
     "category": 1,
     "length": 28,
