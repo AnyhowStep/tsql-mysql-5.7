@@ -1,4 +1,5 @@
-import {IAliasedTable, FromClauseUtil, WhereClause, ColumnUtil} from "@tsql/tsql";
+import * as tm from "type-mapping";
+import {IAliasedTable, FromClauseUtil, WhereClause, ColumnUtil, PrimitiveExpr} from "@tsql/tsql";
 import {QueryData, IQuery, ExtraQueryData} from "./query";
 import * as QueryUtil from "./util";
 
@@ -159,6 +160,34 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
         >(
             this,
             whereIsNullDelegate
+        );
+    }
+    whereNullSafeEq<
+        ColumnT extends ColumnUtil.ExtractWithType<
+            ColumnUtil.FromJoinArray<
+                Extract<this, QueryUtil.AfterFromClause>["fromClause"]["currentJoins"]
+            >,
+            PrimitiveExpr
+        >,
+        ValueT extends tm.OutputOf<ColumnT["mapper"]>
+    > (
+        this : Extract<this, QueryUtil.AfterFromClause>,
+        whereNullSafeEqDelegate : FromClauseUtil.WhereNullSafeEqDelegate<
+            Extract<this, QueryUtil.AfterFromClause>["fromClause"],
+            ColumnT
+        >,
+        value : ValueT
+    ) : (
+        QueryUtil.WhereNullSafeEq<Extract<this, QueryUtil.AfterFromClause>, ColumnT, ValueT>
+    ) {
+        return QueryUtil.whereNullSafeEq<
+            Extract<this, QueryUtil.AfterFromClause>,
+            ColumnT,
+            ValueT
+        >(
+            this,
+            whereNullSafeEqDelegate,
+            value
         );
     }
 }
