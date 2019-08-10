@@ -1,5 +1,5 @@
 import * as tm from "type-mapping";
-import {IAliasedTable, FromClauseUtil, WhereClause, ColumnUtil, PrimitiveExpr, NonNullPrimitiveExpr} from "@tsql/tsql";
+import {IAliasedTable, FromClauseUtil, WhereClause, ColumnUtil, PrimitiveExpr, NonNullPrimitiveExpr, WhereDelegate} from "@tsql/tsql";
 import {QueryData, IQuery, ExtraQueryData} from "./query";
 import * as QueryUtil from "./util";
 
@@ -216,6 +216,20 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
             this,
             whereNullSafeEqDelegate,
             value
+        );
+    }
+    where (
+        whereDelegate : WhereDelegate<
+            this["fromClause"]
+        >
+    ) : (
+        QueryUtil.Where<this>
+    ) {
+        return QueryUtil.where<
+            this
+        >(
+            this,
+            whereDelegate
         );
     }
 }
