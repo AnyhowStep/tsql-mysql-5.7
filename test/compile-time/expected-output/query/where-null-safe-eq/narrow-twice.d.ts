@@ -3,7 +3,7 @@ import * as tsql from "../../../../../dist";
 export declare const query: tsql.Query<{
     fromClause: tsql.IFromClause<{
         outerQueryJoins: undefined;
-        currentJoins: readonly import("@tsql/tsql/dist/join").Join<{
+        currentJoins: readonly tsql.Join<{
             tableAlias: "myTable";
             nullable: false;
             columns: {
@@ -33,7 +33,7 @@ export declare const query: tsql.Query<{
 export declare const query2: tsql.Query<{
     fromClause: tsql.IFromClause<{
         outerQueryJoins: undefined;
-        currentJoins: readonly import("@tsql/tsql/dist/join").Join<{
+        currentJoins: readonly tsql.Join<{
             tableAlias: "myTable";
             nullable: false;
             columns: {

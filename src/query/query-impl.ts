@@ -1,5 +1,5 @@
 import * as tm from "type-mapping";
-import {IAliasedTable, FromClauseUtil, WhereClause, ColumnUtil, PrimitiveExpr, NonNullPrimitiveExpr, WhereDelegate} from "@tsql/tsql";
+import {IAliasedTable, FromClauseUtil, WhereClause, ColumnUtil, PrimitiveExpr, NonNullPrimitiveExpr, WhereDelegate, JoinArrayUtil, PrimaryKey, TypeUtil} from "@tsql/tsql";
 import {QueryData, IQuery, ExtraQueryData} from "./query";
 import * as QueryUtil from "./util";
 
@@ -110,6 +110,29 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
         );
     }
 
+    whereEqPrimaryKey<
+        TableT extends JoinArrayUtil.ExtractWithPrimaryKey<
+            Extract<this, QueryUtil.AfterFromClause>["fromClause"]["currentJoins"]
+        >
+    > (
+        this : Extract<this, QueryUtil.AfterFromClause>,
+        whereEqPrimaryKeyDelegate : FromClauseUtil.WhereEqPrimaryKeyDelegate<
+            Extract<this, QueryUtil.AfterFromClause>["fromClause"],
+            TableT
+        >,
+        primaryKey : TypeUtil.UnionToIntersection<PrimaryKey<TableT>>
+    ) : (
+        QueryUtil.WhereEqPrimaryKey<Extract<this, QueryUtil.AfterFromClause>>
+    ) {
+        return QueryUtil.whereEqPrimaryKey<
+            Extract<this, QueryUtil.AfterFromClause>,
+            TableT
+        >(
+            this,
+            whereEqPrimaryKeyDelegate,
+            primaryKey
+        );
+    }
     whereEq<
         ColumnT extends ColumnUtil.ExtractWithType<
             ColumnUtil.FromJoinArray<

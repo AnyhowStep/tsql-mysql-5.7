@@ -4,7 +4,7 @@ export declare const expr: tsql.ExprImpl<tm.Mapper<unknown, boolean>, tsql.IUsed
 export declare const query: tsql.Query<{
     fromClause: tsql.IFromClause<{
         outerQueryJoins: undefined;
-        currentJoins: readonly import("@tsql/tsql/dist/join").Join<{
+        currentJoins: readonly tsql.Join<{
             readonly tableAlias: "myTable";
             readonly nullable: false;
             readonly columns: {
