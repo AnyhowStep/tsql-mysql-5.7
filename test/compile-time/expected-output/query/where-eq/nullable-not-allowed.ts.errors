@@ -1,0 +1,16 @@
+[
+  {
+    "messageText": "Type 'any' is not assignable to type 'never'.",
+    "code": 2322,
+    "category": 1,
+    "length": 17,
+    "start": 312
+  },
+  {
+    "messageText": "Property 'myTableId' does not exist on type '{}'.",
+    "code": 2339,
+    "category": 1,
+    "length": 9,
+    "start": 320
+  }
+]

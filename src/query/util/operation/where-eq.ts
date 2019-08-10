@@ -1,8 +1,7 @@
 import * as tm from "type-mapping";
-import {FromClauseUtil, ColumnUtil, PrimitiveExpr} from "@tsql/tsql";
+import {FromClauseUtil, ColumnUtil, NonNullPrimitiveExpr} from "@tsql/tsql";
 import {Query} from "../../query-impl";
 import {AfterFromClause} from "../helper-type";
-import {nullSafeEq} from "../../../expr-library";
 
 /**
  * https://github.com/microsoft/TypeScript/issues/32707#issuecomment-518347966
@@ -10,12 +9,12 @@ import {nullSafeEq} from "../../../expr-library";
  * This hack should only really be reserved for types that are more likely
  * to trigger max depth/max count errors.
  */
-export type WhereNullSafeEqImpl<
+export type WhereEqImpl<
     ColumnT extends ColumnUtil.ExtractWithType<
         ColumnUtil.FromJoinArray<
             FromClauseT["currentJoins"]
         >,
-        PrimitiveExpr
+        NonNullPrimitiveExpr
     >,
     ValueT extends tm.OutputOf<ColumnT["mapper"]>,
     FromClauseT extends AfterFromClause["fromClause"],
@@ -25,7 +24,7 @@ export type WhereNullSafeEqImpl<
     UnionLimitClauseT extends AfterFromClause["unionLimitClause"],
 > = (
     Query<{
-        fromClause : FromClauseUtil.WhereNullSafeEq<FromClauseT, ColumnT, ValueT>,
+        fromClause : FromClauseUtil.WhereEq<FromClauseT, ColumnT, ValueT>,
         selectClause : SelectClauseT,
 
         limitClause : LimitClauseT,
@@ -34,17 +33,17 @@ export type WhereNullSafeEqImpl<
         unionLimitClause : UnionLimitClauseT,
     }>
 );
-export type WhereNullSafeEq<
+export type WhereEq<
     QueryT extends AfterFromClause,
     ColumnT extends ColumnUtil.ExtractWithType<
         ColumnUtil.FromJoinArray<
             QueryT["fromClause"]["currentJoins"]
         >,
-        PrimitiveExpr
+        NonNullPrimitiveExpr
     >,
     ValueT extends tm.OutputOf<ColumnT["mapper"]>
 > = (
-    WhereNullSafeEqImpl<
+    WhereEqImpl<
         ColumnT,
         ValueT,
         QueryT["fromClause"],
@@ -54,37 +53,36 @@ export type WhereNullSafeEq<
         QueryT["unionLimitClause"]
     >
 );
-export function whereNullSafeEq<
+export function whereEq<
     QueryT extends AfterFromClause,
     ColumnT extends ColumnUtil.ExtractWithType<
         ColumnUtil.FromJoinArray<
             QueryT["fromClause"]["currentJoins"]
         >,
-        PrimitiveExpr
+        NonNullPrimitiveExpr
     >,
     ValueT extends tm.OutputOf<ColumnT["mapper"]>
 > (
     query : QueryT,
-    whereNullSafeEqDelegate : FromClauseUtil.WhereNullSafeEqDelegate<
+    whereEqDelegate : FromClauseUtil.WhereEqDelegate<
         QueryT["fromClause"],
         ColumnT
     >,
     value : ValueT
 ) : (
-    WhereNullSafeEq<QueryT, ColumnT, ValueT>
+    WhereEq<QueryT, ColumnT, ValueT>
 ) {
     const {
         fromClause,
         whereClause,
-    } = FromClauseUtil.whereNullSafeEq<
+    } = FromClauseUtil.whereEq<
         QueryT["fromClause"],
         ColumnT,
         ValueT
     >(
         query.fromClause,
         query.whereClause,
-        nullSafeEq,
-        whereNullSafeEqDelegate,
+        whereEqDelegate,
         value
     );
 
@@ -98,7 +96,7 @@ export function whereNullSafeEq<
         unionLimitClause,
     } = query;
 
-    const result : WhereNullSafeEq<QueryT, ColumnT, ValueT> = new Query(
+    const result : WhereEq<QueryT, ColumnT, ValueT> = new Query(
         {
             fromClause,
             selectClause,

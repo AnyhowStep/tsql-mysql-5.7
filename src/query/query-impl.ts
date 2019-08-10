@@ -1,5 +1,5 @@
 import * as tm from "type-mapping";
-import {IAliasedTable, FromClauseUtil, WhereClause, ColumnUtil, PrimitiveExpr} from "@tsql/tsql";
+import {IAliasedTable, FromClauseUtil, WhereClause, ColumnUtil, PrimitiveExpr, NonNullPrimitiveExpr} from "@tsql/tsql";
 import {QueryData, IQuery, ExtraQueryData} from "./query";
 import * as QueryUtil from "./util";
 
@@ -110,6 +110,34 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
         );
     }
 
+    whereEq<
+        ColumnT extends ColumnUtil.ExtractWithType<
+            ColumnUtil.FromJoinArray<
+                Extract<this, QueryUtil.AfterFromClause>["fromClause"]["currentJoins"]
+            >,
+            NonNullPrimitiveExpr
+        >,
+        ValueT extends tm.OutputOf<ColumnT["mapper"]>
+    > (
+        this : Extract<this, QueryUtil.AfterFromClause>,
+        whereEqDelegate : FromClauseUtil.WhereEqDelegate<
+            Extract<this, QueryUtil.AfterFromClause>["fromClause"],
+            ColumnT
+        >,
+        value : ValueT
+    ) : (
+        QueryUtil.WhereEq<Extract<this, QueryUtil.AfterFromClause>, ColumnT, ValueT>
+    ) {
+        return QueryUtil.whereEq<
+            Extract<this, QueryUtil.AfterFromClause>,
+            ColumnT,
+            ValueT
+        >(
+            this,
+            whereEqDelegate,
+            value
+        );
+    }
     whereIsNotNull<
         ColumnT extends ColumnUtil.ExtractNullable<
             ColumnUtil.FromJoinArray<
