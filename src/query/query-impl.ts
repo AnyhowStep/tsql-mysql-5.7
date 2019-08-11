@@ -260,11 +260,27 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
         ValueT extends tm.OutputOf<ColumnT["mapper"]>
     > (
         this : Extract<this, QueryUtil.AfterFromClause>,
-        whereNullSafeEqDelegate : FromClauseUtil.WhereNullSafeEqDelegate<
-            Extract<this, QueryUtil.AfterFromClause>["fromClause"],
-            ColumnT
-        >,
-        value : ValueT
+        /**
+         * This construction effectively makes it impossible for `WhereNullSafeEqDelegate<>`
+         * to return a union type.
+         *
+         * This is unfortunate but a necessary compromise for now.
+         *
+         * https://github.com/microsoft/TypeScript/issues/32804#issuecomment-520199818
+         *
+         * https://github.com/microsoft/TypeScript/issues/32804#issuecomment-520201877
+         */
+        ...args : (
+            ColumnT extends ColumnUtil.ExtractWithType<
+                ColumnUtil.FromJoinArray<Extract<this, QueryUtil.AfterFromClause>["fromClause"]["currentJoins"]>,
+                PrimitiveExpr
+            > ?
+            [
+                FromClauseUtil.WhereNullSafeEqDelegate<Extract<this, QueryUtil.AfterFromClause>["fromClause"], ColumnT>,
+                ValueT
+            ] :
+            never
+        )
     ) : (
         QueryUtil.WhereNullSafeEq<Extract<this, QueryUtil.AfterFromClause>, ColumnT, ValueT>
     ) {
@@ -274,8 +290,7 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
             ValueT
         >(
             this,
-            whereNullSafeEqDelegate,
-            value
+            ...args
         );
     }
     where (
