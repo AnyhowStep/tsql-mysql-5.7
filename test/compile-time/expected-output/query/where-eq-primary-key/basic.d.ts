@@ -41,6 +41,7 @@ export declare const query: tsql.Query<{
                 }>;
             };
             readonly primaryKey: readonly ("myTableIdA" | "myTableIdB")[];
+            readonly candidateKeys: readonly (readonly ("myTableIdA" | "myTableIdB")[])[];
             readonly deleteEnabled: true;
             readonly mutableColumns: readonly [];
         }>[];

@@ -21,6 +21,7 @@ export declare const query: tsql.Query<{
                 }>;
             };
             primaryKey: undefined;
+            candidateKeys: readonly [];
             deleteEnabled: true;
             mutableColumns: readonly [];
         }>[];
@@ -51,6 +52,7 @@ export declare const query2: tsql.Query<{
                 }>;
             };
             primaryKey: undefined;
+            candidateKeys: readonly [];
             deleteEnabled: true;
             mutableColumns: readonly [];
         }>[];

@@ -41,6 +41,7 @@ export declare const query: tsql.Query<{
                 }>;
             };
             readonly primaryKey: readonly ("myTableIdA" | "myTableIdB")[];
+            readonly candidateKeys: readonly (readonly ("myTableIdA" | "myTableIdB")[])[];
             readonly deleteEnabled: true;
             readonly mutableColumns: readonly [];
         }> | tsql.Join<{
@@ -81,6 +82,7 @@ export declare const query: tsql.Query<{
                 }>;
             };
             readonly primaryKey: readonly ("myOtherTableIdA" | "myOtherTableIdB")[];
+            readonly candidateKeys: readonly (readonly ("myOtherTableIdA" | "myOtherTableIdB")[])[];
             readonly deleteEnabled: true;
             readonly mutableColumns: readonly [];
         }>)[];

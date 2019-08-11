@@ -22,6 +22,7 @@ export declare const query: tsql.Query<{
                 }>;
             };
             readonly primaryKey: undefined;
+            readonly candidateKeys: readonly [];
             readonly deleteEnabled: true;
             readonly mutableColumns: readonly [];
         }>[];

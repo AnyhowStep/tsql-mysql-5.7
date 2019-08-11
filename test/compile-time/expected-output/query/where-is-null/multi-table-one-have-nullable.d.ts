@@ -21,6 +21,7 @@ export declare const query: tsql.Query<{
                 }>;
             };
             readonly primaryKey: undefined;
+            readonly candidateKeys: readonly [];
             readonly deleteEnabled: true;
             readonly mutableColumns: readonly [];
         }> | tsql.Join<{
@@ -41,6 +42,7 @@ export declare const query: tsql.Query<{
                 }>;
             };
             primaryKey: undefined;
+            candidateKeys: readonly [];
             deleteEnabled: true;
             mutableColumns: readonly [];
         }>)[];
