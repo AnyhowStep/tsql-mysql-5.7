@@ -8,7 +8,7 @@ import {
     NonNullPrimitiveExpr,
     WhereDelegate,
     JoinArrayUtil,
-    PrimaryKey,
+    PrimaryKey_NonUnion,
 } from "@tsql/tsql";
 import {QueryData, IQuery, ExtraQueryData} from "./query";
 import * as QueryUtil from "./util";
@@ -140,7 +140,7 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
             TableT extends JoinArrayUtil.ExtractWithPrimaryKey<Extract<this, QueryUtil.AfterFromClause>["fromClause"]["currentJoins"]> ?
             [
                 FromClauseUtil.WhereEqPrimaryKeyDelegate<Extract<this, QueryUtil.AfterFromClause>["fromClause"], TableT>,
-                PrimaryKey<TableT>
+                PrimaryKey_NonUnion<TableT>
             ] :
             never
         )

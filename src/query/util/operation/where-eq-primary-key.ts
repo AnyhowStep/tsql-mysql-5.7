@@ -1,4 +1,4 @@
-import {FromClauseUtil, PrimaryKey, JoinArrayUtil} from "@tsql/tsql";
+import {FromClauseUtil, PrimaryKey_NonUnion, JoinArrayUtil} from "@tsql/tsql";
 import {Query} from "../../query-impl";
 import {AfterFromClause} from "../helper-type";
 
@@ -55,7 +55,7 @@ export function whereEqPrimaryKey<
         TableT extends JoinArrayUtil.ExtractWithPrimaryKey<QueryT["fromClause"]["currentJoins"]> ?
         [
             FromClauseUtil.WhereEqPrimaryKeyDelegate<QueryT["fromClause"], TableT>,
-            PrimaryKey<TableT>
+            PrimaryKey_NonUnion<TableT>
         ] :
         never
     )
