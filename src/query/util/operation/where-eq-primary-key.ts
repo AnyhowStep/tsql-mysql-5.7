@@ -1,4 +1,4 @@
-import {FromClauseUtil, PrimaryKey, TypeUtil, JoinArrayUtil} from "@tsql/tsql";
+import {FromClauseUtil, PrimaryKey, JoinArrayUtil} from "@tsql/tsql";
 import {Query} from "../../query-impl";
 import {AfterFromClause} from "../helper-type";
 
@@ -41,8 +41,24 @@ export function whereEqPrimaryKey<
     TableT extends JoinArrayUtil.ExtractWithPrimaryKey<QueryT["fromClause"]["currentJoins"]>
 > (
     query : QueryT,
-    whereEqPrimaryKeyDelegate : FromClauseUtil.WhereEqPrimaryKeyDelegate<QueryT["fromClause"], TableT>,
-    primaryKey : TypeUtil.UnionToIntersection<PrimaryKey<TableT>>
+    /**
+     * This construction effectively makes it impossible for `WhereEqPrimaryKeyDelegate<>`
+     * to return a union type.
+     *
+     * This is unfortunate but a necessary compromise for now.
+     *
+     * https://github.com/microsoft/TypeScript/issues/32804#issuecomment-520199818
+     *
+     * https://github.com/microsoft/TypeScript/issues/32804#issuecomment-520201877
+     */
+    ...args : (
+        TableT extends JoinArrayUtil.ExtractWithPrimaryKey<QueryT["fromClause"]["currentJoins"]> ?
+        [
+            FromClauseUtil.WhereEqPrimaryKeyDelegate<QueryT["fromClause"], TableT>,
+            PrimaryKey<TableT>
+        ] :
+        never
+    )
 ) : (
     WhereEqPrimaryKey<QueryT>
 ) {
@@ -55,8 +71,7 @@ export function whereEqPrimaryKey<
     >(
         query.fromClause,
         query.whereClause,
-        whereEqPrimaryKeyDelegate,
-        primaryKey
+        ...args
     );
 
     const {

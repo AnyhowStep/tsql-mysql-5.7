@@ -1,5 +1,15 @@
 import * as tm from "type-mapping";
-import {IAliasedTable, FromClauseUtil, WhereClause, ColumnUtil, PrimitiveExpr, NonNullPrimitiveExpr, WhereDelegate, JoinArrayUtil, PrimaryKey, TypeUtil} from "@tsql/tsql";
+import {
+    IAliasedTable,
+    FromClauseUtil,
+    WhereClause,
+    ColumnUtil,
+    PrimitiveExpr,
+    NonNullPrimitiveExpr,
+    WhereDelegate,
+    JoinArrayUtil,
+    PrimaryKey,
+} from "@tsql/tsql";
 import {QueryData, IQuery, ExtraQueryData} from "./query";
 import * as QueryUtil from "./util";
 
@@ -116,11 +126,24 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
         >
     > (
         this : Extract<this, QueryUtil.AfterFromClause>,
-        whereEqPrimaryKeyDelegate : FromClauseUtil.WhereEqPrimaryKeyDelegate<
-            Extract<this, QueryUtil.AfterFromClause>["fromClause"],
-            TableT
-        >,
-        primaryKey : TypeUtil.UnionToIntersection<PrimaryKey<TableT>>
+        /**
+         * This construction effectively makes it impossible for `WhereEqPrimaryKeyDelegate<>`
+         * to return a union type.
+         *
+         * This is unfortunate but a necessary compromise for now.
+         *
+         * https://github.com/microsoft/TypeScript/issues/32804#issuecomment-520199818
+         *
+         * https://github.com/microsoft/TypeScript/issues/32804#issuecomment-520201877
+         */
+        ...args : (
+            TableT extends JoinArrayUtil.ExtractWithPrimaryKey<Extract<this, QueryUtil.AfterFromClause>["fromClause"]["currentJoins"]> ?
+            [
+                FromClauseUtil.WhereEqPrimaryKeyDelegate<Extract<this, QueryUtil.AfterFromClause>["fromClause"], TableT>,
+                PrimaryKey<TableT>
+            ] :
+            never
+        )
     ) : (
         QueryUtil.WhereEqPrimaryKey<Extract<this, QueryUtil.AfterFromClause>>
     ) {
@@ -129,8 +152,7 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
             TableT
         >(
             this,
-            whereEqPrimaryKeyDelegate,
-            primaryKey
+            ...args
         );
     }
     whereEq<
@@ -143,11 +165,27 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
         ValueT extends tm.OutputOf<ColumnT["mapper"]>
     > (
         this : Extract<this, QueryUtil.AfterFromClause>,
-        whereEqDelegate : FromClauseUtil.WhereEqDelegate<
-            Extract<this, QueryUtil.AfterFromClause>["fromClause"],
-            ColumnT
-        >,
-        value : ValueT
+        /**
+         * This construction effectively makes it impossible for `WhereEqDelegate<>`
+         * to return a union type.
+         *
+         * This is unfortunate but a necessary compromise for now.
+         *
+         * https://github.com/microsoft/TypeScript/issues/32804#issuecomment-520199818
+         *
+         * https://github.com/microsoft/TypeScript/issues/32804#issuecomment-520201877
+         */
+        ...args : (
+            ColumnT extends ColumnUtil.ExtractWithType<
+                ColumnUtil.FromJoinArray<Extract<this, QueryUtil.AfterFromClause>["fromClause"]["currentJoins"]>,
+                NonNullPrimitiveExpr
+            > ?
+            [
+                FromClauseUtil.WhereEqDelegate<Extract<this, QueryUtil.AfterFromClause>["fromClause"], ColumnT>,
+                ValueT
+            ] :
+            never
+        )
     ) : (
         QueryUtil.WhereEq<Extract<this, QueryUtil.AfterFromClause>, ColumnT, ValueT>
     ) {
@@ -157,8 +195,7 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
             ValueT
         >(
             this,
-            whereEqDelegate,
-            value
+            ...args
         );
     }
     whereIsNotNull<
