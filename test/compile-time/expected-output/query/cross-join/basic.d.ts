@@ -4,47 +4,47 @@ export declare const query: tsql.Query<{
     fromClause: tsql.IFromClause<{
         outerQueryJoins: undefined;
         currentJoins: readonly (tsql.Join<{
-            readonly tableAlias: "myTable";
-            readonly nullable: false;
-            readonly columns: {
+            tableAlias: "myTable";
+            nullable: false;
+            columns: {
                 readonly myTableId: tsql.Column<{
                     tableAlias: "myTable";
                     columnAlias: "myTableId";
                     mapper: tm.Mapper<unknown, bigint>;
                 }>;
             };
-            readonly originalColumns: {
+            originalColumns: {
                 readonly myTableId: tsql.Column<{
                     tableAlias: "myTable";
                     columnAlias: "myTableId";
                     mapper: tm.Mapper<unknown, bigint>;
                 }>;
             };
-            readonly primaryKey: undefined;
-            readonly candidateKeys: readonly [];
-            readonly deleteEnabled: true;
-            readonly mutableColumns: readonly [];
+            primaryKey: undefined;
+            candidateKeys: readonly [];
+            deleteEnabled: true;
+            mutableColumns: readonly [];
         }> | tsql.Join<{
-            readonly tableAlias: "myOtherTable";
-            readonly nullable: false;
-            readonly columns: {
+            tableAlias: "myOtherTable";
+            nullable: false;
+            columns: {
                 readonly myOtherTableId: tsql.Column<{
                     tableAlias: "myOtherTable";
                     columnAlias: "myOtherTableId";
                     mapper: tm.Mapper<unknown, bigint>;
                 }>;
             };
-            readonly originalColumns: {
+            originalColumns: {
                 readonly myOtherTableId: tsql.Column<{
                     tableAlias: "myOtherTable";
                     columnAlias: "myOtherTableId";
                     mapper: tm.Mapper<unknown, bigint>;
                 }>;
             };
-            readonly primaryKey: undefined;
-            readonly candidateKeys: readonly [];
-            readonly deleteEnabled: true;
-            readonly mutableColumns: readonly [];
+            primaryKey: undefined;
+            candidateKeys: readonly [];
+            deleteEnabled: true;
+            mutableColumns: readonly [];
         }>)[];
     }>;
     selectClause: undefined;

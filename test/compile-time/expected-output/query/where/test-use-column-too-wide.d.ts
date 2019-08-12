@@ -4,29 +4,26 @@ export declare const query: tsql.Query<{
     fromClause: tsql.IFromClause<{
         outerQueryJoins: undefined;
         currentJoins: readonly tsql.Join<{
-            readonly tableAlias: "myTable";
-            readonly nullable: false;
-            readonly columns: {
-                readonly myTableId: tsql.Column<{
-                    tableAlias: "myTable";
-                    columnAlias: "myTableId";
-                    mapper: tm.Mapper<unknown, bigint>;
-                }>;
-            }; /**
-             * We make this `WHERE` clause handle `myTableId`, even if it is `null`.
-             * So, `bigint|null`.
-             */
-            readonly originalColumns: {
+            tableAlias: "myTable";
+            nullable: false;
+            columns: {
                 readonly myTableId: tsql.Column<{
                     tableAlias: "myTable";
                     columnAlias: "myTableId";
                     mapper: tm.Mapper<unknown, bigint>;
                 }>;
             };
-            readonly primaryKey: undefined;
-            readonly candidateKeys: readonly [];
-            readonly deleteEnabled: true;
-            readonly mutableColumns: readonly [];
+            originalColumns: {
+                readonly myTableId: tsql.Column<{
+                    tableAlias: "myTable";
+                    columnAlias: "myTableId";
+                    mapper: tm.Mapper<unknown, bigint>;
+                }>;
+            };
+            primaryKey: undefined;
+            candidateKeys: readonly [];
+            deleteEnabled: true;
+            mutableColumns: readonly [];
         }>[];
     }>;
     selectClause: undefined;

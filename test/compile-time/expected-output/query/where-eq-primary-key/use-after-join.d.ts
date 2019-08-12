@@ -4,9 +4,9 @@ export declare const query: tsql.Query<{
     fromClause: tsql.IFromClause<{
         outerQueryJoins: undefined;
         currentJoins: readonly (tsql.Join<{
-            readonly tableAlias: "myTable";
-            readonly nullable: false;
-            readonly columns: {
+            tableAlias: "myTable";
+            nullable: false;
+            columns: {
                 readonly otherColumn: tsql.Column<{
                     tableAlias: "myTable";
                     columnAlias: "otherColumn";
@@ -23,7 +23,7 @@ export declare const query: tsql.Query<{
                     mapper: tm.Mapper<unknown, boolean>;
                 }>;
             };
-            readonly originalColumns: {
+            originalColumns: {
                 readonly otherColumn: tsql.Column<{
                     tableAlias: "myTable";
                     columnAlias: "otherColumn";
@@ -40,14 +40,14 @@ export declare const query: tsql.Query<{
                     mapper: tm.Mapper<unknown, boolean>;
                 }>;
             };
-            readonly primaryKey: readonly ("myTableIdA" | "myTableIdB")[];
-            readonly candidateKeys: readonly (readonly ("myTableIdA" | "myTableIdB")[])[];
-            readonly deleteEnabled: true;
-            readonly mutableColumns: readonly [];
+            primaryKey: readonly ("myTableIdA" | "myTableIdB")[];
+            candidateKeys: readonly (readonly ("myTableIdA" | "myTableIdB")[])[];
+            deleteEnabled: true;
+            mutableColumns: readonly [];
         }> | tsql.Join<{
-            readonly tableAlias: "myOtherTable";
-            readonly nullable: false;
-            readonly columns: {
+            tableAlias: "myOtherTable";
+            nullable: false;
+            columns: {
                 readonly otherColumn: tsql.Column<{
                     tableAlias: "myOtherTable";
                     columnAlias: "otherColumn";
@@ -64,7 +64,7 @@ export declare const query: tsql.Query<{
                     mapper: tm.Mapper<unknown, boolean>;
                 }>;
             };
-            readonly originalColumns: {
+            originalColumns: {
                 readonly otherColumn: tsql.Column<{
                     tableAlias: "myOtherTable";
                     columnAlias: "otherColumn";
@@ -81,10 +81,10 @@ export declare const query: tsql.Query<{
                     mapper: tm.Mapper<unknown, boolean>;
                 }>;
             };
-            readonly primaryKey: readonly ("myOtherTableIdA" | "myOtherTableIdB")[];
-            readonly candidateKeys: readonly (readonly ("myOtherTableIdA" | "myOtherTableIdB")[])[];
-            readonly deleteEnabled: true;
-            readonly mutableColumns: readonly [];
+            primaryKey: readonly ("myOtherTableIdA" | "myOtherTableIdB")[];
+            candidateKeys: readonly (readonly ("myOtherTableIdA" | "myOtherTableIdB")[])[];
+            deleteEnabled: true;
+            mutableColumns: readonly [];
         }>)[];
     }>;
     selectClause: undefined;

@@ -5,26 +5,26 @@ export declare const query: tsql.Query<{
     fromClause: tsql.IFromClause<{
         outerQueryJoins: undefined;
         currentJoins: readonly tsql.Join<{
-            readonly tableAlias: "myTable";
-            readonly nullable: false;
-            readonly columns: {
+            tableAlias: "myTable";
+            nullable: false;
+            columns: {
                 readonly myColumn: tsql.Column<{
                     tableAlias: "myTable";
                     columnAlias: "myColumn";
                     mapper: tm.Mapper<unknown, boolean>;
                 }>;
             };
-            readonly originalColumns: {
+            originalColumns: {
                 readonly myColumn: tsql.Column<{
                     tableAlias: "myTable";
                     columnAlias: "myColumn";
                     mapper: tm.Mapper<unknown, boolean>;
                 }>;
             };
-            readonly primaryKey: undefined;
-            readonly candidateKeys: readonly [];
-            readonly deleteEnabled: true;
-            readonly mutableColumns: readonly [];
+            primaryKey: undefined;
+            candidateKeys: readonly [];
+            deleteEnabled: true;
+            mutableColumns: readonly [];
         }>[];
     }>;
     selectClause: undefined;
