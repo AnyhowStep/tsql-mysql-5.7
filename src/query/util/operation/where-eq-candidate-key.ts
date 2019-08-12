@@ -1,4 +1,4 @@
-import {FromClauseUtil, JoinArrayUtil, CandidateKey_NonUnion} from "@tsql/tsql";
+import {FromClauseUtil, JoinArrayUtil, CandidateKey_NonUnion, TypeUtil} from "@tsql/tsql";
 import {Query} from "../../query-impl";
 import {AfterFromClause} from "../helper-type";
 import {eqCandidateKey} from "../../../expr-library";
@@ -56,7 +56,7 @@ export function whereEqCandidateKey<
         TableT extends JoinArrayUtil.ExtractWithCandidateKey<QueryT["fromClause"]["currentJoins"]> ?
         [
             FromClauseUtil.WhereEqCandidateKeyDelegate<QueryT["fromClause"], TableT>,
-            CandidateKey_NonUnion<TableT>
+            TypeUtil.StrictUnion<CandidateKey_NonUnion<TableT>>
         ] :
         never
     )

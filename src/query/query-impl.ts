@@ -10,6 +10,7 @@ import {
     JoinArrayUtil,
     PrimaryKey_NonUnion,
     CandidateKey_NonUnion,
+    TypeUtil,
 } from "@tsql/tsql";
 import {QueryData, IQuery, ExtraQueryData} from "./query";
 import * as QueryUtil from "./util";
@@ -141,7 +142,7 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
             TableT extends JoinArrayUtil.ExtractWithCandidateKey<Extract<this, QueryUtil.AfterFromClause>["fromClause"]["currentJoins"]> ?
             [
                 FromClauseUtil.WhereEqCandidateKeyDelegate<Extract<this, QueryUtil.AfterFromClause>["fromClause"], TableT>,
-                CandidateKey_NonUnion<TableT>
+                TypeUtil.StrictUnion<CandidateKey_NonUnion<TableT>>
             ] :
             never
         )
