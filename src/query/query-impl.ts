@@ -9,6 +9,7 @@ import {
     WhereDelegate,
     JoinArrayUtil,
     PrimaryKey_NonUnion,
+    CandidateKey_NonUnion,
 } from "@tsql/tsql";
 import {QueryData, IQuery, ExtraQueryData} from "./query";
 import * as QueryUtil from "./util";
@@ -120,6 +121,41 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
         );
     }
 
+    whereEqCandidateKey<
+        TableT extends JoinArrayUtil.ExtractWithCandidateKey<
+            Extract<this, QueryUtil.AfterFromClause>["fromClause"]["currentJoins"]
+        >
+    > (
+        this : Extract<this, QueryUtil.AfterFromClause>,
+        /**
+         * This construction effectively makes it impossible for `WhereEqCandidateKeyDelegate<>`
+         * to return a union type.
+         *
+         * This is unfortunate but a necessary compromise for now.
+         *
+         * https://github.com/microsoft/TypeScript/issues/32804#issuecomment-520199818
+         *
+         * https://github.com/microsoft/TypeScript/issues/32804#issuecomment-520201877
+         */
+        ...args : (
+            TableT extends JoinArrayUtil.ExtractWithCandidateKey<Extract<this, QueryUtil.AfterFromClause>["fromClause"]["currentJoins"]> ?
+            [
+                FromClauseUtil.WhereEqCandidateKeyDelegate<Extract<this, QueryUtil.AfterFromClause>["fromClause"], TableT>,
+                CandidateKey_NonUnion<TableT>
+            ] :
+            never
+        )
+    ) : (
+        QueryUtil.WhereEqCandidateKey<Extract<this, QueryUtil.AfterFromClause>>
+    ) {
+        return QueryUtil.whereEqCandidateKey<
+            Extract<this, QueryUtil.AfterFromClause>,
+            TableT
+        >(
+            this,
+            ...args
+        );
+    }
     whereEqPrimaryKey<
         TableT extends JoinArrayUtil.ExtractWithPrimaryKey<
             Extract<this, QueryUtil.AfterFromClause>["fromClause"]["currentJoins"]
