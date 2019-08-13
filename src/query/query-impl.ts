@@ -12,6 +12,7 @@ import {
     CandidateKey_NonUnion,
     TypeUtil,
     SuperKey_NonUnion,
+    PartialRow_NonUnion,
 } from "@tsql/tsql";
 import {QueryData, IQuery, ExtraQueryData} from "./query";
 import * as QueryUtil from "./util";
@@ -151,6 +152,39 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
         QueryUtil.WhereEqCandidateKey<Extract<this, QueryUtil.AfterFromClause>>
     ) {
         return QueryUtil.whereEqCandidateKey<
+            Extract<this, QueryUtil.AfterFromClause>,
+            TableT
+        >(
+            this,
+            ...args
+        );
+    }
+    whereEqColumns<
+        TableT extends Extract<this, QueryUtil.AfterFromClause>["fromClause"]["currentJoins"][number]
+    > (
+        this : Extract<this, QueryUtil.AfterFromClause>,
+        /**
+         * This construction effectively makes it impossible for `WhereEqColumnsDelegate<>`
+         * to return a union type.
+         *
+         * This is unfortunate but a necessary compromise for now.
+         *
+         * https://github.com/microsoft/TypeScript/issues/32804#issuecomment-520199818
+         *
+         * https://github.com/microsoft/TypeScript/issues/32804#issuecomment-520201877
+         */
+        ...args : (
+            TableT extends Extract<this, QueryUtil.AfterFromClause>["fromClause"]["currentJoins"][number] ?
+            [
+                FromClauseUtil.WhereEqColumnsDelegate<Extract<this, QueryUtil.AfterFromClause>["fromClause"], TableT>,
+                PartialRow_NonUnion<TableT>
+            ] :
+            never
+        )
+    ) : (
+        QueryUtil.WhereEqColumns<Extract<this, QueryUtil.AfterFromClause>>
+    ) {
+        return QueryUtil.whereEqColumns<
             Extract<this, QueryUtil.AfterFromClause>,
             TableT
         >(

@@ -15,11 +15,21 @@ import {nullSafeEq} from "./null-safe-eq";
  *  );
  * ```
  *
+ * -----
+ *
+ * It is recommended to **only** use this with **object literals**.
+ * Excess property checks are disabled for non-object literals.
+ * Even if they were enabled, it is possible to slip in extra properties.
+ *
+ * Extra properties are ignored during run-time but may indicate lapses in logic.
+ *
+ * -----
+ *
  * Uses `nullSafeEq()` internally because the super key of a table
  * may have nullable columns.
  *
  * @param table - The table with a candidate key
- * @param superKey - The super key values to compare against
+ * @param superKeyInput - The super key values to compare against
  */
 export const eqSuperKey : EqSuperKey = makeEqSuperKey(
     nullSafeEq
