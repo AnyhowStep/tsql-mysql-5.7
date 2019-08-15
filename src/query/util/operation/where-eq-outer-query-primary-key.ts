@@ -1,7 +1,7 @@
 import {FromClauseUtil, JoinArrayUtil} from "@tsql/tsql";
 import {Query} from "../../query-impl";
 import {AfterFromClause, Correlated} from "../helper-type";
-import { eqPrimaryKeyOfTable } from "../../../expr-library";
+import {eqPrimaryKeyOfTable} from "../../../expr-library";
 
 /**
  * https://github.com/microsoft/TypeScript/issues/32707#issuecomment-518347966
