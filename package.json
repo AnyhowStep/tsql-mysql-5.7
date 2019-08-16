@@ -44,6 +44,6 @@
     "@tsql/tsql": "file:../tsql",
     "@types/mysql": "^2.15.6",
     "mysql": "^2.17.1",
-    "type-mapping": "^1.17.0"
+    "type-mapping": "^1.19.3"
   }
 }
