@@ -110,6 +110,7 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
         this : Extract<this, QueryUtil.AfterFromClause>,
         aliasedTable : (
             & AliasedTableT
+            & TypeUtil.AssertNonUnion<AliasedTableT>
             & QueryUtil.AssertValidCurrentJoin<this, AliasedTableT>
         )
     ) : (

@@ -1,4 +1,4 @@
-import {IAliasedTable, FromClauseUtil} from "@tsql/tsql";
+import {IAliasedTable, FromClauseUtil, TypeUtil} from "@tsql/tsql";
 import {Query} from "../../query-impl";
 import {assertValidJoinTarget, AssertValidCurrentJoin} from "../predicate";
 import {AfterFromClause} from "../helper-type";
@@ -44,6 +44,7 @@ export function crossJoin<
     query : QueryT,
     aliasedTable : (
         & AliasedTableT
+        & TypeUtil.AssertNonUnion<AliasedTableT>
         & AssertValidCurrentJoin<QueryT, AliasedTableT>
     )
 ) : (
@@ -63,7 +64,13 @@ export function crossJoin<
 
     const result : CrossJoin<QueryT, AliasedTableT> = new Query(
         {
-            fromClause : FromClauseUtil.crossJoin(query.fromClause, aliasedTable),
+            fromClause : FromClauseUtil.crossJoin<
+                QueryT["fromClause"],
+                AliasedTableT
+            >(
+                query.fromClause,
+                aliasedTable
+            ),
             selectClause,
 
             limitClause,
