@@ -91,7 +91,7 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
         this : Extract<this, QueryUtil.BeforeFromClause>,
         aliasedTable : (
             & AliasedTableT
-            & QueryUtil.AssertValidCurrentJoin<this, AliasedTableT>
+            & QueryUtil.AssertValidCurrentJoin<Extract<this, QueryUtil.BeforeFromClause>, AliasedTableT>
         )
     ) : (
         QueryUtil.From<Extract<this, QueryUtil.BeforeFromClause>, AliasedTableT>
@@ -111,7 +111,7 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
         aliasedTable : (
             & AliasedTableT
             & TypeUtil.AssertNonUnion<AliasedTableT>
-            & QueryUtil.AssertValidCurrentJoin<this, AliasedTableT>
+            & QueryUtil.AssertValidCurrentJoin<Extract<this, QueryUtil.AfterFromClause>, AliasedTableT>
         )
     ) : (
         QueryUtil.CrossJoin<Extract<this, QueryUtil.AfterFromClause>, AliasedTableT>

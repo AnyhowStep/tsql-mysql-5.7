@@ -1,7 +1,7 @@
 [
   {
     "messageText": {
-      "messageText": "Argument of type 'Table<{ isLateral: false; alias: \"myTable\"; columns: { readonly myTableId: Column<{ tableAlias: \"myTable\"; columnAlias: \"myTableId\"; mapper: Mapper<unknown, bigint>; }>; }; usedRef: IUsedRef<{}>; autoIncrement: undefined; ... 9 more ...; parents: readonly []; }>' is not assignable to parameter of type 'Table<{ isLateral: false; alias: \"myTable\"; columns: { readonly myTableId: Column<{ tableAlias: \"myTable\"; columnAlias: \"myTableId\"; mapper: Mapper<unknown, bigint>; }>; }; usedRef: IUsedRef<{}>; ... 10 more ...; parents: readonly []; }> & CompileError<...>'.",
+      "messageText": "Argument of type 'Table<{ isLateral: false; alias: \"myTable\"; columns: { readonly myTableId: Column<{ tableAlias: \"myTable\"; columnAlias: \"myTableId\"; mapper: Mapper<unknown, bigint>; }>; }; usedRef: IUsedRef<{}>; autoIncrement: undefined; ... 9 more ...; parents: readonly []; }>' is not assignable to parameter of type 'Table<{ isLateral: false; alias: \"myTable\"; columns: { readonly myTableId: Column<{ tableAlias: \"myTable\"; columnAlias: \"myTableId\"; mapper: Mapper<unknown, bigint>; }>; }; usedRef: IUsedRef<{}>; ... 10 more ...; parents: readonly []; }> & { ...; } & CompileError<...>'.",
       "category": 1,
       "code": 2345,
       "next": {
