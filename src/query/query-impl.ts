@@ -13,6 +13,9 @@ import {
     TypeUtil,
     SuperKey_NonUnion,
     PartialRow_NonUnion,
+    RawExpr,
+    OnDelegate,
+    OnClauseUtil,
 } from "@tsql/tsql";
 import {QueryData, IQuery, ExtraQueryData} from "./query";
 import * as QueryUtil from "./util";
@@ -122,6 +125,37 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
         >(
             this,
             aliasedTable
+        );
+    }
+    innerJoin<
+        AliasedTableT extends IAliasedTable,
+        RawOnClauseT extends RawExpr<boolean>
+    > (
+        this : Extract<this, QueryUtil.AfterFromClause>,
+        aliasedTable : (
+            & AliasedTableT
+            & TypeUtil.AssertNonUnion<AliasedTableT>
+            & QueryUtil.AssertValidCurrentJoin<Extract<this, QueryUtil.AfterFromClause>, AliasedTableT>
+        ),
+        onDelegate : OnDelegate<
+            Extract<this, QueryUtil.AfterFromClause>["fromClause"],
+            AliasedTableT,
+            (
+                & RawOnClauseT
+                & OnClauseUtil.AssertNoOuterQueryUsedRef<Extract<this, QueryUtil.AfterFromClause>["fromClause"], RawOnClauseT>
+            )
+        >
+    ) : (
+        QueryUtil.InnerJoin<Extract<this, QueryUtil.AfterFromClause>, AliasedTableT>
+    ) {
+        return QueryUtil.innerJoin<
+            Extract<this, QueryUtil.AfterFromClause>,
+            AliasedTableT,
+            RawOnClauseT
+        >(
+            this,
+            aliasedTable,
+            onDelegate
         );
     }
 
