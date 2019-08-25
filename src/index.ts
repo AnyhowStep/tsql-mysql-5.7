@@ -3,4 +3,5 @@
  */
 export * from "@tsql/tsql";
 
+export * from "./expr-library";
 export * from "./query";

@@ -215,6 +215,90 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
             onDelegate
         );
     }
+    leftJoinUsingCandidateKey<
+        SrcT extends Extract<this, QueryUtil.AfterFromClause>["fromClause"]["currentJoins"][number],
+        DstT extends ITable,
+        SrcColumnsT extends TableUtil.ColumnArraysFromCandidateKeys<SrcT, DstT>
+    > (
+        this : Extract<this, QueryUtil.AfterFromClause>,
+        srcDelegate : FromClauseUtil.LeftJoinUsingCandidateKeySrcDelegate<Extract<this, QueryUtil.AfterFromClause>["fromClause"], SrcT>,
+        aliasedTable : (
+            & DstT
+            & TypeUtil.AssertNonUnion<DstT>
+            & QueryUtil.AssertValidCurrentJoin<Extract<this, QueryUtil.AfterFromClause>, DstT>
+        ),
+        eqCandidateKeyofTableDelegate : EqCandidateKeyOfTableDelegate<SrcT, DstT, SrcColumnsT>
+    ) : (
+        QueryUtil.LeftJoinUsingCandidateKey<Extract<this, QueryUtil.AfterFromClause>, DstT>
+    ) {
+        return QueryUtil.leftJoinUsingCandidateKey<
+            Extract<this, QueryUtil.AfterFromClause>,
+            SrcT,
+            DstT,
+            SrcColumnsT
+        >(
+            this,
+            srcDelegate,
+            aliasedTable,
+            eqCandidateKeyofTableDelegate
+        );
+    }
+    leftJoinUsingPrimaryKey<
+        SrcT extends Extract<this, QueryUtil.AfterFromClause>["fromClause"]["currentJoins"][number],
+        DstT extends TableWithPrimaryKey
+    > (
+        this : Extract<this, QueryUtil.AfterFromClause>,
+        srcDelegate : FromClauseUtil.LeftJoinUsingPrimaryKeySrcDelegate<Extract<this, QueryUtil.AfterFromClause>["fromClause"], SrcT>,
+        aliasedTable : (
+            & DstT
+            & TypeUtil.AssertNonUnion<DstT>
+            & QueryUtil.AssertValidCurrentJoin<Extract<this, QueryUtil.AfterFromClause>, DstT>
+            & TableUtil.AssertHasNullSafeComparablePrimaryKey<DstT, SrcT["columns"]>
+        )
+    ) : (
+        QueryUtil.LeftJoinUsingPrimaryKey<Extract<this, QueryUtil.AfterFromClause>, DstT>
+    ) {
+        return QueryUtil.leftJoinUsingPrimaryKey<
+            Extract<this, QueryUtil.AfterFromClause>,
+            SrcT,
+            DstT
+        >(
+            this,
+            srcDelegate,
+            aliasedTable
+        );
+    }
+    leftJoin<
+        AliasedTableT extends IAliasedTable,
+        RawOnClauseT extends RawExpr<boolean>
+    > (
+        this : Extract<this, QueryUtil.AfterFromClause>,
+        aliasedTable : (
+            & AliasedTableT
+            & TypeUtil.AssertNonUnion<AliasedTableT>
+            & QueryUtil.AssertValidCurrentJoin<Extract<this, QueryUtil.AfterFromClause>, AliasedTableT>
+        ),
+        onDelegate : OnDelegate<
+            Extract<this, QueryUtil.AfterFromClause>["fromClause"],
+            AliasedTableT,
+            (
+                & RawOnClauseT
+                & OnClauseUtil.AssertNoOuterQueryUsedRef<Extract<this, QueryUtil.AfterFromClause>["fromClause"], RawOnClauseT>
+            )
+        >
+    ) : (
+        QueryUtil.LeftJoin<Extract<this, QueryUtil.AfterFromClause>, AliasedTableT>
+    ) {
+        return QueryUtil.leftJoin<
+            Extract<this, QueryUtil.AfterFromClause>,
+            AliasedTableT,
+            RawOnClauseT
+        >(
+            this,
+            aliasedTable,
+            onDelegate
+        );
+    }
 
     whereEqCandidateKey<
         TableT extends JoinArrayUtil.ExtractWithCandidateKey<
