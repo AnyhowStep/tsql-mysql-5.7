@@ -16,6 +16,8 @@ import {
     RawExpr,
     OnDelegate,
     OnClauseUtil,
+    TableWithPrimaryKey,
+    TableUtil,
 } from "@tsql/tsql";
 import {QueryData, IQuery, ExtraQueryData} from "./query";
 import * as QueryUtil from "./util";
@@ -124,6 +126,31 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
             AliasedTableT
         >(
             this,
+            aliasedTable
+        );
+    }
+    innerJoinUsingPrimaryKey<
+        SrcT extends Extract<this, QueryUtil.AfterFromClause>["fromClause"]["currentJoins"][number],
+        DstT extends TableWithPrimaryKey
+    > (
+        this : Extract<this, QueryUtil.AfterFromClause>,
+        srcDelegate : FromClauseUtil.InnerJoinUsingPrimaryKeySrcDelegate<Extract<this, QueryUtil.AfterFromClause>["fromClause"], SrcT>,
+        aliasedTable : (
+            & DstT
+            & TypeUtil.AssertNonUnion<DstT>
+            & QueryUtil.AssertValidCurrentJoin<Extract<this, QueryUtil.AfterFromClause>, DstT>
+            & TableUtil.AssertHasNullSafeComparablePrimaryKey<DstT, SrcT["columns"]>
+        )
+    ) : (
+        QueryUtil.InnerJoinUsingPrimaryKey<Extract<this, QueryUtil.AfterFromClause>, DstT>
+    ) {
+        return QueryUtil.innerJoinUsingPrimaryKey<
+            Extract<this, QueryUtil.AfterFromClause>,
+            SrcT,
+            DstT
+        >(
+            this,
+            srcDelegate,
             aliasedTable
         );
     }
