@@ -20,6 +20,8 @@ import {
     TableUtil,
     ITable,
     EqCandidateKeyOfTableDelegate,
+    SelectClause,
+    SelectDelegate,
 } from "@tsql/tsql";
 import {QueryData, IQuery, ExtraQueryData} from "./query";
 import * as QueryUtil from "./util";
@@ -298,6 +300,16 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
             aliasedTable,
             onDelegate
         );
+    }
+
+    select<
+        SelectsT extends SelectClause
+    > (
+        selectDelegate : SelectDelegate<this["fromClause"], this["selectClause"], SelectsT>
+    ) : (
+        QueryUtil.Select<this, SelectsT>
+    ) {
+        return QueryUtil.select<this, SelectsT>(this, selectDelegate);
     }
 
     whereEqCandidateKey<

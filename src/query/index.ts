@@ -6,7 +6,7 @@ export {
     QueryUtil,
 };
 
-import {IAliasedTable, FromClauseUtil} from "@tsql/tsql";
+import {IAliasedTable, FromClauseUtil, SelectClause, SelectDelegate} from "@tsql/tsql";
 
 export function from<
     AliasedTableT extends IAliasedTable
@@ -48,4 +48,15 @@ export function requireNullableOuterQueryJoins<
 ) {
     return QueryUtil.newInstance()
         .requireNullableOuterQueryJoins<AliasedTablesT>(...aliasedTables as any);
+}
+
+export function select<
+    SelectsT extends SelectClause
+> (
+    selectDelegate : SelectDelegate<QueryUtil.NewInstance["fromClause"], QueryUtil.NewInstance["selectClause"], SelectsT>
+) : (
+    QueryUtil.Select<QueryUtil.NewInstance, SelectsT>
+) {
+    return QueryUtil.newInstance()
+        .select<SelectsT>(selectDelegate);
 }
