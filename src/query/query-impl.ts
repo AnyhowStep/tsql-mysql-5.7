@@ -302,6 +302,25 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
         );
     }
 
+    limit<
+        MaxRowCountT extends bigint
+    > (
+        maxRowCount : MaxRowCountT
+    ) : (
+        QueryUtil.Limit<this, MaxRowCountT>
+    ) {
+        return QueryUtil.limit<this, MaxRowCountT>(this, maxRowCount);
+    }
+    offset<
+        OffsetT extends bigint
+    > (
+        offset : OffsetT
+    ) : (
+        QueryUtil.Offset<this, OffsetT>
+    ) {
+        return QueryUtil.offset<this, OffsetT>(this, offset);
+    }
+
     select<
         SelectsT extends SelectClause
     > (
