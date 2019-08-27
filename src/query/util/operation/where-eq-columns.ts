@@ -84,6 +84,8 @@ export function whereEqColumns<
 
         unionClause,
         unionLimitClause,
+
+        groupByClause,
     } = query;
 
     const result : WhereEqColumns<QueryT> = new Query(
@@ -98,6 +100,7 @@ export function whereEqColumns<
         },
         {
             whereClause,
+            groupByClause,
         }
     );
     return result;

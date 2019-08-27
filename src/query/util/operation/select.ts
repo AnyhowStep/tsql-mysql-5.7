@@ -68,6 +68,7 @@ export function select<
         unionLimitClause,
 
         whereClause,
+        groupByClause,
     } = query;
 
     const result : Select<QueryT, SelectsT> = new Query(
@@ -82,6 +83,7 @@ export function select<
         },
         {
             whereClause,
+            groupByClause,
         }
     );
     return result;

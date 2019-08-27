@@ -22,6 +22,7 @@ import {
     EqCandidateKeyOfTableDelegate,
     SelectClause,
     SelectDelegate,
+    GroupByClause,
 } from "@tsql/tsql";
 import {QueryData, IQuery, ExtraQueryData} from "./query";
 import * as QueryUtil from "./util";
@@ -42,6 +43,7 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
         `IQuery`-specific
     */
     readonly whereClause : WhereClause|undefined;
+    readonly groupByClause : GroupByClause|undefined;
 
     constructor (data : DataT, extraData : ExtraQueryData) {
         this.fromClause = data.fromClause;
@@ -51,6 +53,7 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
         this.unionLimitClause = data.unionLimitClause;
 
         this.whereClause = extraData.whereClause;
+        this.groupByClause = extraData.groupByClause;
     }
 
     readonly buildExprAst = () => {

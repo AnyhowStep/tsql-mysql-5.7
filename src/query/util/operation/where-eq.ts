@@ -109,6 +109,8 @@ export function whereEq<
 
         unionClause,
         unionLimitClause,
+
+        groupByClause,
     } = query;
 
     const result : WhereEq<QueryT, ColumnT, ValueT> = new Query(
@@ -123,6 +125,7 @@ export function whereEq<
         },
         {
             whereClause,
+            groupByClause,
         }
     );
     return result;

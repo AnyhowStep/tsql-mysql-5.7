@@ -83,6 +83,8 @@ export function whereIsNotNull<
 
         unionClause,
         unionLimitClause,
+
+        groupByClause,
     } = query;
 
     const result : WhereIsNotNull<QueryT, ColumnT> = new Query(
@@ -97,6 +99,7 @@ export function whereIsNotNull<
         },
         {
             whereClause,
+            groupByClause,
         }
     );
     return result;

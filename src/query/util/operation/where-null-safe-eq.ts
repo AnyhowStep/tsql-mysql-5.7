@@ -111,6 +111,8 @@ export function whereNullSafeEq<
 
         unionClause,
         unionLimitClause,
+
+        groupByClause,
     } = query;
 
     const result : WhereNullSafeEq<QueryT, ColumnT, ValueT> = new Query(
@@ -125,6 +127,7 @@ export function whereNullSafeEq<
         },
         {
             whereClause,
+            groupByClause,
         }
     );
     return result;
