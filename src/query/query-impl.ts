@@ -23,6 +23,7 @@ import {
     SelectClause,
     SelectDelegate,
     GroupByClause,
+    GroupByDelegate,
 } from "@tsql/tsql";
 import {QueryData, IQuery, ExtraQueryData} from "./query";
 import * as QueryUtil from "./util";
@@ -305,6 +306,22 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
         );
     }
 
+    groupBy (
+        this : Extract<this, QueryUtil.AfterFromClause>,
+        groupByDelegate : GroupByDelegate<
+            Extract<this, QueryUtil.AfterFromClause>["fromClause"],
+            Extract<this, QueryUtil.AfterFromClause>["selectClause"]
+        >
+    ) : (
+        QueryUtil.GroupBy<Extract<this, QueryUtil.AfterFromClause>>
+    ) {
+        return QueryUtil.groupBy<
+            Extract<this, QueryUtil.AfterFromClause>
+        >(
+            this,
+            groupByDelegate
+        );
+    }
     limit<
         MaxRowCountT extends bigint
     > (

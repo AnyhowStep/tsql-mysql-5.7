@@ -1,6 +1,7 @@
-import {WhereDelegate, WhereClauseUtil} from "@tsql/tsql";
+import {GroupByDelegate, GroupByClauseUtil} from "@tsql/tsql";
 import {Query} from "../../query-impl";
 import {IQuery} from "../../query";
+import {AfterFromClause} from "../helper-type";
 
 /**
  * https://github.com/microsoft/TypeScript/issues/32707#issuecomment-518347966
@@ -8,7 +9,7 @@ import {IQuery} from "../../query";
  * This hack should only really be reserved for types that are more likely
  * to trigger max depth/max count errors.
  */
-export type WhereImpl<
+export type GroupByImpl<
     FromClauseT extends IQuery["fromClause"],
     SelectClauseT extends IQuery["selectClause"],
     LimitClauseT extends IQuery["limitClause"],
@@ -25,10 +26,10 @@ export type WhereImpl<
         unionLimitClause : UnionLimitClauseT,
     }>
 );
-export type Where<
+export type GroupBy<
     QueryT extends IQuery
 > = (
-    WhereImpl<
+    GroupByImpl<
         QueryT["fromClause"],
         QueryT["selectClause"],
         QueryT["limitClause"],
@@ -36,20 +37,22 @@ export type Where<
         QueryT["unionLimitClause"]
     >
 );
-export function where<
-    QueryT extends IQuery
+export function groupBy<
+    QueryT extends AfterFromClause
 > (
     query : QueryT,
-    whereDelegate : WhereDelegate<QueryT["fromClause"]>
+    groupByDelegate : GroupByDelegate<QueryT["fromClause"], QueryT["selectClause"]>
 ) : (
-    Where<QueryT>
+    GroupBy<QueryT>
 ) {
-    const whereClause = WhereClauseUtil.where<
-        QueryT["fromClause"]
+    const groupByClause = GroupByClauseUtil.groupBy<
+        QueryT["fromClause"],
+        QueryT["selectClause"]
     >(
         query.fromClause,
-        query.whereClause,
-        whereDelegate
+        query.selectClause,
+        query.groupByClause,
+        groupByDelegate
     );
 
     const {
@@ -60,9 +63,11 @@ export function where<
 
         unionClause,
         unionLimitClause,
+
+        whereClause,
     } = query;
 
-    const result : Where<QueryT> = new Query(
+    const result : GroupBy<QueryT> = new Query(
         {
             fromClause,
             selectClause,
@@ -74,6 +79,7 @@ export function where<
         },
         {
             whereClause,
+            groupByClause,
         }
     );
     return result;
