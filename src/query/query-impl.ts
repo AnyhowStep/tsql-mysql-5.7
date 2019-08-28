@@ -327,18 +327,56 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
     > (
         maxRowCount : MaxRowCountT
     ) : (
-        QueryUtil.Limit<this, MaxRowCountT>
+        QueryUtil.LimitBigInt<this, MaxRowCountT>
+    );
+    limit (
+        maxRowCount : 0
+    ) : (
+        QueryUtil.LimitNumber0<this>
+    );
+    limit (
+        maxRowCount : 1
+    ) : (
+        QueryUtil.LimitNumber1<this>
+    );
+    limit (
+        maxRowCount : 0|1
+    ) : (
+        QueryUtil.LimitNumber0Or1<this>
+    );
+    limit (
+        maxRowCount : number|bigint
+    ) : (
+        QueryUtil.LimitNumber<this>
+    );
+    limit (
+        maxRowCount : number|bigint
+    ) : (
+        | QueryUtil.LimitNumber<this>
+        | QueryUtil.LimitNumber0<this>
+        | QueryUtil.LimitNumber1<this>
+        | QueryUtil.LimitNumber0Or1<this>
     ) {
-        return QueryUtil.limit<this, MaxRowCountT>(this, maxRowCount);
+        return QueryUtil.limit<this>(this, maxRowCount);
     }
     offset<
         OffsetT extends bigint
     > (
         offset : OffsetT
     ) : (
-        QueryUtil.Offset<this, OffsetT>
+        QueryUtil.OffsetBigInt<this, OffsetT>
+    );
+    offset (
+        offset : number|bigint
+    ) : (
+        QueryUtil.OffsetNumber<this>
+    );
+    offset (
+        offset : number|bigint
+    ) : (
+        QueryUtil.OffsetNumber<this>
     ) {
-        return QueryUtil.offset<this, OffsetT>(this, offset);
+        return QueryUtil.offset<this>(this, offset);
     }
 
     select<

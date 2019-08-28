@@ -1,6 +1,6 @@
 import {LimitClauseUtil} from "@tsql/tsql";
-import {Query} from "../../query-impl";
-import {IQuery} from "../../query";
+import {Query} from "../../../query-impl";
+import {IQuery} from "../../../query";
 
 /**
  * https://github.com/microsoft/TypeScript/issues/32707#issuecomment-518347966
@@ -8,7 +8,7 @@ import {IQuery} from "../../query";
  * This hack should only really be reserved for types that are more likely
  * to trigger max depth/max count errors.
  */
-export type LimitImpl<
+export type LimitBigIntImpl<
     MaxRowCountT extends bigint,
     FromClauseT extends IQuery["fromClause"],
     SelectClauseT extends IQuery["selectClause"],
@@ -20,7 +20,7 @@ export type LimitImpl<
         fromClause : FromClauseT,
         selectClause : SelectClauseT,
 
-        limitClause : LimitClauseUtil.Limit<
+        limitClause : LimitClauseUtil.LimitBigInt<
             LimitClauseT,
             MaxRowCountT
         >,
@@ -29,11 +29,11 @@ export type LimitImpl<
         unionLimitClause : UnionLimitClauseT,
     }>
 );
-export type Limit<
+export type LimitBigInt<
     QueryT extends IQuery,
     MaxRowCountT extends bigint
 > = (
-    LimitImpl<
+    LimitBigIntImpl<
         MaxRowCountT,
         QueryT["fromClause"],
         QueryT["selectClause"],
@@ -42,44 +42,3 @@ export type Limit<
         QueryT["unionLimitClause"]
     >
 );
-export function limit<
-    QueryT extends IQuery,
-    MaxRowCountT extends bigint
-> (
-    query : QueryT,
-    maxRowCount : MaxRowCountT
-) : (
-    Limit<QueryT, MaxRowCountT>
-) {
-    const limitClause = LimitClauseUtil.limit<
-        QueryT["limitClause"],
-        MaxRowCountT
-    >(
-        query.limitClause,
-        maxRowCount
-    );
-
-    const {
-        fromClause,
-        selectClause,
-
-        //limitClause,
-
-        unionClause,
-        unionLimitClause,
-    } = query;
-
-    const result : Limit<QueryT, MaxRowCountT> = new Query(
-        {
-            fromClause,
-            selectClause,
-
-            limitClause,
-
-            unionClause,
-            unionLimitClause,
-        },
-        query
-    );
-    return result;
-}

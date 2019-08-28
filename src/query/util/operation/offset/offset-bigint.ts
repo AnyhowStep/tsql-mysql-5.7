@@ -1,6 +1,6 @@
 import {LimitClauseUtil} from "@tsql/tsql";
-import {Query} from "../../query-impl";
-import {IQuery} from "../../query";
+import {Query} from "../../../query-impl";
+import {IQuery} from "../../../query";
 
 /**
  * https://github.com/microsoft/TypeScript/issues/32707#issuecomment-518347966
@@ -8,7 +8,7 @@ import {IQuery} from "../../query";
  * This hack should only really be reserved for types that are more likely
  * to trigger max depth/max count errors.
  */
-export type OffsetImpl<
+export type OffsetBigIntImpl<
     OffsetT extends bigint,
     FromClauseT extends IQuery["fromClause"],
     SelectClauseT extends IQuery["selectClause"],
@@ -20,7 +20,7 @@ export type OffsetImpl<
         fromClause : FromClauseT,
         selectClause : SelectClauseT,
 
-        limitClause : LimitClauseUtil.Offset<
+        limitClause : LimitClauseUtil.OffsetBigInt<
             LimitClauseT,
             OffsetT
         >,
@@ -29,11 +29,11 @@ export type OffsetImpl<
         unionLimitClause : UnionLimitClauseT,
     }>
 );
-export type Offset<
+export type OffsetBigInt<
     QueryT extends IQuery,
     OffsetT extends bigint
 > = (
-    OffsetImpl<
+    OffsetBigIntImpl<
         OffsetT,
         QueryT["fromClause"],
         QueryT["selectClause"],
@@ -42,44 +42,3 @@ export type Offset<
         QueryT["unionLimitClause"]
     >
 );
-export function offset<
-    QueryT extends IQuery,
-    OffsetT extends bigint
-> (
-    query : QueryT,
-    offset : OffsetT
-) : (
-    Offset<QueryT, OffsetT>
-) {
-    const limitClause = LimitClauseUtil.offset<
-        QueryT["limitClause"],
-        OffsetT
-    >(
-        query.limitClause,
-        offset
-    );
-
-    const {
-        fromClause,
-        selectClause,
-
-        //limitClause,
-
-        unionClause,
-        unionLimitClause,
-    } = query;
-
-    const result : Offset<QueryT, OffsetT> = new Query(
-        {
-            fromClause,
-            selectClause,
-
-            limitClause,
-
-            unionClause,
-            unionLimitClause,
-        },
-        query
-    );
-    return result;
-}
