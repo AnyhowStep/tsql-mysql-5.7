@@ -11,13 +11,23 @@
         "next": {
           "messageText": "Type 'Mapper<unknown, boolean | null>' is not assignable to type 'Mapper<unknown, boolean>'.",
           "category": 1,
-          "code": 2322
+          "code": 2322,
+          "next": {
+            "messageText": "Type 'boolean | null' is not assignable to type 'boolean'.",
+            "category": 1,
+            "code": 2322,
+            "next": {
+              "messageText": "Type 'null' is not assignable to type 'boolean'.",
+              "category": 1,
+              "code": 2322
+            }
+          }
         }
       }
     },
     "code": 2322,
     "category": 1,
     "length": 44,
-    "start": 113
+    "start": 266
   }
 ]
