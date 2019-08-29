@@ -1,4 +1,4 @@
-import {SelectClause, SelectClauseUtil, SelectDelegate} from "@tsql/tsql";
+import {WhereDelegate, WhereClauseUtil} from "@tsql/tsql";
 import {Query} from "../../query-impl";
 import {IQuery} from "../../query";
 
@@ -8,8 +8,7 @@ import {IQuery} from "../../query";
  * This hack should only really be reserved for types that are more likely
  * to trigger max depth/max count errors.
  */
-export type SelectImpl<
-    SelectsT extends SelectClause,
+export type HavingImpl<
     FromClauseT extends IQuery["fromClause"],
     SelectClauseT extends IQuery["selectClause"],
     LimitClauseT extends IQuery["limitClause"],
@@ -18,7 +17,7 @@ export type SelectImpl<
 > = (
     Query<{
         fromClause : FromClauseT,
-        selectClause : SelectClauseUtil.Select<SelectClauseT, SelectsT>,
+        selectClause : SelectClauseT,
 
         limitClause : LimitClauseT,
 
@@ -26,12 +25,10 @@ export type SelectImpl<
         unionLimitClause : UnionLimitClauseT,
     }>
 );
-export type Select<
-    QueryT extends IQuery,
-    SelectsT extends SelectClause
+export type Having<
+    QueryT extends IQuery
 > = (
-    SelectImpl<
-        SelectsT,
+    HavingImpl<
         QueryT["fromClause"],
         QueryT["selectClause"],
         QueryT["limitClause"],
@@ -39,36 +36,35 @@ export type Select<
         QueryT["unionLimitClause"]
     >
 );
-export function select<
-    QueryT extends IQuery,
-    SelectsT extends SelectClause
+export function where<
+    QueryT extends IQuery
 > (
     query : QueryT,
-    selectDelegate : SelectDelegate<QueryT["fromClause"], QueryT["selectClause"], SelectsT>
+    whereDelegate : WhereDelegate<QueryT["fromClause"]>
 ) : (
-    Select<QueryT, SelectsT>
+    Where<QueryT>
 ) {
-    const selectClause = SelectClauseUtil.select<
-        QueryT["fromClause"],
-        QueryT["selectClause"],
-        SelectsT
+    const whereClause = WhereClauseUtil.where<
+        QueryT["fromClause"]
     >(
         query.fromClause,
-        query.selectClause,
-        selectDelegate
+        query.whereClause,
+        whereDelegate
     );
 
     const {
         fromClause,
-        //selectClause,
+        selectClause,
 
         limitClause,
 
         unionClause,
         unionLimitClause,
+
+        groupByClause,
     } = query;
 
-    const result : Select<QueryT, SelectsT> = new Query(
+    const result : Where<QueryT> = new Query(
         {
             fromClause,
             selectClause,
@@ -78,7 +74,10 @@ export function select<
             unionClause,
             unionLimitClause,
         },
-        query
+        {
+            whereClause,
+            groupByClause,
+        }
     );
     return result;
 }

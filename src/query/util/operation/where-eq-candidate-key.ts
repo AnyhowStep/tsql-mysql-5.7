@@ -86,6 +86,7 @@ export function whereEqCandidateKey<
         unionLimitClause,
 
         groupByClause,
+        havingClause,
     } = query;
 
     const result : WhereEqCandidateKey<QueryT> = new Query(
@@ -101,6 +102,7 @@ export function whereEqCandidateKey<
         {
             whereClause,
             groupByClause,
+            havingClause,
         }
     );
     return result;

@@ -84,6 +84,7 @@ export function whereEqPrimaryKey<
         unionLimitClause,
 
         groupByClause,
+        havingClause,
     } = query;
 
     const result : WhereEqPrimaryKey<QueryT> = new Query(
@@ -99,6 +100,7 @@ export function whereEqPrimaryKey<
         {
             whereClause,
             groupByClause,
+            havingClause,
         }
     );
     return result;

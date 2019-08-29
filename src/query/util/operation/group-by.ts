@@ -65,6 +65,7 @@ export function groupBy<
         unionLimitClause,
 
         whereClause,
+        havingClause,
     } = query;
 
     const result : GroupBy<QueryT> = new Query(
@@ -80,6 +81,7 @@ export function groupBy<
         {
             whereClause,
             groupByClause,
+            havingClause,
         }
     );
     return result;

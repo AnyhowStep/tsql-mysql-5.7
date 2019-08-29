@@ -86,6 +86,7 @@ export function whereEqSuperKey<
         unionLimitClause,
 
         groupByClause,
+        havingClause,
     } = query;
 
     const result : WhereEqSuperKey<QueryT> = new Query(
@@ -101,6 +102,7 @@ export function whereEqSuperKey<
         {
             whereClause,
             groupByClause,
+            havingClause,
         }
     );
     return result;

@@ -24,6 +24,7 @@ export function newInstance () : NewInstance {
         {
             whereClause : undefined,
             groupByClause : undefined,
+            havingClause : undefined,
         }
     );
     return result;

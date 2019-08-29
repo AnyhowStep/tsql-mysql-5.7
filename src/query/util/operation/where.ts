@@ -62,6 +62,7 @@ export function where<
         unionLimitClause,
 
         groupByClause,
+        havingClause,
     } = query;
 
     const result : Where<QueryT> = new Query(
@@ -77,6 +78,7 @@ export function where<
         {
             whereClause,
             groupByClause,
+            havingClause,
         }
     );
     return result;
