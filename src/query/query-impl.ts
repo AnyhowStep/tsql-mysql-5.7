@@ -25,6 +25,7 @@ import {
     GroupByClause,
     GroupByDelegate,
     HavingClause,
+    HavingDelegate,
 } from "@tsql/tsql";
 import {QueryData, IQuery, ExtraQueryData} from "./query";
 import * as QueryUtil from "./util";
@@ -325,6 +326,22 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
             groupByDelegate
         );
     }
+
+    having (
+        havingDelegate : HavingDelegate<
+            this["fromClause"]
+        >
+    ) : (
+        QueryUtil.Having<this>
+    ) {
+        return QueryUtil.having<
+            this
+        >(
+            this,
+            havingDelegate
+        );
+    }
+
     limit<
         MaxRowCountT extends bigint
     > (

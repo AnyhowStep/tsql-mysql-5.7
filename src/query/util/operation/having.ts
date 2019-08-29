@@ -1,4 +1,4 @@
-import {WhereDelegate, WhereClauseUtil} from "@tsql/tsql";
+import {HavingDelegate, HavingClauseUtil} from "@tsql/tsql";
 import {Query} from "../../query-impl";
 import {IQuery} from "../../query";
 
@@ -36,20 +36,20 @@ export type Having<
         QueryT["unionLimitClause"]
     >
 );
-export function where<
+export function having<
     QueryT extends IQuery
 > (
     query : QueryT,
-    whereDelegate : WhereDelegate<QueryT["fromClause"]>
+    havingDelegate : HavingDelegate<QueryT["fromClause"]>
 ) : (
-    Where<QueryT>
+    Having<QueryT>
 ) {
-    const whereClause = WhereClauseUtil.where<
+    const havingClause = HavingClauseUtil.having<
         QueryT["fromClause"]
     >(
         query.fromClause,
-        query.whereClause,
-        whereDelegate
+        query.havingClause,
+        havingDelegate
     );
 
     const {
@@ -61,10 +61,11 @@ export function where<
         unionClause,
         unionLimitClause,
 
+        whereClause,
         groupByClause,
     } = query;
 
-    const result : Where<QueryT> = new Query(
+    const result : Having<QueryT> = new Query(
         {
             fromClause,
             selectClause,
@@ -77,6 +78,7 @@ export function where<
         {
             whereClause,
             groupByClause,
+            havingClause,
         }
     );
     return result;
