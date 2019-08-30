@@ -1,3 +1,8 @@
+export * from "./limit";
+export * from "./offset";
+export * from "./union-limit";
+export * from "./union-offset";
+
 export * from "./cross-join";
 export * from "./from";
 export * from "./group-by";
@@ -9,8 +14,6 @@ export * from "./left-join-using-candidate-key";
 export * from "./left-join-using-primary-key";
 export * from "./left-join";
 export * from "./order-by";
-export * from "./limit";
-export * from "./offset";
 export * from "./require-nullable-outer-query-joins";
 export * from "./require-outer-query-joins";
 export * from "./select";

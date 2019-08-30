@@ -767,4 +767,62 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
             whereDelegate
         );
     }
+
+    unionLimit<
+        MaxRowCountT extends bigint
+    > (
+        maxRowCount : MaxRowCountT
+    ) : (
+        QueryUtil.UnionLimitBigInt<this, MaxRowCountT>
+    );
+    unionLimit (
+        maxRowCount : 0
+    ) : (
+        QueryUtil.UnionLimitNumber0<this>
+    );
+    unionLimit (
+        maxRowCount : 1
+    ) : (
+        QueryUtil.UnionLimitNumber1<this>
+    );
+    unionLimit (
+        maxRowCount : 0|1
+    ) : (
+        QueryUtil.UnionLimitNumber0Or1<this>
+    );
+    unionLimit (
+        maxRowCount : number|bigint
+    ) : (
+        QueryUtil.UnionLimitNumber<this>
+    );
+    unionLimit (
+        maxRowCount : number|bigint
+    ) : (
+        | QueryUtil.UnionLimitNumber<this>
+        | QueryUtil.UnionLimitNumber0<this>
+        | QueryUtil.UnionLimitNumber1<this>
+        | QueryUtil.UnionLimitNumber0Or1<this>
+    ) {
+        return QueryUtil.unionLimit<this>(this, maxRowCount);
+    }
+    unionOffset<
+        OffsetT extends bigint
+    > (
+        offset : OffsetT
+    ) : (
+        QueryUtil.UnionOffsetBigInt<this, OffsetT>
+    );
+    unionOffset (
+        offset : number|bigint
+    ) : (
+        QueryUtil.UnionOffsetNumber<this>
+    );
+    unionOffset (
+        offset : number|bigint
+    ) : (
+        QueryUtil.UnionOffsetNumber<this>
+    ) {
+        return QueryUtil.unionOffset<this>(this, offset);
+    }
+
 }
