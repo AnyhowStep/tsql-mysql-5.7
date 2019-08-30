@@ -114,6 +114,7 @@ export function whereNullSafeEq<
 
         groupByClause,
         havingClause,
+        orderByClause,
     } = query;
 
     const result : WhereNullSafeEq<QueryT, ColumnT, ValueT> = new Query(
@@ -130,6 +131,7 @@ export function whereNullSafeEq<
             whereClause,
             groupByClause,
             havingClause,
+            orderByClause,
         }
     );
     return result;

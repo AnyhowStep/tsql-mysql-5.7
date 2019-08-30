@@ -112,6 +112,7 @@ export function whereEq<
 
         groupByClause,
         havingClause,
+        orderByClause,
     } = query;
 
     const result : WhereEq<QueryT, ColumnT, ValueT> = new Query(
@@ -128,6 +129,7 @@ export function whereEq<
             whereClause,
             groupByClause,
             havingClause,
+            orderByClause,
         }
     );
     return result;

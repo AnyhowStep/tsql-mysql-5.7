@@ -1,4 +1,4 @@
-import {WhereDelegate, WhereClauseUtil} from "@tsql/tsql";
+import {OrderByDelegate, OrderByClauseUtil} from "@tsql/tsql";
 import {Query} from "../../query-impl";
 import {IQuery} from "../../query";
 
@@ -8,7 +8,7 @@ import {IQuery} from "../../query";
  * This hack should only really be reserved for types that are more likely
  * to trigger max depth/max count errors.
  */
-export type WhereImpl<
+export type OrderByImpl<
     FromClauseT extends IQuery["fromClause"],
     SelectClauseT extends IQuery["selectClause"],
     LimitClauseT extends IQuery["limitClause"],
@@ -25,10 +25,10 @@ export type WhereImpl<
         unionLimitClause : UnionLimitClauseT,
     }>
 );
-export type Where<
+export type OrderBy<
     QueryT extends IQuery
 > = (
-    WhereImpl<
+    OrderByImpl<
         QueryT["fromClause"],
         QueryT["selectClause"],
         QueryT["limitClause"],
@@ -36,20 +36,20 @@ export type Where<
         QueryT["unionLimitClause"]
     >
 );
-export function where<
+export function orderBy<
     QueryT extends IQuery
 > (
     query : QueryT,
-    whereDelegate : WhereDelegate<QueryT["fromClause"]>
+    orderByDelegate : OrderByDelegate<QueryT["fromClause"]>
 ) : (
-    Where<QueryT>
+    OrderBy<QueryT>
 ) {
-    const whereClause = WhereClauseUtil.where<
+    const orderByClause = OrderByClauseUtil.orderBy<
         QueryT["fromClause"]
     >(
         query.fromClause,
-        query.whereClause,
-        whereDelegate
+        query.orderByClause,
+        orderByDelegate
     );
 
     const {
@@ -61,12 +61,12 @@ export function where<
         unionClause,
         unionLimitClause,
 
+        whereClause,
         groupByClause,
         havingClause,
-        orderByClause,
     } = query;
 
-    const result : Where<QueryT> = new Query(
+    const result : OrderBy<QueryT> = new Query(
         {
             fromClause,
             selectClause,

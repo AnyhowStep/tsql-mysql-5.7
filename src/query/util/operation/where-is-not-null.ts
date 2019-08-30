@@ -86,6 +86,7 @@ export function whereIsNotNull<
 
         groupByClause,
         havingClause,
+        orderByClause,
     } = query;
 
     const result : WhereIsNotNull<QueryT, ColumnT> = new Query(
@@ -102,6 +103,7 @@ export function whereIsNotNull<
             whereClause,
             groupByClause,
             havingClause,
+            orderByClause,
         }
     );
     return result;

@@ -87,6 +87,7 @@ export function whereEqColumns<
 
         groupByClause,
         havingClause,
+        orderByClause,
     } = query;
 
     const result : WhereEqColumns<QueryT> = new Query(
@@ -103,6 +104,7 @@ export function whereEqColumns<
             whereClause,
             groupByClause,
             havingClause,
+            orderByClause,
         }
     );
     return result;

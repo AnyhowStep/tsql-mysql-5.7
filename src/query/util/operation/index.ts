@@ -8,6 +8,7 @@ export * from "./inner-join";
 export * from "./left-join-using-candidate-key";
 export * from "./left-join-using-primary-key";
 export * from "./left-join";
+export * from "./order-by";
 export * from "./limit";
 export * from "./offset";
 export * from "./require-nullable-outer-query-joins";

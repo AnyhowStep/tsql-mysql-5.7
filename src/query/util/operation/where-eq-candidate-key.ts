@@ -87,6 +87,7 @@ export function whereEqCandidateKey<
 
         groupByClause,
         havingClause,
+        orderByClause,
     } = query;
 
     const result : WhereEqCandidateKey<QueryT> = new Query(
@@ -103,6 +104,7 @@ export function whereEqCandidateKey<
             whereClause,
             groupByClause,
             havingClause,
+            orderByClause,
         }
     );
     return result;
