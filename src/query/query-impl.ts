@@ -421,11 +421,12 @@ export class Query<DataT extends QueryData> implements IQuery<DataT> {
     select<
         SelectsT extends SelectClause
     > (
+        this : Extract<this, QueryUtil.BeforeUnionClause>,
         selectDelegate : SelectDelegate<this["fromClause"], this["selectClause"], SelectsT>
     ) : (
-        QueryUtil.Select<this, SelectsT>
+        QueryUtil.Select<Extract<this, QueryUtil.BeforeUnionClause>, SelectsT>
     ) {
-        return QueryUtil.select<this, SelectsT>(this, selectDelegate);
+        return QueryUtil.select<Extract<this, QueryUtil.BeforeUnionClause>, SelectsT>(this, selectDelegate);
     }
 
     whereEqCandidateKey<

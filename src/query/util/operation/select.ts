@@ -1,6 +1,6 @@
-import {SelectClause, SelectClauseUtil, SelectDelegate} from "@tsql/tsql";
+import {SelectClause, SelectClauseUtil, SelectDelegate, QueryBaseUtil} from "@tsql/tsql";
 import {Query} from "../../query-impl";
-import {IQuery} from "../../query";
+import {BeforeUnionClause} from "../helper-type";
 
 /**
  * https://github.com/microsoft/TypeScript/issues/32707#issuecomment-518347966
@@ -10,11 +10,11 @@ import {IQuery} from "../../query";
  */
 export type SelectImpl<
     SelectsT extends SelectClause,
-    FromClauseT extends IQuery["fromClause"],
-    SelectClauseT extends IQuery["selectClause"],
-    LimitClauseT extends IQuery["limitClause"],
-    UnionClauseT extends IQuery["unionClause"],
-    UnionLimitClauseT extends IQuery["unionLimitClause"],
+    FromClauseT extends BeforeUnionClause["fromClause"],
+    SelectClauseT extends BeforeUnionClause["selectClause"],
+    LimitClauseT extends BeforeUnionClause["limitClause"],
+    UnionClauseT extends BeforeUnionClause["unionClause"],
+    UnionLimitClauseT extends BeforeUnionClause["unionLimitClause"],
 > = (
     Query<{
         fromClause : FromClauseT,
@@ -27,7 +27,7 @@ export type SelectImpl<
     }>
 );
 export type Select<
-    QueryT extends IQuery,
+    QueryT extends BeforeUnionClause,
     SelectsT extends SelectClause
 > = (
     SelectImpl<
@@ -40,7 +40,7 @@ export type Select<
     >
 );
 export function select<
-    QueryT extends IQuery,
+    QueryT extends BeforeUnionClause,
     SelectsT extends SelectClause
 > (
     query : QueryT,
@@ -48,6 +48,9 @@ export function select<
 ) : (
     Select<QueryT, SelectsT>
 ) {
+    if (!QueryBaseUtil.isBeforeUnionClause(query)) {
+        throw new Error(`Cannot SELECT after UNION clause; this will change the number of columns`)
+    }
     const selectClause = SelectClauseUtil.select<
         QueryT["fromClause"],
         QueryT["selectClause"],
