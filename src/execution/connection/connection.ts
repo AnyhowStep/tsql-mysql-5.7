@@ -102,7 +102,15 @@ export class Connection implements tsql.IConnection {
                     sql,
                     (err, results, rawFieldArr) => {
                         if (err != undefined) {
-                            reject(err);
+                            if (err instanceof Error) {
+                                if (err.code == "ER_DATA_OUT_OF_RANGE") {
+                                    reject(new tsql.DataOutOfRangeError(err.message));
+                                } else {
+                                    reject(err);
+                                }
+                            } else {
+                                reject(err);
+                            }
                             return;
                         }
                         if (rawFieldArr == undefined) {

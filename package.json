@@ -14,7 +14,9 @@
     "test-compile-time": "ts-node -P ./test/compile-time/tsconfig.json ./test/compile-time/runner.ts",
     "accept-compile-time": "ts-node -P ./test/compile-time/tsconfig.json ./test/compile-time/accept-actual.ts",
     "accept-one": "ts-node -P ./test/compile-time/tsconfig.json ./test/compile-time/accept-one.ts",
-    "test-compile-time-interactive": "ts-node -P ./test/compile-time/tsconfig.json ./test/compile-time/interactive.ts"
+    "test-compile-time-interactive": "ts-node -P ./test/compile-time/tsconfig.json ./test/compile-time/interactive.ts",
+    "test-run-time": "ts-node -P ./test/run-time/tsconfig.json -r ./test/run-time/tape-stream.ts -r ./test/run-time/bluebird-promise.ts ./test/run-time/runner.ts",
+    "test-run-time-bigint-polyfill": "ts-node -P ./test/run-time/tsconfig.json -r ./test/run-time/tape-stream.ts -r ./test/run-time/bigint-polyfill.ts -r ./test/run-time/bluebird-promise.ts ./test/run-time/runner.ts"
   },
   "repository": {
     "type": "git",
@@ -28,12 +30,14 @@
   "homepage": "https://github.com/AnyhowStep/tsql-mysql-5.7#readme",
   "devDependencies": {
     "@anyhowstep/typed-env": "^2.1.0",
+    "@types/bluebird": "^3.5.29",
     "@types/diff": "^4.0.2",
     "@types/mysql": "^2.15.8",
     "@types/node": "^12.6.2",
     "@types/tape": "^4.2.33",
     "@typescript-eslint/eslint-plugin": "^1.13.0",
     "@typescript-eslint/parser": "^1.13.0",
+    "bluebird": "^3.7.2",
     "c8": "^5.0.1",
     "diff": "^4.0.1",
     "eslint": "^5.16.0",
@@ -43,6 +47,7 @@
     "typescript": "^3.5.1"
   },
   "dependencies": {
-    "mysql": "^2.17.1"
+    "mysql": "^2.17.1",
+    "type-mapping": "^1.29.3"
   }
 }

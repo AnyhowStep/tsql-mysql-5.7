@@ -1,6 +1,12 @@
 import * as fs from "fs";
+import * as util from "util";
 
-export function getAllTsFiles (rootDir : string, result : string[] = [], relativeDir : string|undefined = undefined) : string[] {
+export function getAllTsFiles (
+    rootDir : string,
+    includeDeclarationFiles : boolean,
+    result : string[] = [],
+    relativeDir : string|undefined = undefined
+) : string[] {
     const currentDir = (relativeDir == undefined) ?
         rootDir :
         rootDir + "/" + relativeDir;
@@ -9,12 +15,19 @@ export function getAllTsFiles (rootDir : string, result : string[] = [], relativ
         if (fs.lstatSync(fullPath).isDirectory()) {
             getAllTsFiles(
                 rootDir,
+                includeDeclarationFiles,
                 result,
                 (relativeDir == undefined) ?
                     path :
                     relativeDir + "/" + path
             );
-        } else if (path.endsWith(".ts")) {
+        } else if (
+            path.endsWith(".ts") &&
+            (
+                includeDeclarationFiles ||
+                !path.endsWith(".d.ts")
+            )
+        ) {
             if (relativeDir == undefined) {
                 continue;
             }
@@ -22,4 +35,19 @@ export function getAllTsFiles (rootDir : string, result : string[] = [], relativ
         }
     }
     return result;
+}
+
+export function log (...args : any[]) {
+    const result : string[] = [];
+    for (const arg of args) {
+        result.push(util.inspect(
+            arg,
+            {
+                depth : 10,
+                colors : true,
+                maxArrayLength : 100,
+            }
+        ));
+    }
+    console.log(result.join(", "));
 }

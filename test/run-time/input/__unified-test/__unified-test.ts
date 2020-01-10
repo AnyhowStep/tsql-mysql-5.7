@@ -1,6 +1,6 @@
 import * as tape from "tape";
 import {unifiedTest} from "@tsql/tsql/unified-test";
-import * as mysql from "../../../dist";
+import * as mysql from "../../../../dist";
 
 unifiedTest({
     pool : new mysql.Pool({

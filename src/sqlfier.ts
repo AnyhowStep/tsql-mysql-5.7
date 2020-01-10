@@ -127,6 +127,7 @@ export const sqlfier : tsql.Sqlfier = {
     },
     operatorSqlfier : {
         ...tsql.notImplementedSqlfier.operatorSqlfier,
+        [tsql.OperatorType.ADDITION]: ({operands}) => tsql.AstUtil.insertBetween(operands, "+"),
     },
     queryBaseSqlfier : (rawQuery, toSql) => {
         return queryToSql(rawQuery, toSql, false);
