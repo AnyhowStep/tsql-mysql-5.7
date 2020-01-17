@@ -3,7 +3,13 @@ import * as tsql from "@tsql/tsql";
 import {CharSet} from "../../char-set";
 import {Connection} from "../connection";
 
-export interface PoolArgs extends Omit<mysql.PoolConfig, "supportBigNumbers"|"bigNumberStrings"|"dateStrings"> {
+export interface PoolArgs extends Omit<
+    mysql.PoolConfig,
+    | "supportBigNumbers"
+    | "bigNumberStrings"
+    | "dateStrings"
+    | "timezone"
+> {
     host      : string;
     port?     : number;
     database  : string;
@@ -29,6 +35,8 @@ export class Pool implements tsql.IPool {
                 as strings rather than inflated into JavaScript Date objects.
             */
             dateStrings : true,
+
+            timezone : "UTC",
         });
     }
 
@@ -37,33 +45,79 @@ export class Pool implements tsql.IPool {
             return Promise.reject(new Error(`Pool has been deallocated`));
         }
         return new Promise<ResultT>((resolve, reject) => {
-            this.poolImpl.getConnection((err, connectionImpl) => {
-                if (err != undefined) {
-                    reject(err);
+            this.poolImpl.getConnection((getConnectionError, connectionImpl) => {
+                if (getConnectionError != undefined) {
+                    reject(getConnectionError);
                     return;
                 }
 
-                /**
-                 * @todo Always set timezone to +00:00?
-                 */
                 const connection = new Connection({
                     pool : this,
                     eventEmitters : new tsql.ConnectionEventEmitterCollection(this),
                     connectionImpl,
+                    asyncQueue : undefined,
                     sharedConnectionInformation : {
                         transactionData : undefined,
                         savepointId : 0,
                     },
                 });
-                try {
-                    callback(connection)
-                        .then(
-                            resolve,
-                            reject
-                        );
-                } catch (err) {
-                    reject(err);
-                }
+                connection.rawQuery("SET @@session.time_zone = '+00:00'")
+                    .then(
+                        () => {
+                            try {
+                                callback(connection)
+                                    .then(
+                                        (result) => {
+                                            connection.deallocate()
+                                                .then(
+                                                    () => resolve(result),
+                                                    (_deallocateErr) => {
+                                                        /**
+                                                         * @todo Handle deallocate error?
+                                                         */
+                                                        resolve(result);
+                                                    }
+                                                );
+                                        },
+                                        (asyncCallbackError) => {
+                                            connection.deallocate()
+                                                .then(
+                                                    () => reject(asyncCallbackError),
+                                                    (_deallocateErr) => {
+                                                        /**
+                                                         * @todo Handle deallocate error?
+                                                         */
+                                                        reject(asyncCallbackError);
+                                                    }
+                                                );
+                                        }
+                                    );
+                            } catch (syncCallbackError) {
+                                connection.deallocate()
+                                    .then(
+                                        () => reject(syncCallbackError),
+                                        (_deallocateErr) => {
+                                            /**
+                                             * @todo Handle deallocate error?
+                                             */
+                                            reject(syncCallbackError);
+                                        }
+                                    );
+                            }
+                        },
+                        (setTimeZoneError) => {
+                            connection.deallocate()
+                                .then(
+                                    () => reject(setTimeZoneError),
+                                    (_deallocateErr) => {
+                                        /**
+                                         * @todo Handle deallocate error?
+                                         */
+                                        reject(setTimeZoneError);
+                                    }
+                                );
+                        }
+                    );
             });
         });
     }

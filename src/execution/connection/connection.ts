@@ -1,6 +1,7 @@
+import * as tm from "type-mapping";
 import * as mysql from "mysql";
 import * as tsql from "@tsql/tsql";
-import {sqlfier} from "../../sqlfier";
+import {sqlfier, insertOneSqlString} from "../../sqlfier";
 
 export interface SharedConnectionInformation {
     /**
@@ -19,10 +20,16 @@ export interface SharedConnectionInformation {
     savepointId : number;
 }
 
-export class Connection implements tsql.IConnection {
+export class Connection implements
+    tsql.IConnection,
+    tsql.ConnectionComponent.InTransaction,
+    tsql.ConnectionComponent.Savepoint<tsql.ITransactionConnection>,
+    tsql.ConnectionComponent.InSavepoint
+{
     readonly pool: tsql.IPool;
     readonly eventEmitters: tsql.IConnectionEventEmitterCollection;
 
+    private readonly connectionImpl : mysql.PoolConnection;
     private readonly asyncQueue : tsql.AsyncQueue<mysql.PoolConnection>;
     private readonly sharedConnectionInformation : SharedConnectionInformation;
 
@@ -31,20 +38,23 @@ export class Connection implements tsql.IConnection {
             pool,
             eventEmitters,
             connectionImpl,
+            asyncQueue,
             sharedConnectionInformation,
         } :
         {
             pool : tsql.IPool,
             eventEmitters : tsql.IConnectionEventEmitterCollection,
-            connectionImpl : mysql.PoolConnection|tsql.AsyncQueue<mysql.PoolConnection>,
+            connectionImpl : mysql.PoolConnection,
+            asyncQueue : undefined|tsql.AsyncQueue<mysql.PoolConnection>,
             sharedConnectionInformation : SharedConnectionInformation,
         }
     ) {
         this.pool = pool;
         this.eventEmitters = eventEmitters;
 
-        this.asyncQueue = connectionImpl instanceof tsql.AsyncQueue ?
-            connectionImpl :
+        this.connectionImpl = connectionImpl;
+        this.asyncQueue = asyncQueue instanceof tsql.AsyncQueue ?
+            asyncQueue :
             new tsql.AsyncQueue<mysql.PoolConnection>(() => {
                 return {
                     item : connectionImpl,
@@ -57,12 +67,219 @@ export class Connection implements tsql.IConnection {
 
 
     tryGetFullConnection(): tsql.IConnection | undefined {
-        throw new Error("Method not implemented.");
+        if (
+            this.sharedConnectionInformation.transactionData != undefined &&
+            this.sharedConnectionInformation.transactionData.accessMode == tsql.TransactionAccessMode.READ_ONLY
+        ) {
+            /**
+             * Can't give a full connection if we are in a readonly transaction.
+             * No `INSERT/UPDATE/DELETE` allowed.
+             */
+            return undefined;
+        } else {
+            return this as unknown as tsql.IConnection;
+        }
     }
     lock<ResultT>(callback: tsql.LockCallback<tsql.IConnection, ResultT>): Promise<ResultT> {
-        callback;
-        throw new Error("Method not implemented.");
+        return this.asyncQueue.lock((nestedAsyncQueue) => {
+            const nestedConnection = new Connection({
+                pool : this.pool,
+                eventEmitters : this.eventEmitters,
+                connectionImpl : this.connectionImpl,
+                asyncQueue : nestedAsyncQueue,
+                sharedConnectionInformation : this.sharedConnectionInformation
+            });
+            return callback(
+                nestedConnection as unknown as tsql.IConnection
+            );
+        });
     }
+
+    rollback () : Promise<void> {
+        if (!this.isInTransaction()) {
+            return Promise.reject(new Error("Not in transaction; cannot rollback"));
+        }
+        return this.rawQuery("ROLLBACK")
+            .then(() => {
+                this.sharedConnectionInformation.transactionData = undefined;
+                /**
+                 * @todo Handle sync errors somehow.
+                 * Maybe propagate them to `IPool` and have an `onError` handler or something
+                 */
+                this.eventEmitters.rollback();
+            });
+    }
+    commit () : Promise<void> {
+        if (!this.isInTransaction()) {
+            return Promise.reject(new Error("Not in transaction; cannot commit"));
+        }
+        return this.rawQuery("COMMIT")
+            .then(() => {
+                this.sharedConnectionInformation.transactionData = undefined;
+                /**
+                 * @todo Handle sync errors somehow.
+                 * Maybe propagate them to `IPool` and have an `onError` handler or something
+                 */
+                this.eventEmitters.commit();
+            });
+    }
+
+    getMinimumIsolationLevel () : tsql.IsolationLevel {
+        if (this.sharedConnectionInformation.transactionData == undefined) {
+            throw new Error(`Not in transaction`);
+        }
+        return this.sharedConnectionInformation.transactionData.minimumIsolationLevel;
+    }
+    getTransactionAccessMode () : tsql.TransactionAccessMode {
+        if (this.sharedConnectionInformation.transactionData == undefined) {
+            throw new Error(`Not in transaction`);
+        }
+        return this.sharedConnectionInformation.transactionData.accessMode;
+    }
+
+    private transactionImpl<ResultT> (
+        minimumIsolationLevel : tsql.IsolationLevel,
+        accessMode : tsql.TransactionAccessMode,
+        callback : tsql.LockCallback<tsql.ITransactionConnection, ResultT>|tsql.LockCallback<tsql.IsolatedSelectConnection, ResultT>
+    ) : Promise<ResultT> {
+        if (this.sharedConnectionInformation.transactionData != undefined) {
+            return Promise.reject(new Error(`Transaction already started or starting`));
+        }
+        /**
+         * SQLite only has `SERIALIZABLE` transactions.
+         * So, no matter what we request, we will always get a
+         * `SERIALIZABLE` transaction.
+         *
+         * However, we will just pretend that we have all
+         * isolation levels supported.
+         */
+        this.sharedConnectionInformation.transactionData = {
+            minimumIsolationLevel,
+            accessMode,
+        };
+
+        return new Promise<ResultT>((resolve, reject) => {
+            const isolationLevelSql = (
+                minimumIsolationLevel == tsql.IsolationLevel.READ_UNCOMMITTED ?
+                "READ UNCOMMITTED" :
+                minimumIsolationLevel == tsql.IsolationLevel.READ_COMMITTED ?
+                "READ COMMITTED" :
+                minimumIsolationLevel == tsql.IsolationLevel.REPEATABLE_READ ?
+                "REPEATABLE READ" :
+                minimumIsolationLevel == tsql.IsolationLevel.SERIALIZABLE ?
+                "SERIALIZABLE" :
+                "UNKNOWN ISOLATION LEVEL"
+            );
+            if (isolationLevelSql == "UNKNOWN ISOLATION LEVEL") {
+                throw new Error(`Invalid isolation level ${minimumIsolationLevel}`);
+            }
+            const accessModeSql = (
+                accessMode == tsql.TransactionAccessMode.READ_ONLY ?
+                "READ ONLY" :
+                "READ WRITE"
+            );
+            this.rawQuery(`SET TRANSACTION ISOLATION LEVEL ${isolationLevelSql}`)
+                .then(() => {
+                    return this.rawQuery(`START TRANSACTION ${accessModeSql}`);
+                })
+                .then(() => {
+                    /**
+                     * @todo Handle sync errors somehow.
+                     * Maybe propagate them to `IPool` and have an `onError` handler or something
+                     */
+                    this.eventEmitters.commit();
+                    if (!this.isInTransaction()) {
+                        /**
+                         * Why did one of the `OnCommit` listeners call `commit()` or `rollback()`?
+                         */
+                        throw new Error(`Expected to be in transaction`);
+                    }
+                    return callback(this as unknown as tsql.ITransactionConnection);
+                })
+                .then((result) => {
+                    if (!this.isInTransaction()) {
+                        resolve(result);
+                        return;
+                    }
+
+                    this.commit()
+                        .then(() => {
+                            resolve(result);
+                        })
+                        .catch((commitErr) => {
+                            this.rollback()
+                                .then(() => {
+                                    reject(commitErr);
+                                })
+                                .catch((rollbackErr) => {
+                                    commitErr.rollbackErr = rollbackErr;
+                                    reject(commitErr);
+                                });
+                        });
+                })
+                .catch((err) => {
+                    if (!this.isInTransaction()) {
+                        reject(err);
+                        return;
+                    }
+
+                    this.rollback()
+                        .then(() => {
+                            reject(err);
+                        })
+                        .catch((rollbackErr) => {
+                            err.rollbackErr = rollbackErr;
+                            reject(err);
+                        });
+                });
+        });
+    }
+    private transactionIfNotInOneImpl<ResultT> (
+        minimumIsolationLevel : tsql.IsolationLevel,
+        accessMode : tsql.TransactionAccessMode,
+        callback : tsql.LockCallback<tsql.ITransactionConnection, ResultT>|tsql.LockCallback<tsql.IsolatedSelectConnection, ResultT>
+    ) : Promise<ResultT> {
+        return this.lock(async (nestedConnection) => {
+            if (nestedConnection.isInTransaction()) {
+                if (tsql.IsolationLevelUtil.isWeakerThan(
+                    this.getMinimumIsolationLevel(),
+                    minimumIsolationLevel
+                )) {
+                    /**
+                     * For example, our current isolation level is
+                     * `READ_UNCOMMITTED` but we want
+                     * `SERIALIZABLE`.
+                     *
+                     * Obviously, `READ_UNCOMMITTED` is weaker than
+                     * `SERIALIZABLE`.
+                     *
+                     * So, we error.
+                     *
+                     * @todo Custom error type
+                     */
+                    return Promise.reject(new Error(`Current isolation level is ${this.getMinimumIsolationLevel()}; cannot guarantee ${minimumIsolationLevel}`));
+                }
+                if (tsql.TransactionAccessModeUtil.isLessPermissiveThan(
+                    this.getTransactionAccessMode(),
+                    accessMode
+                )) {
+                    return Promise.reject(new Error(`Current transaction access mode is ${this.getTransactionAccessMode()}; cannot allow ${accessMode}`));
+                }
+                try {
+                    return callback(nestedConnection);
+                } catch (err) {
+                    return Promise.reject(err);
+                }
+            } else {
+                return (nestedConnection as unknown as Connection).transactionImpl(
+                    minimumIsolationLevel,
+                    accessMode,
+                    callback
+                );
+            }
+        });
+    }
+
     transactionIfNotInOne<ResultT>(
         callback: tsql.LockCallback<tsql.ITransactionConnection, ResultT>
     ): Promise<ResultT>;
@@ -76,8 +293,11 @@ export class Connection implements tsql.IConnection {
             | [tsql.IsolationLevel, tsql.LockCallback<tsql.ITransactionConnection, ResultT>]
         )
     ): Promise<ResultT> {
-        args;
-        throw new Error("Method not implemented.");
+        return this.transactionIfNotInOneImpl(
+            args.length == 1 ? tsql.IsolationLevel.SERIALIZABLE : args[0],
+            tsql.TransactionAccessMode.READ_WRITE,
+            args.length == 1 ? args[0] : args[1]
+        );
     }
     readOnlyTransactionIfNotInOne<ResultT>(
         callback: tsql.LockCallback<tsql.IsolatedSelectConnection, ResultT>
@@ -92,8 +312,11 @@ export class Connection implements tsql.IConnection {
             | [tsql.IsolationLevel, tsql.LockCallback<tsql.IsolatedSelectConnection, ResultT>]
         )
     ): Promise<ResultT> {
-        args;
-        throw new Error("Method not implemented.");
+        return this.transactionIfNotInOneImpl(
+            args.length == 1 ? tsql.IsolationLevel.SERIALIZABLE : args[0],
+            tsql.TransactionAccessMode.READ_ONLY,
+            args.length == 1 ? args[0] : args[1]
+        );
     }
     rawQuery(sql: string): Promise<tsql.RawQueryResult> {
         return this.asyncQueue.enqueue<tsql.RawQueryResult>((connectionImpl) => {
@@ -153,10 +376,73 @@ export class Connection implements tsql.IConnection {
                 }
             });
     }
-    insertOne<TableT extends tsql.ITable<tsql.TableData> & {insertEnabled: true;}>(table: TableT, row: {readonly [columnAlias in Exclude<TableT["columns"] extends tsql.ColumnMap ? Extract<keyof TableT["columns"], string> : never, TableT["generatedColumns"][number] | TableT["nullableColumns"][number] | TableT["explicitDefaultValueColumns"][number] | TableT["autoIncrement"]>]: tsql.BuiltInExpr_NonCorrelated<ReturnType<TableT["columns"][columnAlias]["mapper"]>>;} & {readonly [columnAlias in tsql.TableUtil.OptionalColumnAlias<TableT>]?: tsql.BuiltInExpr_NonCorrelatedOrUndefined<ReturnType<TableT["columns"][columnAlias]["mapper"]>>;}): Promise<tsql.InsertOneResult> {
-        table;
-        row;
-        throw new Error("Method not implemented.");
+    async insertOne<TableT extends tsql.InsertableTable>(
+        table: TableT,
+        row: tsql.BuiltInInsertRow<TableT>
+    ): Promise<tsql.InsertOneResult> {
+        const sql = insertOneSqlString(table, row, "");
+        return this.lock((rawNestedConnection) => {
+            const nestedConnection = (rawNestedConnection as unknown as Connection);
+            return nestedConnection.rawQuery(sql)
+                .then(async (result) => {
+                    console.log(result);
+                    if (!tsql.TypeUtil.isObjectWithOwnEnumerableKeys<
+                        Record<
+                            | "insertId"
+                            | "affectedRows",
+                            unknown
+                        >
+                    >()(
+                        result.results,
+                        [
+                            "insertId",
+                            "affectedRows",
+                        ]
+                    )) {
+                        throw new Error(`Expected InsertResult`);
+                    }
+                    result.results
+
+                    const BigInt = tm.TypeUtil.getBigIntFactoryFunctionOrError();
+
+                    const autoIncrementId = (
+                        (table.autoIncrement == undefined) ?
+                        undefined :
+                        (row[table.autoIncrement as keyof typeof row] === undefined) ?
+                        await tsql
+                            .selectValue(() => tsql.expr(
+                                {
+                                    mapper : tm.mysql.bigIntSigned(),
+                                    usedRef : tsql.UsedRefUtil.fromColumnRef({}),
+                                },
+                                "LAST_INSERT_ROW()"
+                            ))
+                            .fetchValue(nestedConnection) :
+                        /**
+                         * Emulate MySQL behaviour
+                         */
+                        BigInt(0)
+                    );
+
+                    const insertOneResult : tsql.InsertOneResult = {
+                        query : { sql, },
+                        insertedRowCount : BigInt(1) as 1n,
+                        autoIncrementId : (
+                            autoIncrementId == undefined ?
+                            undefined :
+                            tm.BigIntUtil.equal(autoIncrementId, BigInt(0)) ?
+                            undefined :
+                            autoIncrementId
+                        ),
+                        warningCount : BigInt(0),
+                        message : "ok",
+                    };
+                    return insertOneResult;
+                })
+                .catch((err) => {
+                    throw err;
+                });
+        });
     }
     insertMany<TableT extends tsql.ITable<tsql.TableData> & {insertEnabled: true;}>(table: TableT, rows: readonly [{readonly [columnAlias in Exclude<TableT["columns"] extends tsql.ColumnMap ? Extract<keyof TableT["columns"], string> : never, TableT["generatedColumns"][number] | TableT["nullableColumns"][number] | TableT["explicitDefaultValueColumns"][number] | TableT["autoIncrement"]>]: tsql.BuiltInExpr_NonCorrelated<ReturnType<TableT["columns"][columnAlias]["mapper"]>>;} & {readonly [columnAlias in tsql.TableUtil.OptionalColumnAlias<TableT>]?: tsql.BuiltInExpr_NonCorrelatedOrUndefined<ReturnType<TableT["columns"][columnAlias]["mapper"]>>;}, ...({readonly [columnAlias in Exclude<TableT["columns"] extends tsql.ColumnMap ? Extract<keyof TableT["columns"], string> : never, TableT["generatedColumns"][number] | TableT["nullableColumns"][number] | TableT["explicitDefaultValueColumns"][number] | TableT["autoIncrement"]>]: tsql.BuiltInExpr_NonCorrelated<ReturnType<TableT["columns"][columnAlias]["mapper"]>>;} & {readonly [columnAlias in tsql.TableUtil.OptionalColumnAlias<TableT>]?: tsql.BuiltInExpr_NonCorrelatedOrUndefined<ReturnType<TableT["columns"][columnAlias]["mapper"]>>;})[]]): Promise<tsql.InsertManyResult> {
         table;
@@ -259,11 +545,165 @@ export class Connection implements tsql.IConnection {
         throw new Error("Method not implemented.");
     }
     isInTransaction(): this is tsql.ITransactionConnection {
-        throw new Error("Method not implemented.");
+        return this.sharedConnectionInformation.transactionData != undefined;
+    }
+
+    private savepointData : (
+        | undefined
+        | {
+            savepointName : string,
+        }
+    ) = undefined;
+    private savepointImpl<ResultT> (
+        callback : tsql.LockCallback<tsql.ITransactionConnection & tsql.ConnectionComponent.InSavepoint, ResultT>
+    ) : Promise<ResultT> {
+        if (this.sharedConnectionInformation.transactionData == undefined) {
+            return Promise.reject(new Error(`Cannot use savepoint outside transaction`));
+        }
+        if (this.savepointData != undefined) {
+            return Promise.reject(new Error(`A savepoint is already in progress`));
+        }
+        const savepointData = {
+            savepointName : `tsql_savepoint_${++this.sharedConnectionInformation.savepointId}`,
+        };
+        this.savepointData = savepointData;
+        this.eventEmitters.savepoint();
+
+        return new Promise<ResultT>((resolve, reject) => {
+            this.rawQuery(`SAVEPOINT ${savepointData.savepointName}`)
+                .then(() => {
+                    if (!this.isInTransaction()) {
+                        throw new Error(`Expected to be in transaction`);
+                    }
+                    if (this.savepointData != savepointData) {
+                        /**
+                         * Why did the savepoint information change?
+                         */
+                        throw new Error(`Expected to be in savepoint ${savepointData.savepointName}`);
+                    }
+                    return callback(this as tsql.ITransactionConnection & tsql.ConnectionComponent.InSavepoint);
+                })
+                .then((result) => {
+                    if (!this.isInTransaction()) {
+                        /**
+                         * `.rollback()` was probably explicitly called
+                         */
+                        resolve(result);
+                        return;
+                    }
+                    if (this.savepointData == undefined) {
+                        /**
+                         * `.rollbackToSavepoint()` was probably explicitly called
+                         */
+                        resolve(result);
+                        return;
+                    }
+                    if (this.savepointData != savepointData) {
+                        /**
+                         * Some weird thing is going on here.
+                         * This should never happen.
+                         */
+                        reject(new Error(`Expected to be in savepoint ${savepointData.savepointName} or to not be in a savepoint`));
+                        return;
+                    }
+
+                    this.releaseSavepoint()
+                        .then(() => {
+                            resolve(result);
+                        })
+                        .catch((_releaseErr) => {
+                            /**
+                             * Being unable to release a savepoint isn't so bad.
+                             * It usually just means the DBMS cannot reclaim resources
+                             * until the transaction ends.
+                             *
+                             * @todo Do something with `_releaseErr`
+                             */
+                            resolve(result);
+                        });
+                })
+                .catch((err) => {
+                    if (!this.isInTransaction()) {
+                        /**
+                         * `.rollback()` was probably explicitly called
+                         */
+                        reject(err);
+                        return;
+                    }
+                    if (this.savepointData == undefined) {
+                        /**
+                         * `.rollbackToSavepoint()` was probably explicitly called
+                         */
+                        reject(err);
+                        return;
+                    }
+                    if (this.savepointData != savepointData) {
+                        /**
+                         * Some weird thing is going on here.
+                         * This should never happen.
+                         */
+                        err.savepointErr = new Error(`Expected to be in savepoint ${savepointData.savepointName} or to not be in a savepoint`);
+                        reject(err);
+                        return;
+                    }
+
+                    this.rollbackToSavepoint()
+                        .then(() => {
+                            reject(err);
+                        })
+                        .catch((rollbackToSavepointErr) => {
+                            err.rollbackToSavepointErr = rollbackToSavepointErr;
+                            reject(err);
+                        });
+                });
+        });
+    }
+    rollbackToSavepoint () : Promise<void> {
+        if (this.savepointData == undefined) {
+            return Promise.reject(new Error("Not in savepoint; cannot release savepoint"));
+        }
+        return this.rawQuery(`ROLLBACK TO SAVEPOINT ${this.savepointData.savepointName}`)
+            .then(() => {
+                this.savepointData = undefined;
+                this.eventEmitters.rollbackToSavepoint();
+            });
+    }
+    releaseSavepoint () : Promise<void> {
+        if (this.savepointData == undefined) {
+            return Promise.reject(new Error("Not in savepoint; cannot release savepoint"));
+        }
+        return this.rawQuery(`RELEASE SAVEPOINT ${this.savepointData.savepointName}`)
+            .then(() => {
+                this.savepointData = undefined;
+                this.eventEmitters.releaseSavepoint();
+            });
+    }
+    savepoint<ResultT> (
+        callback : tsql.LockCallback<tsql.ITransactionConnection & tsql.ConnectionComponent.InSavepoint, ResultT>
+    ) : Promise<ResultT> {
+        return this.lock(async (nestedConnection) => {
+            return (nestedConnection as unknown as Connection).savepointImpl(
+                callback
+            );
+        });
+    }
+
+    private deallocatePromise : Promise<void>|undefined = undefined;
+    deallocate (): Promise<void> {
+        if (this.deallocatePromise == undefined) {
+            this.deallocatePromise = this.asyncQueue.stop()
+                .then(
+                    () => this.connectionImpl.release(),
+                    (err) => {
+                        this.connectionImpl.release();
+                        throw err;
+                    }
+                );
+            return this.deallocatePromise;
+        }
+        return Promise.reject("This connection has already been deallocated");
     }
     isDeallocated(): boolean {
-        throw new Error("Method not implemented.");
+        return this.deallocatePromise != undefined;
     }
-
-
 }
