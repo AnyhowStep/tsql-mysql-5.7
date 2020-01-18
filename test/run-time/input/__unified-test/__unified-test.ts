@@ -66,7 +66,7 @@ unifiedTest({
                     table.primaryKey.columnAlias == column.columnAlias
                 ) {
                     if (table.primaryKey.autoIncrement) {
-                        columnSql.push("PRIMARY KEY AUTOINCREMENT");
+                        columnSql.push("PRIMARY KEY AUTO_INCREMENT");
                     } else {
                         columnSql.push("PRIMARY KEY");
                     }

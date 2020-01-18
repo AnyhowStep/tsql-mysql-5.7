@@ -15,7 +15,7 @@ export function insertOneSqlString<
         })
         .sort();
 
-    const values = columnAliases
+    const value = columnAliases
         .map(columnAlias => tsql.BuiltInExprUtil.buildAst(
             insertRow[columnAlias as unknown as keyof typeof insertRow]
         ))
@@ -29,27 +29,19 @@ export function insertOneSqlString<
             },
             [] as tsql.Ast[]
         );
+    value.unshift("(");
+    value.push(")");
 
-    const ast : tsql.Ast[] = values.length == 0 ?
-        [
-            `INSERT ${modifier} INTO`,
-            /**
-             * We use the `unaliasedAst` because the user may have called `setSchemaName()`
-             */
-            table.unaliasedAst,
-            "VALUES ()",
-        ] :
-        [
-            `INSERT ${modifier} INTO`,
-            /**
-             * We use the `unaliasedAst` because the user may have called `setSchemaName()`
-             */
-            table.unaliasedAst,
-            "(",
-            columnAliases.map(tsql.escapeIdentifierWithBackticks).join(", "),
-            ") VALUES (",
-            ...values,
-            ")",
-        ];
+    const ast : tsql.Ast[] = [
+        `INSERT ${modifier} INTO`,
+        /**
+         * We use the `unaliasedAst` because the user may have called `setSchemaName()`
+         */
+        table.unaliasedAst,
+        "(",
+        columnAliases.map(tsql.escapeIdentifierWithBackticks).join(", "),
+        ") VALUES",
+        value,
+    ];
     return tsql.AstUtil.toSql(ast, sqlfier);
 }
