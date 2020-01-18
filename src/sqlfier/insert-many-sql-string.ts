@@ -15,9 +15,14 @@ export function insertManySqlString<
     const values = insertRows.reduce(
         (values, insertRow) => {
             const value = columnAliases
-                .map(columnAlias => tsql.BuiltInExprUtil.buildAst(
-                    insertRow[columnAlias as unknown as keyof typeof insertRow]
-                ))
+                .map(columnAlias => {
+                    const v = insertRow[columnAlias as unknown as keyof typeof insertRow];
+                    if (v === undefined) {
+                        return "DEFAULT";
+                    } else {
+                        return tsql.BuiltInExprUtil.buildAst(v);
+                    }
+                })
                 .reduce<tsql.Ast[]>(
                     (values, ast) => {
                         if (values.length > 0) {
