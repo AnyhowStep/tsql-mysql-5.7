@@ -1,7 +1,7 @@
 import * as tm from "type-mapping";
 import * as mysql from "mysql";
 import * as tsql from "@tsql/tsql";
-import {sqlfier, insertOneSqlString, insertManySqlString} from "../../sqlfier";
+import {sqlfier, insertOneSqlString, insertManySqlString, deleteSqlString} from "../../sqlfier";
 import {isOkPacket} from "./ok-packet";
 
 export interface SharedConnectionInformation {
@@ -422,7 +422,7 @@ export class Connection implements
                             undefined :
                             autoIncrementId
                         ),
-                        warningCount : BigInt(0),
+                        warningCount : BigInt(result.results.warningCount),
                         message : result.results.message,
                     };
                     return insertOneResult;
@@ -451,7 +451,7 @@ export class Connection implements
                     return {
                         query : { sql, },
                         insertedRowCount : BigInt(result.results.affectedRows),
-                        warningCount : BigInt(0),
+                        warningCount : BigInt(result.results.warningCount),
                         message : result.results.message,
                     };
                 })
@@ -510,9 +510,26 @@ export class Connection implements
         throw new Error("Method not implemented.");
     }
     delete(table: tsql.DeletableTable, whereClause: tsql.WhereClause): Promise<tsql.DeleteResult> {
-        table;
-        whereClause;
-        throw new Error("Method not implemented.");
+        const sql = deleteSqlString(table, whereClause);
+        return this.rawQuery(sql)
+            .then(async (result) => {
+                if (!isOkPacket(result.results)) {
+                    throw new Error(`Expected DeleteResult`);
+                }
+
+                const BigInt = tm.TypeUtil.getBigIntFactoryFunctionOrError();
+
+                return {
+                    query : { sql, },
+                    deletedRowCount : BigInt(result.results.affectedRows),
+                    warningCount : BigInt(result.results.warningCount),
+                    message : result.results.message,
+                };
+            })
+            .catch((err) => {
+                //console.error("error encountered", sql);
+                throw err;
+            });
     }
     tryFetchSchemaMeta(schemaAlias: string | undefined): Promise<tsql.SchemaMeta | undefined> {
         schemaAlias;

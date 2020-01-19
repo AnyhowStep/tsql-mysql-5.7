@@ -240,22 +240,44 @@ export const sqlfier : tsql.Sqlfier = {
             Aggregate (GROUP BY) Function Descriptions
             https://dev.mysql.com/doc/refman/8.0/en/group-by-functions.html
         */
-       [tsql.OperatorType.AGGREGATE_COUNT_ALL] : () => tsql.functionCall("COUNT", ["*"]),
-       [tsql.OperatorType.AGGREGATE_COUNT_EXPR] : ({operands, operatorType}) => {
-           if (operands.length == 2) {
-               const [isDistinct, expr] = operands;
-               if (
-                   tsql.LiteralValueNodeUtil.isLiteralValueNode(isDistinct) &&
-                   isDistinct.literalValue === true
-               ) {
-                   return tsql.functionCall("COUNT", [["DISTINCT", expr]]);
-               } else {
-                   return tsql.functionCall("COUNT", [expr]);
-               }
-           } else {
-               throw new Error(`${operatorType} only implemented for 2 args`);
-           }
-       },
+        [tsql.OperatorType.AGGREGATE_COUNT_ALL] : () => tsql.functionCall("COUNT", ["*"]),
+        [tsql.OperatorType.AGGREGATE_COUNT_EXPR] : ({operands, operatorType}) => {
+            if (operands.length == 2) {
+                const [isDistinct, expr] = operands;
+                if (
+                    tsql.LiteralValueNodeUtil.isLiteralValueNode(isDistinct) &&
+                    isDistinct.literalValue === true
+                ) {
+                    return tsql.functionCall("COUNT", [["DISTINCT", expr]]);
+                } else {
+                    return tsql.functionCall("COUNT", [expr]);
+                }
+            } else {
+                throw new Error(`${operatorType} only implemented for 2 args`);
+            }
+        },
+
+        [tsql.OperatorType.EXISTS] : ({operands : [query]}, toSql) => {
+            if (tsql.QueryBaseUtil.isAfterFromClause(query)) {
+                //EXISTS(... FROM table)
+                if (tsql.QueryBaseUtil.isAfterSelectClause(query)) {
+                    //EXISTS(SELECT x FROM table)
+                    return tsql.functionCall("EXISTS", [query]);
+                } else {
+                    //EXISTS(FROM table)
+                    return tsql.functionCall("EXISTS", [
+                        "SELECT *" + toSql(query)
+                    ]);
+                }
+            } else {
+                if (tsql.QueryBaseUtil.isAfterSelectClause(query)) {
+                    //EXISTS(SELECT x)
+                    return tsql.functionCall("EXISTS", [query]);
+                } else {
+                    throw new Error(`Query should have either FROM or SELECT clause`);
+                }
+            }
+        },
     },
     queryBaseSqlfier : (rawQuery, toSql) => {
         return queryToSql(rawQuery, toSql, false);

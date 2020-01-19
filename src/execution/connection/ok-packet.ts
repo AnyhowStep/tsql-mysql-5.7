@@ -3,6 +3,7 @@ import * as tsql from "@tsql/tsql";
 export interface OkPacket {
     readonly insertId : number,
     readonly affectedRows : number,
+    readonly warningCount : number,
     readonly message : string,
 }
 
@@ -12,6 +13,7 @@ export function isOkPacket (mixed : unknown) : mixed is OkPacket {
         [
             "insertId",
             "affectedRows",
+            "warningCount",
             "message",
         ]
     );
