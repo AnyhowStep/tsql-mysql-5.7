@@ -473,7 +473,7 @@ export class Connection implements
                 .then(async (result) => {
                     console.log(result);
                     if (!isOkPacket(result.results)) {
-                        throw new Error(`Expected InsertManyResult`);
+                        throw new Error(`Expected InsertIgnoreOneResult`);
                     }
 
                     const BigInt = tm.TypeUtil.getBigIntFactoryFunctionOrError();
@@ -527,10 +527,34 @@ export class Connection implements
                 });
         });
     }
-    insertIgnoreMany<TableT extends tsql.ITable<tsql.TableData> & {insertEnabled: true;}>(table: TableT, rows: readonly [{readonly [columnAlias in Exclude<TableT["columns"] extends tsql.ColumnMap ? Extract<keyof TableT["columns"], string> : never, TableT["generatedColumns"][number] | TableT["nullableColumns"][number] | TableT["explicitDefaultValueColumns"][number] | TableT["autoIncrement"]>]: tsql.BuiltInExpr_NonCorrelated<ReturnType<TableT["columns"][columnAlias]["mapper"]>>;} & {readonly [columnAlias in tsql.TableUtil.OptionalColumnAlias<TableT>]?: tsql.BuiltInExpr_NonCorrelatedOrUndefined<ReturnType<TableT["columns"][columnAlias]["mapper"]>>;}, ...({readonly [columnAlias in Exclude<TableT["columns"] extends tsql.ColumnMap ? Extract<keyof TableT["columns"], string> : never, TableT["generatedColumns"][number] | TableT["nullableColumns"][number] | TableT["explicitDefaultValueColumns"][number] | TableT["autoIncrement"]>]: tsql.BuiltInExpr_NonCorrelated<ReturnType<TableT["columns"][columnAlias]["mapper"]>>;} & {readonly [columnAlias in tsql.TableUtil.OptionalColumnAlias<TableT>]?: tsql.BuiltInExpr_NonCorrelatedOrUndefined<ReturnType<TableT["columns"][columnAlias]["mapper"]>>;})[]]): Promise<tsql.InsertIgnoreManyResult> {
-        table;
-        rows;
-        throw new Error("Method not implemented.");
+    insertIgnoreMany<TableT extends tsql.InsertableTable>(
+        table: TableT,
+        rows: readonly [tsql.BuiltInInsertRow<TableT>, ...tsql.BuiltInInsertRow<TableT>[]]
+    ): Promise<tsql.InsertIgnoreManyResult> {
+        const sql = insertManySqlString(table, rows, "IGNORE");
+        return this.lock(async (rawNestedConnection) : Promise<tsql.InsertIgnoreManyResult> => {
+            const nestedConnection = rawNestedConnection as unknown as Connection;
+            return nestedConnection.rawQuery(sql)
+                .then(async (result) => {
+                    console.log(result);
+                    if (!isOkPacket(result.results)) {
+                        throw new Error(`Expected InsertIgnoreManyResult`);
+                    }
+
+                    const BigInt = tm.TypeUtil.getBigIntFactoryFunctionOrError();
+
+                    return {
+                        query : { sql, },
+                        insertedRowCount : BigInt(result.results.affectedRows),
+                        warningCount : BigInt(result.results.warningCount),
+                        message : result.results.message,
+                    };
+                })
+                .catch((err) => {
+                    //console.error("error encountered", sql);
+                    throw err;
+                });
+        });
     }
     replaceOne<TableT extends tsql.ITable<tsql.TableData> & {insertEnabled: true;} & {deleteEnabled: true;}>(table: TableT, row: {readonly [columnAlias in Exclude<TableT["columns"] extends tsql.ColumnMap ? Extract<keyof TableT["columns"], string> : never, TableT["generatedColumns"][number] | TableT["nullableColumns"][number] | TableT["explicitDefaultValueColumns"][number] | TableT["autoIncrement"]>]: tsql.BuiltInExpr_NonCorrelated<ReturnType<TableT["columns"][columnAlias]["mapper"]>>;} & {readonly [columnAlias in tsql.TableUtil.OptionalColumnAlias<TableT>]?: tsql.BuiltInExpr_NonCorrelatedOrUndefined<ReturnType<TableT["columns"][columnAlias]["mapper"]>>;}): Promise<tsql.ReplaceOneResult> {
         table;

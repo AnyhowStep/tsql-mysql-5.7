@@ -60,6 +60,15 @@ unifiedTest({
                     columnSql.push("NOT NULL");
                 }
 
+                if (column.nullable === true && table.primaryKey != undefined) {
+                    const columnAliases = table.primaryKey.multiColumn ?
+                        table.primaryKey.columnAliases :
+                        [table.primaryKey.columnAlias];
+                    if (columnAliases.includes(column.columnAlias)) {
+                        throw new Error(`Primary key column ${column.columnAlias} cannot be nullable`);
+                    }
+                }
+
                 if (
                     table.primaryKey != undefined &&
                     !table.primaryKey.multiColumn &&
