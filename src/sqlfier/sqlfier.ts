@@ -207,6 +207,37 @@ export const sqlfier : tsql.Sqlfier = {
             Date and Time Functions
             https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html
         */
+        [tsql.OperatorType.TIMESTAMPADD_MILLISECOND] : ({operands}) => tsql.functionCall(
+            "TIMESTAMPADD",
+            [
+                "SECOND",
+                tsql.AstUtil.insertBetween(
+                    [
+                        operands[1],
+                        "1000e0"
+                    ],
+                    "/"
+                ),
+                operands[0]
+            ]
+        ),
+        [tsql.OperatorType.TIMESTAMPADD_DAY] : ({operands}) => tsql.functionCall(
+            "TIMESTAMPADD",
+            [
+                "SECOND",
+                tsql.AstUtil.insertBetween(
+                    [
+                        operands[1],
+                        /**
+                         * 1 day = 24 * 60 * 60 seconds
+                         */
+                        "86400e0"
+                    ],
+                    "*"
+                ),
+                operands[0]
+            ]
+        ),
         [tsql.OperatorType.UTC_STRING_TO_TIMESTAMP_CONSTRUCTOR] : ({operands}) => tsql.functionCall(
             "CONVERT_TZ",
             [
@@ -251,6 +282,66 @@ export const sqlfier : tsql.Sqlfier = {
                     return tsql.functionCall("COUNT", [["DISTINCT", expr]]);
                 } else {
                     return tsql.functionCall("COUNT", [expr]);
+                }
+            } else {
+                throw new Error(`${operatorType} only implemented for 2 args`);
+            }
+        },
+        [tsql.OperatorType.AGGREGATE_AVERAGE] : ({operands, operatorType}) => {
+            if (operands.length == 2) {
+                const [isDistinct, expr] = operands;
+                if (
+                    tsql.LiteralValueNodeUtil.isLiteralValueNode(isDistinct) &&
+                    isDistinct.literalValue === true
+                ) {
+                    return tsql.functionCall("AVG", [["DISTINCT", expr]]);
+                } else {
+                    return tsql.functionCall("AVG", [expr]);
+                }
+            } else {
+                throw new Error(`${operatorType} only implemented for 2 args`);
+            }
+        },
+        [tsql.OperatorType.AGGREGATE_MAX] : ({operands, operatorType}) => {
+            if (operands.length == 2) {
+                const [isDistinct, expr] = operands;
+                if (
+                    tsql.LiteralValueNodeUtil.isLiteralValueNode(isDistinct) &&
+                    isDistinct.literalValue === true
+                ) {
+                    return tsql.functionCall("MAX", [["DISTINCT", expr]]);
+                } else {
+                    return tsql.functionCall("MAX", [expr]);
+                }
+            } else {
+                throw new Error(`${operatorType} only implemented for 2 args`);
+            }
+        },
+        [tsql.OperatorType.AGGREGATE_MIN] : ({operands, operatorType}) => {
+            if (operands.length == 2) {
+                const [isDistinct, expr] = operands;
+                if (
+                    tsql.LiteralValueNodeUtil.isLiteralValueNode(isDistinct) &&
+                    isDistinct.literalValue === true
+                ) {
+                    return tsql.functionCall("MIN", [["DISTINCT", expr]]);
+                } else {
+                    return tsql.functionCall("MIN", [expr]);
+                }
+            } else {
+                throw new Error(`${operatorType} only implemented for 2 args`);
+            }
+        },
+        [tsql.OperatorType.AGGREGATE_SUM] : ({operands, operatorType}) => {
+            if (operands.length == 2) {
+                const [isDistinct, expr] = operands;
+                if (
+                    tsql.LiteralValueNodeUtil.isLiteralValueNode(isDistinct) &&
+                    isDistinct.literalValue === true
+                ) {
+                    return tsql.functionCall("SUM", [["DISTINCT", expr]]);
+                } else {
+                    return tsql.functionCall("SUM", [expr]);
                 }
             } else {
                 throw new Error(`${operatorType} only implemented for 2 args`);
