@@ -5,9 +5,9 @@ import {sqlfier} from "./sqlfier";
 export function insertOneSqlString<
     TableT extends InsertableTable
 > (
+    insertType : string,
     table : TableT,
-    insertRow : tsql.BuiltInInsertRow<TableT>,
-    modifier : string
+    insertRow : tsql.BuiltInInsertRow<TableT>
 ) : string {
     const columnAliases = tsql.TableUtil.columnAlias(table)
         .filter(columnAlias => {
@@ -33,7 +33,7 @@ export function insertOneSqlString<
     value.push(")");
 
     const ast : tsql.Ast[] = [
-        `INSERT ${modifier} INTO`,
+        `${insertType} INTO`,
         /**
          * We use the `unaliasedAst` because the user may have called `setSchemaName()`
          */

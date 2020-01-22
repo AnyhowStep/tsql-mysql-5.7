@@ -382,14 +382,14 @@ export class Connection implements
         table: TableT,
         row: tsql.BuiltInInsertRow<TableT>
     ): Promise<tsql.InsertOneResult> {
-        const sql = insertOneSqlString(table, row, "");
+        const sql = insertOneSqlString("INSERT", table, row);
         return this.lock((rawNestedConnection) => {
             const nestedConnection = (rawNestedConnection as unknown as Connection);
             return nestedConnection.rawQuery(sql)
                 .then(async (result) => {
                     console.log(result);
                     if (!isOkPacket(result.results)) {
-                        throw new Error(`Expected InsertResult`);
+                        throw new Error(`Expected InsertOneResult`);
                     }
 
                     const BigInt = tm.TypeUtil.getBigIntFactoryFunctionOrError();
@@ -437,7 +437,7 @@ export class Connection implements
         table: TableT,
         rows: readonly [tsql.BuiltInInsertRow<TableT>, ...tsql.BuiltInInsertRow<TableT>[]]
     ): Promise<tsql.InsertManyResult> {
-        const sql = insertManySqlString(table, rows, "");
+        const sql = insertManySqlString("INSERT", table, rows);
         return this.lock(async (rawNestedConnection) : Promise<tsql.InsertManyResult> => {
             const nestedConnection = rawNestedConnection as unknown as Connection;
             return nestedConnection.rawQuery(sql)
@@ -466,7 +466,7 @@ export class Connection implements
         table: TableT,
         row: tsql.BuiltInInsertRow<TableT>
     ): Promise<tsql.InsertIgnoreOneResult> {
-        const sql = insertOneSqlString(table, row, "IGNORE");
+        const sql = insertOneSqlString("INSERT IGNORE", table, row);
         return this.lock((rawNestedConnection) => {
             const nestedConnection = (rawNestedConnection as unknown as Connection);
             return nestedConnection.rawQuery(sql)
@@ -531,7 +531,7 @@ export class Connection implements
         table: TableT,
         rows: readonly [tsql.BuiltInInsertRow<TableT>, ...tsql.BuiltInInsertRow<TableT>[]]
     ): Promise<tsql.InsertIgnoreManyResult> {
-        const sql = insertManySqlString(table, rows, "IGNORE");
+        const sql = insertManySqlString("INSERT IGNORE", table, rows);
         return this.lock(async (rawNestedConnection) : Promise<tsql.InsertIgnoreManyResult> => {
             const nestedConnection = rawNestedConnection as unknown as Connection;
             return nestedConnection.rawQuery(sql)
@@ -556,15 +556,89 @@ export class Connection implements
                 });
         });
     }
-    replaceOne<TableT extends tsql.ITable<tsql.TableData> & {insertEnabled: true;} & {deleteEnabled: true;}>(table: TableT, row: {readonly [columnAlias in Exclude<TableT["columns"] extends tsql.ColumnMap ? Extract<keyof TableT["columns"], string> : never, TableT["generatedColumns"][number] | TableT["nullableColumns"][number] | TableT["explicitDefaultValueColumns"][number] | TableT["autoIncrement"]>]: tsql.BuiltInExpr_NonCorrelated<ReturnType<TableT["columns"][columnAlias]["mapper"]>>;} & {readonly [columnAlias in tsql.TableUtil.OptionalColumnAlias<TableT>]?: tsql.BuiltInExpr_NonCorrelatedOrUndefined<ReturnType<TableT["columns"][columnAlias]["mapper"]>>;}): Promise<tsql.ReplaceOneResult> {
-        table;
-        row;
-        throw new Error("Method not implemented.");
+    replaceOne<TableT extends tsql.InsertableTable & tsql.DeletableTable>(
+        table: TableT,
+        row: tsql.BuiltInInsertRow<TableT>
+    ): Promise<tsql.ReplaceOneResult> {
+        const sql = insertOneSqlString("REPLACE", table, row);
+        return this.lock((rawNestedConnection) => {
+            const nestedConnection = (rawNestedConnection as unknown as Connection);
+            return nestedConnection.rawQuery(sql)
+                .then(async (result) => {
+                    console.log(result);
+                    if (!isOkPacket(result.results)) {
+                        throw new Error(`Expected ReplaceOneResult`);
+                    }
+
+                    const BigInt = tm.TypeUtil.getBigIntFactoryFunctionOrError();
+
+                    const autoIncrementId = (
+                        (table.autoIncrement == undefined) ?
+                        undefined :
+                        (row[table.autoIncrement as keyof typeof row] === undefined) ?
+                        await tsql
+                            .selectValue(() => tsql.expr(
+                                {
+                                    mapper : tm.mysql.bigIntSigned(),
+                                    usedRef : tsql.UsedRefUtil.fromColumnRef({}),
+                                },
+                                "LAST_INSERT_ID()"
+                            ))
+                            .fetchValue(nestedConnection) :
+                        /**
+                         * Emulate MySQL behaviour
+                         */
+                        BigInt(0)
+                    );
+
+                    const replaceOneResult : tsql.ReplaceOneResult = {
+                        query : { sql, },
+                        insertedOrReplacedRowCount : BigInt(1) as 1n,
+                        autoIncrementId : (
+                            autoIncrementId == undefined ?
+                            undefined :
+                            tm.BigIntUtil.equal(autoIncrementId, BigInt(0)) ?
+                            undefined :
+                            autoIncrementId
+                        ),
+                        warningCount : BigInt(result.results.warningCount),
+                        message : result.results.message,
+                    };
+                    return replaceOneResult;
+                })
+                .catch((err) => {
+                    throw err;
+                });
+        });
     }
-    replaceMany<TableT extends tsql.ITable<tsql.TableData> & {insertEnabled: true;} & {deleteEnabled: true;}>(table: TableT, rows: readonly [{readonly [columnAlias in Exclude<TableT["columns"] extends tsql.ColumnMap ? Extract<keyof TableT["columns"], string> : never, TableT["generatedColumns"][number] | TableT["nullableColumns"][number] | TableT["explicitDefaultValueColumns"][number] | TableT["autoIncrement"]>]: tsql.BuiltInExpr_NonCorrelated<ReturnType<TableT["columns"][columnAlias]["mapper"]>>;} & {readonly [columnAlias in tsql.TableUtil.OptionalColumnAlias<TableT>]?: tsql.BuiltInExpr_NonCorrelatedOrUndefined<ReturnType<TableT["columns"][columnAlias]["mapper"]>>;}, ...({readonly [columnAlias in Exclude<TableT["columns"] extends tsql.ColumnMap ? Extract<keyof TableT["columns"], string> : never, TableT["generatedColumns"][number] | TableT["nullableColumns"][number] | TableT["explicitDefaultValueColumns"][number] | TableT["autoIncrement"]>]: tsql.BuiltInExpr_NonCorrelated<ReturnType<TableT["columns"][columnAlias]["mapper"]>>;} & {readonly [columnAlias in tsql.TableUtil.OptionalColumnAlias<TableT>]?: tsql.BuiltInExpr_NonCorrelatedOrUndefined<ReturnType<TableT["columns"][columnAlias]["mapper"]>>;})[]]): Promise<tsql.ReplaceManyResult> {
-        table;
-        rows;
-        throw new Error("Method not implemented.");
+    replaceMany<TableT extends tsql.InsertableTable & tsql.DeletableTable>(
+        table: TableT,
+        rows : readonly [tsql.BuiltInInsertRow<TableT>, ...tsql.BuiltInInsertRow<TableT>[]]
+    ): Promise<tsql.ReplaceManyResult> {
+        const sql = insertManySqlString("REPLACE", table, rows);
+        return this.lock(async (rawNestedConnection) : Promise<tsql.ReplaceManyResult> => {
+            const nestedConnection = rawNestedConnection as unknown as Connection;
+            return nestedConnection.rawQuery(sql)
+                .then(async (result) => {
+                    console.log(result);
+                    if (!isOkPacket(result.results)) {
+                        throw new Error(`Expected ReplaceManyResult`);
+                    }
+
+                    const BigInt = tm.TypeUtil.getBigIntFactoryFunctionOrError();
+
+                    return {
+                        query : { sql, },
+                        insertedOrReplacedRowCount : BigInt(rows.length),
+                        warningCount : BigInt(result.results.warningCount),
+                        message : result.results.message,
+                    };
+                })
+                .catch((err) => {
+                    //console.error("error encountered", sql);
+                    throw err;
+                });
+        });
     }
     insertSelect<QueryT extends tsql.IQueryBase<{fromClause: tsql.IFromClause<tsql.FromClauseData>; selectClause: readonly (tsql.ColumnMap | tsql.IColumn<tsql.ColumnData> | tsql.IExprSelectItem<tsql.ExprSelectItemData> | tsql.ColumnRef)[]; limitClause: tsql.LimitClause | undefined; compoundQueryClause: readonly tsql.CompoundQuery[] | undefined; compoundQueryLimitClause: tsql.LimitClause | undefined; mapDelegate: tsql.MapDelegate<never, never, unknown> | undefined;}> & tsql.IQueryBase<{fromClause: tsql.IFromClause<{outerQueryJoins: undefined; currentJoins: readonly tsql.IJoin<tsql.JoinData>[] | undefined;}>; selectClause: readonly (tsql.ColumnMap | tsql.IColumn<tsql.ColumnData> | tsql.IExprSelectItem<tsql.ExprSelectItemData> | tsql.ColumnRef)[] | undefined; limitClause: tsql.LimitClause | undefined; compoundQueryClause: readonly tsql.CompoundQuery[] | undefined; compoundQueryLimitClause: tsql.LimitClause | undefined; mapDelegate: tsql.MapDelegate<never, never, unknown> | undefined;}>, TableT extends tsql.ITable<tsql.TableData> & {insertEnabled: true;}>(query: QueryT, table: TableT, row: tsql.InsertSelectRow<QueryT, TableT>): Promise<tsql.InsertManyResult> {
         query;

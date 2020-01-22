@@ -5,9 +5,9 @@ import {sqlfier} from "./sqlfier";
 export function insertManySqlString<
     TableT extends InsertableTable
 > (
+    insertType : string,
     table : TableT,
-    insertRows : readonly [tsql.BuiltInInsertRow<TableT>, ...tsql.BuiltInInsertRow<TableT>[]],
-    modifier : string
+    insertRows : readonly [tsql.BuiltInInsertRow<TableT>, ...tsql.BuiltInInsertRow<TableT>[]]
 ) : string {
     const columnAliases = tsql.TableUtil.columnAlias(table)
         .sort();
@@ -46,7 +46,7 @@ export function insertManySqlString<
     );
 
     const ast : tsql.Ast[] = [
-        `INSERT ${modifier} INTO`,
+        `${insertType} INTO`,
         /**
          * We use the `unaliasedAst` because the user may have called `setSchemaName()`
          */
