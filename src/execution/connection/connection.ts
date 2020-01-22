@@ -1,7 +1,7 @@
 import * as tm from "type-mapping";
 import * as mysql from "mysql";
 import * as tsql from "@tsql/tsql";
-import {sqlfier, insertOneSqlString, insertManySqlString, deleteSqlString} from "../../sqlfier";
+import {sqlfier, insertOneSqlString, insertManySqlString, deleteSqlString, updateSqlString} from "../../sqlfier";
 import {isOkPacket} from "./ok-packet";
 
 export interface SharedConnectionInformation {
@@ -663,10 +663,48 @@ export class Connection implements
         whereClause : tsql.WhereClause,
         assignmentMap : tsql.BuiltInAssignmentMap<TableT>
     ) : Promise<tsql.UpdateResult> {
-        table;
-        whereClause;
-        assignmentMap;
-        throw new Error("Method not implemented.");
+        const sql = updateSqlString(table, whereClause, assignmentMap);
+        if (sql == undefined) {
+            return tsql.from(table as any)
+                .where(() => whereClause as any)
+                .count(this)
+                .then((count) => {
+                    return {
+                        query : {
+                            /**
+                             * No `UPDATE` statement executed
+                             */
+                            sql : "",
+                        },
+                        foundRowCount : count,
+                        updatedRowCount : BigInt(0),
+                        warningCount : BigInt(0),
+                        message : "ok",
+                    };
+                });
+        }
+
+        return this.rawQuery(sql)
+            .then(async (result) => {
+                console.log(result);
+                if (!isOkPacket(result.results)) {
+                    throw new Error(`Expected UpdateResult`);
+                }
+
+                const BigInt = tm.TypeUtil.getBigIntFactoryFunctionOrError();
+
+                return {
+                    query : { sql, },
+                    foundRowCount : BigInt(result.results.affectedRows),
+                    updatedRowCount : BigInt(result.results.changedRows),
+                    warningCount : BigInt(result.results.warningCount),
+                    message : result.results.message,
+                };
+            })
+            .catch((err) => {
+                //console.error("error encountered", sql);
+                throw err;
+            });
     }
     delete(table: tsql.DeletableTable, whereClause: tsql.WhereClause): Promise<tsql.DeleteResult> {
         const sql = deleteSqlString(table, whereClause);
