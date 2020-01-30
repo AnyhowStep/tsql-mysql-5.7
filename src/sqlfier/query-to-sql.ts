@@ -50,7 +50,7 @@ export function nonCompoundQueryToSql (
     }
 
     if (query.orderByClause != undefined) {
-        result.push(orderByClauseToSql(query.orderByClause, toSql).join(" "));
+        result.push(orderByClauseToSql(query.orderByClause, query.selectClause, toSql).join(" "));
     }
 
     if (query.limitClause != undefined) {
@@ -106,7 +106,7 @@ export function queryToSql (
     }
 
     if (query.compoundQueryOrderByClause != undefined) {
-        result.push(orderByClauseToSql(query.compoundQueryOrderByClause, toSql).join(" "));
+        result.push(orderByClauseToSql(query.compoundQueryOrderByClause, undefined, toSql).join(" "));
     }
 
     if (query.compoundQueryLimitClause != undefined) {

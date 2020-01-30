@@ -403,6 +403,7 @@ export class Connection implements
                                 {
                                     mapper : tm.mysql.bigIntSigned(),
                                     usedRef : tsql.UsedRefUtil.fromColumnRef({}),
+                                    isAggregate : false,
                                 },
                                 "LAST_INSERT_ID()"
                             ))
@@ -497,6 +498,7 @@ export class Connection implements
                                 {
                                     mapper : tm.mysql.bigIntSigned(),
                                     usedRef : tsql.UsedRefUtil.fromColumnRef({}),
+                                    isAggregate : false,
                                 },
                                 "LAST_INSERT_ID()"
                             ))
@@ -581,6 +583,7 @@ export class Connection implements
                                 {
                                     mapper : tm.mysql.bigIntSigned(),
                                     usedRef : tsql.UsedRefUtil.fromColumnRef({}),
+                                    isAggregate : false,
                                 },
                                 "LAST_INSERT_ID()"
                             ))
@@ -640,19 +643,28 @@ export class Connection implements
                 });
         });
     }
-    insertSelect<QueryT extends tsql.IQueryBase<{fromClause: tsql.IFromClause<tsql.FromClauseData>; selectClause: readonly (tsql.ColumnMap | tsql.IColumn<tsql.ColumnData> | tsql.IExprSelectItem<tsql.ExprSelectItemData> | tsql.ColumnRef)[]; limitClause: tsql.LimitClause | undefined; compoundQueryClause: readonly tsql.CompoundQuery[] | undefined; compoundQueryLimitClause: tsql.LimitClause | undefined; mapDelegate: tsql.MapDelegate<never, never, unknown> | undefined;}> & tsql.IQueryBase<{fromClause: tsql.IFromClause<{outerQueryJoins: undefined; currentJoins: readonly tsql.IJoin<tsql.JoinData>[] | undefined;}>; selectClause: readonly (tsql.ColumnMap | tsql.IColumn<tsql.ColumnData> | tsql.IExprSelectItem<tsql.ExprSelectItemData> | tsql.ColumnRef)[] | undefined; limitClause: tsql.LimitClause | undefined; compoundQueryClause: readonly tsql.CompoundQuery[] | undefined; compoundQueryLimitClause: tsql.LimitClause | undefined; mapDelegate: tsql.MapDelegate<never, never, unknown> | undefined;}>, TableT extends tsql.ITable<tsql.TableData> & {insertEnabled: true;}>(query: QueryT, table: TableT, row: tsql.InsertSelectRow<QueryT, TableT>): Promise<tsql.InsertManyResult> {
+    insertSelect<
+        QueryT extends tsql.QueryBaseUtil.AfterSelectClause & tsql.QueryBaseUtil.NonCorrelated,
+        TableT extends tsql.InsertableTable
+    >(query: QueryT, table: TableT, row: tsql.InsertSelectRow<QueryT, TableT>): Promise<tsql.InsertManyResult> {
         query;
         table;
         row;
         throw new Error("Method not implemented.");
     }
-    insertIgnoreSelect<QueryT extends tsql.IQueryBase<{fromClause: tsql.IFromClause<tsql.FromClauseData>; selectClause: readonly (tsql.ColumnMap | tsql.IColumn<tsql.ColumnData> | tsql.IExprSelectItem<tsql.ExprSelectItemData> | tsql.ColumnRef)[]; limitClause: tsql.LimitClause | undefined; compoundQueryClause: readonly tsql.CompoundQuery[] | undefined; compoundQueryLimitClause: tsql.LimitClause | undefined; mapDelegate: tsql.MapDelegate<never, never, unknown> | undefined;}> & tsql.IQueryBase<{fromClause: tsql.IFromClause<{outerQueryJoins: undefined; currentJoins: readonly tsql.IJoin<tsql.JoinData>[] | undefined;}>; selectClause: readonly (tsql.ColumnMap | tsql.IColumn<tsql.ColumnData> | tsql.IExprSelectItem<tsql.ExprSelectItemData> | tsql.ColumnRef)[] | undefined; limitClause: tsql.LimitClause | undefined; compoundQueryClause: readonly tsql.CompoundQuery[] | undefined; compoundQueryLimitClause: tsql.LimitClause | undefined; mapDelegate: tsql.MapDelegate<never, never, unknown> | undefined;}>, TableT extends tsql.ITable<tsql.TableData> & {insertEnabled: true;}>(query: QueryT, table: TableT, row: tsql.InsertSelectRow<QueryT, TableT>): Promise<tsql.InsertIgnoreManyResult> {
+    insertIgnoreSelect<
+        QueryT extends tsql.QueryBaseUtil.AfterSelectClause & tsql.QueryBaseUtil.NonCorrelated,
+        TableT extends tsql.InsertableTable
+    >(query: QueryT, table: TableT, row: tsql.InsertSelectRow<QueryT, TableT>): Promise<tsql.InsertIgnoreManyResult> {
         query;
         table;
         row;
         throw new Error("Method not implemented.");
     }
-    replaceSelect<QueryT extends tsql.IQueryBase<{fromClause: tsql.IFromClause<tsql.FromClauseData>; selectClause: readonly (tsql.ColumnMap | tsql.IColumn<tsql.ColumnData> | tsql.IExprSelectItem<tsql.ExprSelectItemData> | tsql.ColumnRef)[]; limitClause: tsql.LimitClause | undefined; compoundQueryClause: readonly tsql.CompoundQuery[] | undefined; compoundQueryLimitClause: tsql.LimitClause | undefined; mapDelegate: tsql.MapDelegate<never, never, unknown> | undefined;}> & tsql.IQueryBase<{fromClause: tsql.IFromClause<{outerQueryJoins: undefined; currentJoins: readonly tsql.IJoin<tsql.JoinData>[] | undefined;}>; selectClause: readonly (tsql.ColumnMap | tsql.IColumn<tsql.ColumnData> | tsql.IExprSelectItem<tsql.ExprSelectItemData> | tsql.ColumnRef)[] | undefined; limitClause: tsql.LimitClause | undefined; compoundQueryClause: readonly tsql.CompoundQuery[] | undefined; compoundQueryLimitClause: tsql.LimitClause | undefined; mapDelegate: tsql.MapDelegate<never, never, unknown> | undefined;}>, TableT extends tsql.ITable<tsql.TableData> & {insertEnabled: true;} & {deleteEnabled: true;}>(query: QueryT, table: TableT, row: tsql.InsertSelectRow<QueryT, TableT>): Promise<tsql.ReplaceManyResult> {
+    replaceSelect<
+        QueryT extends tsql.QueryBaseUtil.AfterSelectClause & tsql.QueryBaseUtil.NonCorrelated,
+        TableT extends tsql.InsertableTable
+    >(query: QueryT, table: TableT, row: tsql.InsertSelectRow<QueryT, TableT>): Promise<tsql.ReplaceManyResult> {
         query;
         table;
         row;

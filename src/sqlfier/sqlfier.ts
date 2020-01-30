@@ -254,6 +254,7 @@ export const sqlfier : tsql.Sqlfier = {
             Cast Functions and Operators
             https://dev.mysql.com/doc/refman/8.0/en/cast-functions.html
         */
+        [tsql.OperatorType.CAST_AS_DOUBLE] : ({operands : [x]}, toSql) => `((${toSql(x)}) + 0e0)`,
         [tsql.OperatorType.CAST_AS_DECIMAL] : ({operands : [arg, precision, scale]}, toSql) => tsql.functionCall(
             "CAST",
             [
@@ -357,7 +358,7 @@ export const sqlfier : tsql.Sqlfier = {
                 } else {
                     //EXISTS(FROM table)
                     return tsql.functionCall("EXISTS", [
-                        "SELECT *" + toSql(query)
+                        "SELECT 1 " + toSql(query)
                     ]);
                 }
             } else {
