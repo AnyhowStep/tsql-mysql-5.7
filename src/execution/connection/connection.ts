@@ -763,8 +763,13 @@ export class Connection implements
             | [tsql.IsolationLevel, tsql.LockCallback<tsql.ITransactionConnection, ResultT>]
         )
     ): Promise<ResultT> {
-        args;
-        throw new Error("Method not implemented.");
+        return this.lock(async (nestedConnection) => {
+            return (nestedConnection as unknown as Connection).transactionImpl(
+                args.length == 1 ? tsql.IsolationLevel.SERIALIZABLE : args[0],
+                tsql.TransactionAccessMode.READ_WRITE,
+                args.length == 1 ? args[0] : args[1]
+            );
+        });
     }
     readOnlyTransaction<ResultT>(
         callback: tsql.LockCallback<tsql.IsolatedSelectConnection, ResultT>
@@ -779,8 +784,13 @@ export class Connection implements
             | [tsql.IsolationLevel, tsql.LockCallback<tsql.IsolatedSelectConnection, ResultT>]
         )
     ): Promise<ResultT> {
-        args;
-        throw new Error("Method not implemented.");
+        return this.lock(async (nestedConnection) => {
+            return (nestedConnection as unknown as Connection).transactionImpl(
+                args.length == 1 ? tsql.IsolationLevel.SERIALIZABLE : args[0],
+                tsql.TransactionAccessMode.READ_ONLY,
+                args.length == 1 ? args[0] : args[1]
+            );
+        });
     }
     isInTransaction(): this is tsql.ITransactionConnection {
         return this.sharedConnectionInformation.transactionData != undefined;

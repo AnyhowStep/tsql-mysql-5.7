@@ -370,6 +370,16 @@ export const sqlfier : tsql.Sqlfier = {
                 }
             }
         },
+
+        /*
+            Custom library functions
+
+            These functions are not standard SQL,
+            but can be implemented using standard SQL.
+        */
+        [tsql.OperatorType.THROW_IF_NULL] : ({operands : [arg]}) => {
+            return tsql.functionCall("COALESCE", [arg, "(SELECT NULL UNION ALL SELECT NULL)"]);
+        },
     },
     queryBaseSqlfier : (rawQuery, toSql) => {
         return queryToSql(rawQuery, toSql, false);

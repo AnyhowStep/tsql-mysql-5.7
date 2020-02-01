@@ -4,6 +4,10 @@ export function groupByClauseToSql (
     groupByClause : tsql.GroupByClause,
     _toSql : (ast : tsql.Ast) => string
 ) : string[] {
+    if (groupByClause.length == 0) {
+        return [];
+    }
+
     const result : string[] = [];
     for (const column of groupByClause) {
         if (result.length > 0) {

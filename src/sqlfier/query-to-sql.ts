@@ -31,22 +31,17 @@ export function nonCompoundQueryToSql (
     if (query.fromClause != undefined && query.fromClause.currentJoins != undefined) {
         result.push(fromClauseToSql(query.fromClause.currentJoins, toSql).join(" "));
     }
+
     if (query.whereClause != undefined) {
         result.push(whereClauseToSql(query.whereClause, toSql).join(" "));
     }
-    if (query.groupByClause == undefined) {
-        if (query.havingClause != undefined) {
-            /**
-             * Workaround for `<empty grouping set>` not supported by MySQL
-             */
-            result.push("GROUP BY 'empty-grouping-set'");
-            result.push(havingClauseToSql(query.havingClause, toSql).join(" "));
-        }
-    } else {
+
+    if (query.groupByClause != undefined) {
         result.push(groupByClauseToSql(query.groupByClause, toSql).join(" "));
-        if (query.havingClause != undefined) {
-            result.push(havingClauseToSql(query.havingClause, toSql).join(" "));
-        }
+    }
+
+    if (query.havingClause != undefined) {
+        result.push(havingClauseToSql(query.havingClause, toSql).join(" "));
     }
 
     if (query.orderByClause != undefined) {
