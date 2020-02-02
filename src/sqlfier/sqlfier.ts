@@ -187,8 +187,8 @@ export const sqlfier : tsql.Sqlfier = {
                         tsql.double.random(),
                         0.5
                     ),
-                    tsql.castAsSignedBigInteger(randomNonNegative),
-                    tsql.castAsSignedBigInteger(randomNegative)
+                    tsql.castAsBigIntSigned(randomNonNegative),
+                    tsql.castAsBigIntSigned(randomNegative)
                 );
 
                 return toSql(randomBigIntSigned.ast);
