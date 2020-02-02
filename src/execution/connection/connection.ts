@@ -1,7 +1,7 @@
 import * as tm from "type-mapping";
 import * as mysql from "mysql";
 import * as tsql from "@tsql/tsql";
-import {sqlfier, insertOneSqlString, insertManySqlString, deleteSqlString, updateSqlString} from "../../sqlfier";
+import {sqlfier, insertOneSqlString, insertManySqlString, deleteSqlString, updateSqlString, insertSelectSqlString} from "../../sqlfier";
 import {isOkPacket} from "./ok-packet";
 
 export interface SharedConnectionInformation {
@@ -646,29 +646,104 @@ export class Connection implements
     insertSelect<
         QueryT extends tsql.QueryBaseUtil.AfterSelectClause & tsql.QueryBaseUtil.NonCorrelated,
         TableT extends tsql.InsertableTable
-    >(query: QueryT, table: TableT, row: tsql.InsertSelectRow<QueryT, TableT>): Promise<tsql.InsertManyResult> {
-        query;
-        table;
-        row;
-        throw new Error("Method not implemented.");
+    >(
+        query: QueryT,
+        table: TableT,
+        insertSelectRow: tsql.InsertSelectRow<QueryT, TableT>
+    ): Promise<tsql.InsertManyResult> {
+        const sql = insertSelectSqlString("INSERT", query, table, insertSelectRow);
+        return this.lock(async (rawNestedConnection) : Promise<tsql.InsertManyResult> => {
+            const nestedConnection = rawNestedConnection as unknown as Connection;
+            return nestedConnection.rawQuery(sql)
+                .then(async (result) => {
+                    console.log(result);
+                    if (!isOkPacket(result.results)) {
+                        throw new Error(`Expected InsertManyResult`);
+                    }
+
+                    const BigInt = tm.TypeUtil.getBigIntFactoryFunctionOrError();
+
+                    return {
+                        query : { sql, },
+                        insertedRowCount : BigInt(result.results.affectedRows),
+                        warningCount : BigInt(result.results.warningCount),
+                        message : result.results.message,
+                    };
+                })
+                .catch((err) => {
+                    //console.error("error encountered", sql);
+                    throw err;
+                });
+        });
     }
     insertIgnoreSelect<
         QueryT extends tsql.QueryBaseUtil.AfterSelectClause & tsql.QueryBaseUtil.NonCorrelated,
         TableT extends tsql.InsertableTable
-    >(query: QueryT, table: TableT, row: tsql.InsertSelectRow<QueryT, TableT>): Promise<tsql.InsertIgnoreManyResult> {
-        query;
-        table;
-        row;
-        throw new Error("Method not implemented.");
+    >(
+        query: QueryT,
+        table: TableT,
+        insertSelectRow: tsql.InsertSelectRow<QueryT, TableT>
+    ): Promise<tsql.InsertIgnoreManyResult> {
+        const sql = insertSelectSqlString("INSERT IGNORE", query, table, insertSelectRow);
+        return this.lock(async (rawNestedConnection) : Promise<tsql.InsertManyResult> => {
+            const nestedConnection = rawNestedConnection as unknown as Connection;
+            return nestedConnection.rawQuery(sql)
+                .then(async (result) => {
+                    console.log(result);
+                    if (!isOkPacket(result.results)) {
+                        throw new Error(`Expected InsertIgnoreManyResult`);
+                    }
+
+                    const BigInt = tm.TypeUtil.getBigIntFactoryFunctionOrError();
+
+                    return {
+                        query : { sql, },
+                        insertedRowCount : BigInt(result.results.affectedRows),
+                        warningCount : BigInt(result.results.warningCount),
+                        message : result.results.message,
+                    };
+                })
+                .catch((err) => {
+                    //console.error("error encountered", sql);
+                    throw err;
+                });
+        });
     }
     replaceSelect<
         QueryT extends tsql.QueryBaseUtil.AfterSelectClause & tsql.QueryBaseUtil.NonCorrelated,
         TableT extends tsql.InsertableTable
-    >(query: QueryT, table: TableT, row: tsql.InsertSelectRow<QueryT, TableT>): Promise<tsql.ReplaceManyResult> {
-        query;
-        table;
-        row;
-        throw new Error("Method not implemented.");
+    >(
+        query: QueryT,
+        table: TableT,
+        insertSelectRow: tsql.InsertSelectRow<QueryT, TableT>
+    ): Promise<tsql.ReplaceManyResult> {
+        const sql = insertSelectSqlString("REPLACE", query, table, insertSelectRow);
+        return this.lock(async (rawNestedConnection) : Promise<tsql.ReplaceManyResult> => {
+            const nestedConnection = rawNestedConnection as unknown as Connection;
+            return nestedConnection.rawQuery(sql)
+                .then(async (result) => {
+                    console.log(result);
+                    if (!isOkPacket(result.results)) {
+                        throw new Error(`Expected ReplaceManyResult`);
+                    }
+
+                    const BigInt = tm.TypeUtil.getBigIntFactoryFunctionOrError();
+
+                    return {
+                        query : { sql, },
+                        insertedOrReplacedRowCount : BigInt(
+                            result.results.affectedRows -
+                            result.results.changedRows
+                        ),
+                        warningCount : BigInt(result.results.warningCount),
+                        message : result.results.message,
+                    };
+                })
+                .catch((err) => {
+                    //console.error("error encountered", sql);
+                    throw err;
+                });
+        });
     }
     update<TableT extends tsql.ITable> (
         table : TableT,
@@ -938,12 +1013,27 @@ export class Connection implements
 
     private deallocatePromise : Promise<void>|undefined = undefined;
     deallocate (): Promise<void> {
+        console.log("deallocating...");
         if (this.deallocatePromise == undefined) {
             this.deallocatePromise = this.asyncQueue.stop()
                 .then(
-                    () => this.connectionImpl.release(),
-                    (err) => {
+                    () => {
+                        console.log("deallocated");
                         this.connectionImpl.release();
+                        /**
+                         * @todo Handle sync errors somehow.
+                         * Maybe propagate them to `IPool` and have an `onError` handler or something
+                         */
+                        this.eventEmitters.commit();
+                    },
+                    (err) => {
+                        console.log("deallocated with error");
+                        this.connectionImpl.release();
+                        /**
+                         * @todo Handle sync errors somehow.
+                         * Maybe propagate them to `IPool` and have an `onError` handler or something
+                         */
+                        this.eventEmitters.commit();
                         throw err;
                     }
                 );
