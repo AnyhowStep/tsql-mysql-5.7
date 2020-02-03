@@ -2,13 +2,14 @@ import * as tape from "tape";
 import * as tsql from "@tsql/tsql";
 import {unifiedTest, UnifiedSchema} from "@tsql/tsql/unified-test";
 import * as mysql from "../../../../dist";
+import {TypedEnv} from "@anyhowstep/typed-env";
 
 unifiedTest({
     pool : new mysql.Pool({
-        host      : "localhost",
-        database  : "typed-orm-test",
-        user      : "typed-orm-test-admin",
-        password  : "BARyJg48ItnwkjJy",
+        host      : TypedEnv.GetStringOrError("MYSQL_HOST"),//"localhost",
+        database  : TypedEnv.GetStringOrError("MYSQL_DATABASE"),//"typed-orm-test",
+        user      : TypedEnv.GetStringOrError("MYSQL_USERNAME"),//"typed-orm-test-admin",
+        password  : TypedEnv.GetStringOrError("MYSQL_PASSWORD"),//"BARyJg48ItnwkjJy",
         charset   : mysql.CharSet.utf8mb4,
     }),
     tape,

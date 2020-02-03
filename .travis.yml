@@ -1,3 +1,12 @@
+services:
+  - mysql
+
+env:
+  - MYSQL_HOST=localhost
+  - MYSQL_DATABASE=travis_db
+  - MYSQL_USERNAME=root
+  - MYSQL_PASSWORD=
+
 language: node_js
 
 node_js:
@@ -9,6 +18,8 @@ branches:
   only:
   - /.*/
 
+before_install:
+  - mysql -e 'CREATE DATABASE travis_db;'
 
 install:
   - npm install
