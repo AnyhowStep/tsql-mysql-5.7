@@ -46,18 +46,26 @@ export const sqlfier : tsql.Sqlfier = {
         [tsql.OperatorType.GREATER_THAN] : ({operands}) => tsql.AstUtil.insertBetween(operands, ">"),
         [tsql.OperatorType.LESS_THAN_OR_EQUAL] : ({operands}) => tsql.AstUtil.insertBetween(operands, "<="),
         [tsql.OperatorType.GREATER_THAN_OR_EQUAL] : ({operands}) => tsql.AstUtil.insertBetween(operands, ">="),
-        [tsql.OperatorType.IN] : ({operands : [x, y, ...rest]}) => {
-            if (rest.length == 0 && tsql.Parentheses.IsParentheses(y) && tsql.QueryBaseUtil.isQuery(y.ast)) {
-                return [
-                    x,
-                    tsql.functionCall("IN", [y.ast])
-                ];
-            } else {
-                return [
-                    x,
-                    tsql.functionCall("IN", [y, ...rest])
-                ];
-            }
+        [tsql.OperatorType.IN_ARRAY] : ({operands : [x, ...rest]}) => {
+            return [
+                x,
+                tsql.functionCall("IN", [...rest])
+            ];
+        },
+        [tsql.OperatorType.IN_QUERY] : ({operands : [x, y]}) => {
+            /**
+             * https://github.com/AnyhowStep/tsql/issues/198
+             *
+             * Not a MySQL problem, but nice to have some consistency
+             */
+            return [
+                x,
+                tsql.functionCall("IN", [
+                    tsql.Parentheses.IsParentheses(y) ?
+                    y.ast :
+                    y
+                ])
+            ];
         },
         [tsql.OperatorType.IS_NOT_NULL] : ({operands}) => [operands[0], "IS NOT NULL"],
         [tsql.OperatorType.IS_NULL] : ({operands}) => [operands[0], "IS NULL"],
