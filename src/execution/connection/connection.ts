@@ -3,6 +3,7 @@ import * as mysql from "mysql";
 import * as tsql from "@tsql/tsql";
 import {sqlfier, insertOneSqlString, insertManySqlString, deleteSqlString, updateSqlString, insertSelectSqlString} from "../../sqlfier";
 import {isOkPacket} from "./ok-packet";
+import {tryFetchSchemaMeta, tryFetchGeneratedColumnExpression} from "../../schema-introspection";
 
 export interface SharedConnectionInformation {
     /**
@@ -816,14 +817,19 @@ export class Connection implements
             });
     }
     tryFetchSchemaMeta(schemaAlias: string | undefined): Promise<tsql.SchemaMeta | undefined> {
-        schemaAlias;
-        throw new Error("Method not implemented.");
+        return tryFetchSchemaMeta(this, schemaAlias);
     }
-    tryFetchGeneratedColumnExpression(schemaAlias: string | undefined, tableAlias: string, columnAlias: string): Promise<string | undefined> {
-        schemaAlias;
-        tableAlias;
-        columnAlias;
-        throw new Error("Method not implemented.");
+    tryFetchGeneratedColumnExpression(
+        schemaAlias: string | undefined,
+        tableAlias: string,
+        columnAlias: string
+    ): Promise<string | undefined> {
+        return tryFetchGeneratedColumnExpression(
+            this,
+            schemaAlias,
+            tableAlias,
+            columnAlias
+        );
     }
     transaction<ResultT>(
         callback: tsql.LockCallback<tsql.ITransactionConnection, ResultT>
