@@ -2,7 +2,6 @@ import * as tsql from "@tsql/tsql";
 import {queryToSql} from "./query-to-sql";
 
 export const sqlfier : tsql.Sqlfier = {
-    ...tsql.notImplementedSqlfier,
     identifierSqlfier : (identifierNode) => identifierNode.identifiers
         .map(tsql.escapeIdentifierWithBackticks)
         .join("."),
@@ -69,11 +68,9 @@ export const sqlfier : tsql.Sqlfier = {
         },
         [tsql.OperatorType.IS_NOT_NULL] : ({operands}) => [operands[0], "IS NOT NULL"],
         [tsql.OperatorType.IS_NULL] : ({operands}) => [operands[0], "IS NULL"],
-        [tsql.OperatorType.LIKE] : ({operands}) => tsql.AstUtil.insertBetween(operands, "LIKE"),
         [tsql.OperatorType.LIKE_ESCAPE] : ({operands : [expr, pattern, escapeChar]}) => [
             expr, "LIKE", pattern, "ESCAPE", escapeChar
         ],
-        [tsql.OperatorType.NOT_LIKE] : ({operands}) => tsql.AstUtil.insertBetween(operands, "NOT LIKE"),
         [tsql.OperatorType.NOT_LIKE_ESCAPE] : ({operands : [expr, pattern, escapeChar]}) => [
             expr, "NOT LIKE", pattern, "ESCAPE", escapeChar
         ],

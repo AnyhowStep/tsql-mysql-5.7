@@ -4,12 +4,16 @@ import {unifiedTest, UnifiedSchema} from "@tsql/tsql/unified-test";
 import * as mysql from "../../../../dist";
 import {TypedEnv} from "@anyhowstep/typed-env";
 
+if (process.env.ENV_FILE != undefined) {
+    TypedEnv.Load(process.env.ENV_FILE);
+}
+
 unifiedTest({
     pool : new mysql.Pool({
-        host      : TypedEnv.GetStringOrError("MYSQL_HOST"),//"localhost",
-        database  : TypedEnv.GetStringOrError("MYSQL_DATABASE"),//"typed-orm-test",
-        user      : TypedEnv.GetStringOrError("MYSQL_USERNAME"),//"typed-orm-test-admin",
-        password  : TypedEnv.GetStringOrError("MYSQL_PASSWORD"),//"BARyJg48ItnwkjJy",
+        host      : TypedEnv.GetStringOrError("MYSQL_HOST"),
+        database  : TypedEnv.GetStringOrError("MYSQL_DATABASE"),
+        user      : TypedEnv.GetStringOrError("MYSQL_USERNAME"),
+        password  : TypedEnv.GetStringOrError("MYSQL_PASSWORD"),
         charset   : mysql.CharSet.utf8mb4,
     }),
     tape,
