@@ -19,7 +19,6 @@ before_install:
   - mysql -e 'CREATE DATABASE travis_db;'
 
 install:
-  - npm install
 
 cache:
   directories:
@@ -35,6 +34,7 @@ script:
   - npm run build
   - cd ../
   - npm link ./tsql
+  - npm install
   - npm run sanity-check-travis
   # - npm install codecov
 
