@@ -35,6 +35,7 @@ script:
   - cd ../
   - npm link ./tsql
   - npm install
+  - npm link ./tsql
   - npm run sanity-check-travis
   # - npm install codecov
 
