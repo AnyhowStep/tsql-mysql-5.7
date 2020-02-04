@@ -38,9 +38,22 @@ export const sqlfier : tsql.Sqlfier = {
             "AND",
             operands[2]
         ],
+        [tsql.OperatorType.NOT_BETWEEN_AND] : ({operands}) => [
+            operands[0],
+            "NOT BETWEEN",
+            operands[1],
+            "AND",
+            operands[2]
+        ],
         [tsql.OperatorType.COALESCE] : ({operatorType, operands}) => tsql.functionCall(operatorType, operands),
         [tsql.OperatorType.EQUAL] : ({operands}) => tsql.AstUtil.insertBetween(operands, "="),
         [tsql.OperatorType.NULL_SAFE_EQUAL] : ({operands}) => tsql.AstUtil.insertBetween(operands, "<=>"),
+        [tsql.OperatorType.NOT_NULL_SAFE_EQUAL] : ({operands}) => [
+            "NOT",
+            "(",
+            tsql.AstUtil.insertBetween(operands, "<=>"),
+            ")"
+        ],
         [tsql.OperatorType.LESS_THAN] : ({operands}) => tsql.AstUtil.insertBetween(operands, "<"),
         [tsql.OperatorType.GREATER_THAN] : ({operands}) => tsql.AstUtil.insertBetween(operands, ">"),
         [tsql.OperatorType.LESS_THAN_OR_EQUAL] : ({operands}) => tsql.AstUtil.insertBetween(operands, "<="),
@@ -66,8 +79,35 @@ export const sqlfier : tsql.Sqlfier = {
                 ])
             ];
         },
+        [tsql.OperatorType.NOT_IN_ARRAY] : ({operands : [x, ...rest]}) => {
+            return [
+                x,
+                tsql.functionCall("NOT IN", [...rest])
+            ];
+        },
+        [tsql.OperatorType.NOT_IN_QUERY] : ({operands : [x, y]}) => {
+            /**
+             * https://github.com/AnyhowStep/tsql/issues/198
+             *
+             * Not a MySQL problem, but nice to have some consistency
+             */
+            return [
+                x,
+                tsql.functionCall("NOT IN", [
+                    tsql.Parentheses.IsParentheses(y) ?
+                    y.ast :
+                    y
+                ])
+            ];
+        },
         [tsql.OperatorType.IS_NOT_NULL] : ({operands}) => [operands[0], "IS NOT NULL"],
         [tsql.OperatorType.IS_NULL] : ({operands}) => [operands[0], "IS NULL"],
+        [tsql.OperatorType.IS_UNKNOWN] : ({operands}) => [operands[0], "IS UNKNOWN"],
+        [tsql.OperatorType.IS_NOT_UNKNOWN] : ({operands}) => [operands[0], "IS NOT UNKNOWN"],
+        [tsql.OperatorType.IS_TRUE] : ({operands}) => [operands[0], "IS TRUE"],
+        [tsql.OperatorType.IS_NOT_TRUE] : ({operands}) => [operands[0], "IS NOT TRUE"],
+        [tsql.OperatorType.IS_FALSE] : ({operands}) => [operands[0], "IS FALSE"],
+        [tsql.OperatorType.IS_NOT_FALSE] : ({operands}) => [operands[0], "IS NOT FALSE"],
         [tsql.OperatorType.LIKE_ESCAPE] : ({operands : [expr, pattern, escapeChar]}) => [
             expr, "LIKE", pattern, "ESCAPE", escapeChar
         ],
@@ -75,6 +115,8 @@ export const sqlfier : tsql.Sqlfier = {
             expr, "NOT LIKE", pattern, "ESCAPE", escapeChar
         ],
         [tsql.OperatorType.NOT_EQUAL] : ({operands}) => tsql.AstUtil.insertBetween(operands, "<>"),
+        [tsql.OperatorType.LEAST] : ({operatorType, operands}) => tsql.functionCall(operatorType, operands),
+        [tsql.OperatorType.GREATEST] : ({operatorType, operands}) => tsql.functionCall(operatorType, operands),
 
         /*
             Logical Operators
@@ -101,6 +143,15 @@ export const sqlfier : tsql.Sqlfier = {
             c,
             "END"
         ],
+        [tsql.OperatorType.IF_NULL] : ({operands}) => tsql.functionCall("IFNULL", operands),
+        [tsql.OperatorType.NULL_IF_EQUAL] : ({operands}) => tsql.functionCall("NULLIF", operands),
+
+        /*
+            String Functions and Operators
+            https://dev.mysql.com/doc/refman/8.0/en/string-functions.html
+        */
+        [tsql.OperatorType.ASCII] : ({operands}) => tsql.functionCall("ASCII", operands),
+        [tsql.OperatorType.CONCAT] : ({operands}) => tsql.functionCall("CONCAT", operands),
 
         /*
             Arithmetic Operators
