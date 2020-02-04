@@ -151,7 +151,16 @@ export const sqlfier : tsql.Sqlfier = {
             https://dev.mysql.com/doc/refman/8.0/en/string-functions.html
         */
         [tsql.OperatorType.ASCII] : ({operands}) => tsql.functionCall("ASCII", operands),
+        [tsql.OperatorType.BIN] : ({operands}) => tsql.functionCall("BIN", operands),
+        [tsql.OperatorType.BIT_LENGTH] : ({operands}) => tsql.functionCall("BIT_LENGTH", operands),
+        [tsql.OperatorType.CHAR_LENGTH] : ({operands}) => tsql.functionCall("CHAR_LENGTH", operands),
+        [tsql.OperatorType.OCTET_LENGTH] : ({operands}) => tsql.functionCall("OCTET_LENGTH", operands),
         [tsql.OperatorType.CONCAT] : ({operands}) => tsql.functionCall("CONCAT", operands),
+        [tsql.OperatorType.NULL_SAFE_CONCAT] : ({operands}) => tsql.functionCall(
+            "CONCAT",
+            operands.map(operand => tsql.functionCall("COALESCE", [operand, "''"]))
+        ),
+        [tsql.OperatorType.CONCAT_WS] : ({operands}) => tsql.functionCall("CONCAT_WS", operands),
 
         /*
             Arithmetic Operators
