@@ -161,6 +161,24 @@ export const sqlfier : tsql.Sqlfier = {
             operands.map(operand => tsql.functionCall("COALESCE", [operand, "''"]))
         ),
         [tsql.OperatorType.CONCAT_WS] : ({operands}) => tsql.functionCall("CONCAT_WS", operands),
+        [tsql.OperatorType.FROM_BASE64] : ({operands}) => tsql.functionCall("FROM_BASE64", operands),
+        [tsql.OperatorType.HEX] : ({operands}) => tsql.functionCall("HEX", operands),
+        [tsql.OperatorType.IN_STR] : ({operands}) => tsql.functionCall("INSTR", operands),
+        [tsql.OperatorType.LPAD] : ({operands}) => tsql.functionCall("LPAD", operands),
+        [tsql.OperatorType.RPAD] : ({operands}) => tsql.functionCall("RPAD", operands),
+        [tsql.OperatorType.LTRIM] : ({operands}) => tsql.functionCall("LTRIM", operands),
+        [tsql.OperatorType.RTRIM] : ({operands}) => tsql.functionCall("RTRIM", operands),
+        [tsql.OperatorType.TRIM] : ({operands}) => tsql.functionCall("TRIM", operands),
+        [tsql.OperatorType.POSITION] : ({operands}) => tsql.functionCall("POSITION", [
+            tsql.AstUtil.insertBetween(operands, "IN")
+        ]),
+        [tsql.OperatorType.REPEAT] : ({operands}) => tsql.functionCall("REPEAT", operands),
+        [tsql.OperatorType.REPLACE] : ({operands}) => tsql.functionCall("REPLACE", operands),
+        [tsql.OperatorType.REVERSE] : ({operands}) => tsql.functionCall("REVERSE", operands),
+        [tsql.OperatorType.TO_BASE64] : ({operands}) => tsql.functionCall("TO_BASE64", operands),
+        [tsql.OperatorType.UNHEX] : ({operands}) => tsql.functionCall("UNHEX", operands),
+        [tsql.OperatorType.UPPER] : ({operands}) => tsql.functionCall("UPPER", operands),
+        [tsql.OperatorType.LOWER] : ({operands}) => tsql.functionCall("LOWER", operands),
 
         /*
             Arithmetic Operators
