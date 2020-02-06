@@ -188,6 +188,23 @@ export const sqlfier : tsql.Sqlfier = {
         [tsql.OperatorType.SUBTRACTION]: ({operands}) => tsql.AstUtil.insertBetween(operands, "-"),
         [tsql.OperatorType.MULTIPLICATION]: ({operands}) => tsql.AstUtil.insertBetween(operands, "*"),
         [tsql.OperatorType.INTEGER_DIVISION]: ({operands}) => tsql.AstUtil.insertBetween(operands, "DIV"),
+        [tsql.OperatorType.UNARY_MINUS]: ({operands, typeHint}) => {
+            if (typeHint == tsql.TypeHint.BIGINT_SIGNED) {
+                /**
+                 * @todo Decide how to handle,
+                 * ```sql
+                 *  SELECT -9223372036854775808; -- BIGINT SIGNED
+                 *  > 9223372036854775808 -- DECIMAL
+                 * ```
+                 *
+                 * We do not want this implicit conversion.
+                 * But it only seems to happen to expressions that do not reference a column...
+                 */
+                return ["-", operands[0]];
+            } else {
+                return ["-", operands[0]];
+            }
+        },
 
         /*
             Mathematical Functions
@@ -285,6 +302,13 @@ export const sqlfier : tsql.Sqlfier = {
         [tsql.OperatorType.SQUARE_ROOT] : ({operands}) => tsql.functionCall("SQRT", operands),
         [tsql.OperatorType.TANGENT] : ({operands}) => tsql.functionCall("TAN", operands),
         [tsql.OperatorType.TRUNCATE] : ({operands}) => tsql.functionCall("TRUNCATE", operands),
+        [tsql.OperatorType.INTEGER_REMAINDER] : ({operands, typeHint}) => {
+            if (typeHint == tsql.TypeHint.BIGINT_SIGNED) {
+                return tsql.AstUtil.insertBetween(operands, "%");
+            } else {
+                throw new Error(`INTEGER_REMAINDER not implemented for ${typeHint}`);
+            }
+        },
 
         /*
             Date and Time Functions
@@ -431,6 +455,16 @@ export const sqlfier : tsql.Sqlfier = {
                 throw new Error(`${operatorType} only implemented for 2 args`);
             }
         },
+        [tsql.OperatorType.AGGREGATE_GROUP_CONCAT_DISTINCT] : ({operands}) => tsql.functionCall(
+            "GROUP_CONCAT",
+            [
+                ["DISTINCT", operands[0]]
+            ]
+        ),
+        [tsql.OperatorType.AGGREGATE_GROUP_CONCAT_ALL] : ({operands}) => tsql.functionCall(
+            "GROUP_CONCAT",
+            operands
+        ),
 
         [tsql.OperatorType.EXISTS] : ({operands : [query]}, toSql) => {
             if (tsql.QueryBaseUtil.isAfterFromClause(query)) {
