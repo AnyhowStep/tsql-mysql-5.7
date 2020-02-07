@@ -376,6 +376,171 @@ export const sqlfier : tsql.Sqlfier = {
         ),
 
         /*
+            Bit Functions and Operators
+            https://dev.mysql.com/doc/refman/8.0/en/bit-functions.html
+        */
+        [tsql.OperatorType.BITWISE_AND] : ({operands, typeHint}) => {
+            if (typeHint == tsql.TypeHint.BIGINT_SIGNED) {
+                /**
+                 * MySQL does the bitwise-and, then casts to unsigned.
+                 * But we do not want that.
+                 */
+                return tsql.functionCall(
+                    "CAST",
+                    [
+                        [
+                            tsql.AstUtil.insertBetween(operands, "&"),
+                            "AS SIGNED INTEGER"
+                        ]
+                    ]
+                );
+            } else {
+                throw new Error(`BITWISE_AND not implemented for typeHint ${typeHint}`);
+            }
+        },
+        [tsql.OperatorType.BITWISE_OR] : ({operands, typeHint}) => {
+            if (typeHint == tsql.TypeHint.BIGINT_SIGNED) {
+                /**
+                 * MySQL does the bitwise-or, then casts to unsigned.
+                 * But we do not want that.
+                 */
+                return tsql.functionCall(
+                    "CAST",
+                    [
+                        [
+                            tsql.AstUtil.insertBetween(operands, "|"),
+                            "AS SIGNED INTEGER"
+                        ]
+                    ]
+                );
+            } else {
+                throw new Error(`BITWISE_OR not implemented for typeHint ${typeHint}`);
+            }
+        },
+        [tsql.OperatorType.BITWISE_XOR] : ({operands, typeHint}) => {
+            if (typeHint == tsql.TypeHint.BIGINT_SIGNED) {
+                /**
+                 * MySQL does the bitwise-xor, then casts to unsigned.
+                 * But we do not want that.
+                 */
+                return tsql.functionCall(
+                    "CAST",
+                    [
+                        [
+                            tsql.AstUtil.insertBetween(operands, "^"),
+                            "AS SIGNED INTEGER"
+                        ]
+                    ]
+                );
+            } else {
+                throw new Error(`BITWISE_XOR not implemented for typeHint ${typeHint}`);
+            }
+        },
+        [tsql.OperatorType.BITWISE_NOT] : ({operands, typeHint}) => {
+            if (typeHint == tsql.TypeHint.BIGINT_SIGNED) {
+                /**
+                 * MySQL does the bitwise-not, then casts to unsigned.
+                 * But we do not want that.
+                 */
+                return tsql.functionCall(
+                    "CAST",
+                    [
+                        [
+                            ["~", operands],
+                            "AS SIGNED INTEGER"
+                        ]
+                    ]
+                );
+            } else {
+                throw new Error(`BITWISE_NOT not implemented for typeHint ${typeHint}`);
+            }
+        },
+        [tsql.OperatorType.BITWISE_LEFT_SHIFT] : ({operands, typeHint}) => {
+            if (typeHint == tsql.TypeHint.BIGINT_SIGNED) {
+                /**
+                 * MySQL does the bitwise-left-shift, then casts to unsigned.
+                 * But we do not want that.
+                 */
+                return tsql.functionCall(
+                    "CAST",
+                    [
+                        [
+                            tsql.AstUtil.insertBetween(operands, "<<"),
+                            "AS SIGNED INTEGER"
+                        ]
+                    ]
+                );
+            } else {
+                throw new Error(`BITWISE_LEFT_SHIFT not implemented for typeHint ${typeHint}`);
+            }
+        },
+        [tsql.OperatorType.BITWISE_RIGHT_SHIFT] : ({operands, typeHint}) => {
+            if (typeHint == tsql.TypeHint.BIGINT_SIGNED) {
+                /**
+                 * MySQL does the bitwise-right-shift, then casts to unsigned.
+                 * But we do not want that.
+                 */
+                /*
+                return tsql.functionCall(
+                    "CAST",
+                    [
+                        [
+                            tsql.AstUtil.insertBetween(operands, ">>"),
+                            "AS SIGNED INTEGER"
+                        ]
+                    ]
+                );*/
+                /**
+                 * MySQL only supports unsigned right-shift.
+                 * We want a signed right-shift.
+                 *
+                 * @see https://www.tutorialspoint.com/Bitwise-right-shift-operator-in-Java
+                 */
+                const unsignedRightShift = tsql.functionCall(
+                    "CAST",
+                    [
+                        [
+                            tsql.AstUtil.insertBetween(operands, ">>"),
+                            "AS SIGNED INTEGER"
+                        ]
+                    ]
+                );
+                const signedRightShift = tsql.functionCall(
+                    "CAST",
+                    [
+                        [
+                            [
+                                tsql.parentheses(
+                                    tsql.AstUtil.insertBetween(operands, ">>"),
+                                    false
+                                ),
+                                "|",
+                                [
+                                    "~",
+                                    tsql.parentheses(
+                                        ["18446744073709551615", ">>", operands[1]],
+                                        false
+                                    )
+                                ]
+                            ],
+                            "AS SIGNED INTEGER"
+                        ]
+                    ]
+                );
+                return tsql.functionCall(
+                    "IF",
+                    [
+                        [operands[0], ">= 0"],
+                        unsignedRightShift,
+                        signedRightShift
+                    ]
+                )
+            } else {
+                throw new Error(`BITWISE_RIGHT_SHIFT not implemented for typeHint ${typeHint}`);
+            }
+        },
+
+        /*
             Aggregate (GROUP BY) Function Descriptions
             https://dev.mysql.com/doc/refman/8.0/en/group-by-functions.html
         */
