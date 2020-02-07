@@ -323,7 +323,7 @@ export class Connection implements
     rawQuery(sql: string): Promise<tsql.RawQueryResult> {
         return this.asyncQueue.enqueue<tsql.RawQueryResult>((connectionImpl) => {
             return new Promise<tsql.RawQueryResult>((resolve, reject) => {
-                console.log("sql", sql);
+                //console.log("sql", sql);
                 connectionImpl.query(
                     sql,
                     (err, results, rawFieldArr) => {
@@ -388,7 +388,7 @@ export class Connection implements
             const nestedConnection = (rawNestedConnection as unknown as Connection);
             return nestedConnection.rawQuery(sql)
                 .then(async (result) => {
-                    console.log(result);
+                    //console.log(result);
                     if (!isOkPacket(result.results)) {
                         throw new Error(`Expected InsertOneResult`);
                     }
@@ -444,7 +444,7 @@ export class Connection implements
             const nestedConnection = rawNestedConnection as unknown as Connection;
             return nestedConnection.rawQuery(sql)
                 .then(async (result) => {
-                    console.log(result);
+                    //console.log(result);
                     if (!isOkPacket(result.results)) {
                         throw new Error(`Expected InsertManyResult`);
                     }
@@ -473,7 +473,7 @@ export class Connection implements
             const nestedConnection = (rawNestedConnection as unknown as Connection);
             return nestedConnection.rawQuery(sql)
                 .then(async (result) => {
-                    console.log(result);
+                    //console.log(result);
                     if (!isOkPacket(result.results)) {
                         throw new Error(`Expected InsertIgnoreOneResult`);
                     }
@@ -539,7 +539,7 @@ export class Connection implements
             const nestedConnection = rawNestedConnection as unknown as Connection;
             return nestedConnection.rawQuery(sql)
                 .then(async (result) => {
-                    console.log(result);
+                    //console.log(result);
                     if (!isOkPacket(result.results)) {
                         throw new Error(`Expected InsertIgnoreManyResult`);
                     }
@@ -568,7 +568,7 @@ export class Connection implements
             const nestedConnection = (rawNestedConnection as unknown as Connection);
             return nestedConnection.rawQuery(sql)
                 .then(async (result) => {
-                    console.log(result);
+                    //console.log(result);
                     if (!isOkPacket(result.results)) {
                         throw new Error(`Expected ReplaceOneResult`);
                     }
@@ -624,7 +624,7 @@ export class Connection implements
             const nestedConnection = rawNestedConnection as unknown as Connection;
             return nestedConnection.rawQuery(sql)
                 .then(async (result) => {
-                    console.log(result);
+                    //console.log(result);
                     if (!isOkPacket(result.results)) {
                         throw new Error(`Expected ReplaceManyResult`);
                     }
@@ -657,7 +657,7 @@ export class Connection implements
             const nestedConnection = rawNestedConnection as unknown as Connection;
             return nestedConnection.rawQuery(sql)
                 .then(async (result) => {
-                    console.log(result);
+                    //console.log(result);
                     if (!isOkPacket(result.results)) {
                         throw new Error(`Expected InsertManyResult`);
                     }
@@ -690,7 +690,7 @@ export class Connection implements
             const nestedConnection = rawNestedConnection as unknown as Connection;
             return nestedConnection.rawQuery(sql)
                 .then(async (result) => {
-                    console.log(result);
+                    //console.log(result);
                     if (!isOkPacket(result.results)) {
                         throw new Error(`Expected InsertIgnoreManyResult`);
                     }
@@ -723,7 +723,7 @@ export class Connection implements
             const nestedConnection = rawNestedConnection as unknown as Connection;
             return nestedConnection.rawQuery(sql)
                 .then(async (result) => {
-                    console.log(result);
+                    //console.log(result);
                     if (!isOkPacket(result.results)) {
                         throw new Error(`Expected ReplaceManyResult`);
                     }
@@ -774,7 +774,7 @@ export class Connection implements
 
         return this.rawQuery(sql)
             .then(async (result) => {
-                console.log(result);
+                //console.log(result);
                 if (!isOkPacket(result.results)) {
                     throw new Error(`Expected UpdateResult`);
                 }
@@ -1019,12 +1019,12 @@ export class Connection implements
 
     private deallocatePromise : Promise<void>|undefined = undefined;
     deallocate (): Promise<void> {
-        console.log("deallocating...");
+        //console.log("deallocating...");
         if (this.deallocatePromise == undefined) {
             this.deallocatePromise = this.asyncQueue.stop()
                 .then(
                     () => {
-                        console.log("deallocated");
+                        //console.log("deallocated");
                         this.connectionImpl.release();
                         /**
                          * @todo Handle sync errors somehow.
@@ -1033,7 +1033,7 @@ export class Connection implements
                         this.eventEmitters.commit();
                     },
                     (err) => {
-                        console.log("deallocated with error");
+                        //console.log("deallocated with error");
                         this.connectionImpl.release();
                         /**
                          * @todo Handle sync errors somehow.
