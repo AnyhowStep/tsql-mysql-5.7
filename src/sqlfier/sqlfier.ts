@@ -575,35 +575,11 @@ export const sqlfier : tsql.Sqlfier = {
                 throw new Error(`${operatorType} only implemented for 2 args`);
             }
         },
-        [tsql.OperatorType.AGGREGATE_MAX] : ({operands, operatorType}) => {
-            if (operands.length == 2) {
-                const [isDistinct, expr] = operands;
-                if (
-                    tsql.LiteralValueNodeUtil.isLiteralValueNode(isDistinct) &&
-                    isDistinct.literalValue === true
-                ) {
-                    return tsql.functionCall("MAX", [["DISTINCT", expr]]);
-                } else {
-                    return tsql.functionCall("MAX", [expr]);
-                }
-            } else {
-                throw new Error(`${operatorType} only implemented for 2 args`);
-            }
+        [tsql.OperatorType.AGGREGATE_MAX] : ({operands}) => {
+            return tsql.functionCall("MAX", operands);
         },
-        [tsql.OperatorType.AGGREGATE_MIN] : ({operands, operatorType}) => {
-            if (operands.length == 2) {
-                const [isDistinct, expr] = operands;
-                if (
-                    tsql.LiteralValueNodeUtil.isLiteralValueNode(isDistinct) &&
-                    isDistinct.literalValue === true
-                ) {
-                    return tsql.functionCall("MIN", [["DISTINCT", expr]]);
-                } else {
-                    return tsql.functionCall("MIN", [expr]);
-                }
-            } else {
-                throw new Error(`${operatorType} only implemented for 2 args`);
-            }
+        [tsql.OperatorType.AGGREGATE_MIN] : ({operands}) => {
+            return tsql.functionCall("MIN", operands);
         },
         [tsql.OperatorType.AGGREGATE_SUM] : ({operands, operatorType}) => {
             if (operands.length == 2) {
