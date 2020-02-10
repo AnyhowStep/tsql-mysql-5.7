@@ -424,6 +424,14 @@ export const sqlfier : tsql.Sqlfier = {
             "LAST_DAY",
             operands
         ),
+        [tsql.OperatorType.TIMESTAMPADD_YEAR] : ({operands}) => tsql.functionCall(
+            "TIMESTAMPADD",
+            [
+                "YEAR",
+                operands[0],
+                operands[1]
+            ]
+        ),
         [tsql.OperatorType.TIMESTAMPADD_MILLISECOND] : ({operands}) => tsql.functionCall(
             "TIMESTAMPADD",
             [
