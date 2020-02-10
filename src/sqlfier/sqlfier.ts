@@ -314,6 +314,53 @@ export const sqlfier : tsql.Sqlfier = {
             Date and Time Functions
             https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html
         */
+        [tsql.OperatorType.CURRENT_DATE] : () => tsql.functionCall(
+            "CURRENT_DATE",
+            []
+        ),
+        [tsql.OperatorType.CURRENT_TIMESTAMP_0] : () => tsql.functionCall(
+            "CURRENT_TIMESTAMP",
+            ["0"]
+        ),
+        [tsql.OperatorType.CURRENT_TIMESTAMP_1] : () => tsql.functionCall(
+            "CURRENT_TIMESTAMP",
+            ["1"]
+        ),
+        [tsql.OperatorType.CURRENT_TIMESTAMP_2] : () => tsql.functionCall(
+            "CURRENT_TIMESTAMP",
+            ["2"]
+        ),
+        [tsql.OperatorType.CURRENT_TIMESTAMP_3] : () => tsql.functionCall(
+            "CURRENT_TIMESTAMP",
+            ["3"]
+        ),
+        [tsql.OperatorType.EXTRACT_YEAR] : ({operands}) => tsql.functionCall(
+            "EXTRACT",
+            [
+                [
+                    "YEAR FROM",
+                    operands[0]
+                ]
+            ]
+        ),
+        [tsql.OperatorType.EXTRACT_MONTH] : ({operands}) => tsql.functionCall(
+            "EXTRACT",
+            [
+                [
+                    "MONTH FROM",
+                    operands[0]
+                ]
+            ]
+        ),
+        [tsql.OperatorType.EXTRACT_DAY] : ({operands}) => tsql.functionCall(
+            "EXTRACT",
+            [
+                [
+                    "DAY FROM",
+                    operands[0]
+                ]
+            ]
+        ),
         [tsql.OperatorType.TIMESTAMPADD_MILLISECOND] : ({operands}) => tsql.functionCall(
             "TIMESTAMPADD",
             [
