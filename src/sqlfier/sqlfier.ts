@@ -432,6 +432,14 @@ export const sqlfier : tsql.Sqlfier = {
                 operands[1]
             ]
         ),
+        [tsql.OperatorType.TIMESTAMPADD_MONTH] : ({operands}) => tsql.functionCall(
+            "TIMESTAMPADD",
+            [
+                "MONTH",
+                operands[0],
+                operands[1]
+            ]
+        ),
         [tsql.OperatorType.TIMESTAMPADD_MILLISECOND] : ({operands}) => tsql.functionCall(
             "TIMESTAMPADD",
             [
@@ -452,7 +460,7 @@ export const sqlfier : tsql.Sqlfier = {
                 "SECOND",
                 tsql.AstUtil.insertBetween(
                     [
-                        operands[1],
+                        operands[0],
                         /**
                          * 1 day = 24 * 60 * 60 seconds
                          */
@@ -460,7 +468,7 @@ export const sqlfier : tsql.Sqlfier = {
                     ],
                     "*"
                 ),
-                operands[0]
+                operands[1]
             ]
         ),
         [tsql.OperatorType.UTC_STRING_TO_TIMESTAMP_CONSTRUCTOR] : ({operands}) => tsql.functionCall(
