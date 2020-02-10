@@ -420,6 +420,10 @@ export const sqlfier : tsql.Sqlfier = {
             "/",
             "1000e0"
         ],
+        [tsql.OperatorType.LAST_DAY] : ({operands}) => tsql.functionCall(
+            "LAST_DAY",
+            operands
+        ),
         [tsql.OperatorType.TIMESTAMPADD_MILLISECOND] : ({operands}) => tsql.functionCall(
             "TIMESTAMPADD",
             [
