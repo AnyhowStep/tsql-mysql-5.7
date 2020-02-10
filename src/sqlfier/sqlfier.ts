@@ -361,6 +361,65 @@ export const sqlfier : tsql.Sqlfier = {
                 ]
             ]
         ),
+        [tsql.OperatorType.EXTRACT_HOUR] : ({operands}) => tsql.functionCall(
+            "EXTRACT",
+            [
+                [
+                    "HOUR FROM",
+                    operands[0]
+                ]
+            ]
+        ),
+        [tsql.OperatorType.EXTRACT_MINUTE] : ({operands}) => tsql.functionCall(
+            "EXTRACT",
+            [
+                [
+                    "MINUTE FROM",
+                    operands[0]
+                ]
+            ]
+        ),
+        [tsql.OperatorType.EXTRACT_INTEGER_SECOND] : ({operands}) => tsql.functionCall(
+            "EXTRACT",
+            [
+                [
+                    "SECOND FROM",
+                    operands[0]
+                ]
+            ]
+        ),
+        [tsql.OperatorType.EXTRACT_FRACTIONAL_SECOND_3] : ({operands}) => [
+            tsql.functionCall(
+                "EXTRACT",
+                [
+                    [
+                        "SECOND FROM",
+                        operands[0]
+                    ]
+                ]
+            ),
+            "+",
+            tsql.functionCall(
+                "FLOOR",
+                [
+                    [
+                        tsql.functionCall(
+                            "EXTRACT",
+                            [
+                                [
+                                    "MICROSECOND FROM",
+                                    operands[0]
+                                ]
+                            ]
+                        ),
+                        "/",
+                        "1000e0"
+                    ]
+                ]
+            ),
+            "/",
+            "1000e0"
+        ],
         [tsql.OperatorType.TIMESTAMPADD_MILLISECOND] : ({operands}) => tsql.functionCall(
             "TIMESTAMPADD",
             [
