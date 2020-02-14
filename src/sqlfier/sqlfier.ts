@@ -116,13 +116,39 @@ export const sqlfier : tsql.Sqlfier = {
              * https://github.com/AnyhowStep/tsql/issues/198
              *
              * Not a MySQL problem, but nice to have some consistency
+             *
+             * @todo https://github.com/AnyhowStep/tsql/issues/227
              */
+            let query = tsql.Parentheses.IsParentheses(y) ?
+                y.ast :
+                y;
+            if (!tsql.QueryBaseUtil.isQuery(query)) {
+                throw new Error(`Expected query for NOT_IN_QUERY`);
+            }
+            if (
+                query.limitClause != undefined ||
+                query.compoundQueryClause != undefined ||
+                query.compoundQueryLimitClause != undefined ||
+                query.compoundQueryOrderByClause != undefined
+            ) {
+                const derivedTable = tsql.QueryBaseUtil.as(
+                    query as tsql.QueryBaseUtil.AfterSelectClause,
+                    "tmp"
+                );
+                query = (
+                    tsql.QueryUtil.newInstance()
+                    .from(derivedTable)
+                    .select(columns => [
+                        columns[
+                            Object.keys(columns)[0] as keyof typeof columns
+                        ]
+                    ] as any)
+                ) as unknown as tsql.IQueryBase;
+            }
             return [
                 x,
                 tsql.functionCall("NOT IN", [
-                    tsql.Parentheses.IsParentheses(y) ?
-                    y.ast :
-                    y
+                    query
                 ])
             ];
         },
