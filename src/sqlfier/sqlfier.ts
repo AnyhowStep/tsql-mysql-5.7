@@ -69,13 +69,39 @@ export const sqlfier : tsql.Sqlfier = {
              * https://github.com/AnyhowStep/tsql/issues/198
              *
              * Not a MySQL problem, but nice to have some consistency
+             *
+             * @todo https://github.com/AnyhowStep/tsql/issues/227
              */
+            let query = tsql.Parentheses.IsParentheses(y) ?
+                y.ast :
+                y;
+            if (!tsql.QueryBaseUtil.isQuery(query)) {
+                throw new Error(`Expected query for IN_QUERY`);
+            }
+            if (
+                query.limitClause != undefined ||
+                query.compoundQueryClause != undefined ||
+                query.compoundQueryLimitClause != undefined ||
+                query.compoundQueryOrderByClause != undefined
+            ) {
+                const derivedTable = tsql.QueryBaseUtil.as(
+                    query as tsql.QueryBaseUtil.AfterSelectClause,
+                    "tmp"
+                );
+                query = (
+                    tsql.QueryUtil.newInstance()
+                    .from(derivedTable)
+                    .select(columns => [
+                        columns[
+                            Object.keys(columns)[0] as keyof typeof columns
+                        ]
+                    ] as any)
+                ) as unknown as tsql.IQueryBase;
+            }
             return [
                 x,
                 tsql.functionCall("IN", [
-                    tsql.Parentheses.IsParentheses(y) ?
-                    y.ast :
-                    y
+                    query
                 ])
             ];
         },
@@ -440,47 +466,117 @@ export const sqlfier : tsql.Sqlfier = {
                 operands[1]
             ]
         ),
-        [tsql.OperatorType.TIMESTAMPADD_MILLISECOND] : ({operands}) => tsql.functionCall(
-            "TIMESTAMPADD",
-            [
-                "SECOND",
-                tsql.AstUtil.insertBetween(
-                    [
-                        operands[1],
-                        "1000e0"
-                    ],
-                    "/"
-                ),
-                operands[0]
-            ]
-        ),
         [tsql.OperatorType.TIMESTAMPADD_DAY] : ({operands}) => tsql.functionCall(
             "TIMESTAMPADD",
             [
-                "SECOND",
-                tsql.AstUtil.insertBetween(
-                    [
-                        operands[0],
-                        /**
-                         * 1 day = 24 * 60 * 60 seconds
-                         */
-                        "86400e0"
-                    ],
-                    "*"
-                ),
+                "DAY",
+                operands[0],
                 operands[1]
             ]
         ),
-        [tsql.OperatorType.UTC_STRING_TO_TIMESTAMP_CONSTRUCTOR] : ({operands}) => tsql.functionCall(
-            "CONVERT_TZ",
+        [tsql.OperatorType.TIMESTAMPADD_HOUR] : ({operands}) => tsql.functionCall(
+            "TIMESTAMPADD",
             [
-                tsql.functionCall(
-                    "TIMESTAMP",
-                    operands
-                ),
-                tsql.cStyleEscapeString("+00:00"),
-                "@@session.time_zone"
+                "HOUR",
+                operands[0],
+                operands[1]
             ]
+        ),
+        [tsql.OperatorType.TIMESTAMPADD_MINUTE] : ({operands}) => tsql.functionCall(
+            "TIMESTAMPADD",
+            [
+                "MINUTE",
+                operands[0],
+                operands[1]
+            ]
+        ),
+        [tsql.OperatorType.TIMESTAMPADD_SECOND] : ({operands}) => tsql.functionCall(
+            "TIMESTAMPADD",
+            [
+                "SECOND",
+                operands[0],
+                operands[1]
+            ]
+        ),
+        [tsql.OperatorType.TIMESTAMPADD_MILLISECOND] : ({operands}) => tsql.functionCall(
+            "TIMESTAMPADD",
+            [
+                "MICROSECOND",
+                [
+                    operands[0],
+                    "*",
+                    "1000"
+                ],
+                operands[1]
+            ]
+        ),
+        [tsql.OperatorType.TIMESTAMPDIFF_DAY] : ({operands}) => tsql.functionCall(
+            "TIMESTAMPDIFF",
+            [
+                "DAY",
+                operands[0],
+                operands[1]
+            ]
+        ),
+        [tsql.OperatorType.TIMESTAMPDIFF_HOUR] : ({operands}) => tsql.functionCall(
+            "TIMESTAMPDIFF",
+            [
+                "HOUR",
+                operands[0],
+                operands[1]
+            ]
+        ),
+        [tsql.OperatorType.TIMESTAMPDIFF_MINUTE] : ({operands}) => tsql.functionCall(
+            "TIMESTAMPDIFF",
+            [
+                "MINUTE",
+                operands[0],
+                operands[1]
+            ]
+        ),
+        [tsql.OperatorType.TIMESTAMPDIFF_SECOND] : ({operands}) => tsql.functionCall(
+            "TIMESTAMPDIFF",
+            [
+                "SECOND",
+                operands[0],
+                operands[1]
+            ]
+        ),
+        [tsql.OperatorType.TIMESTAMPDIFF_MILLISECOND] : ({operands}) => tsql.functionCall(
+            "CAST",
+            [
+                [
+                    tsql.functionCall(
+                        "TIMESTAMPDIFF",
+                        [
+                            "MICROSECOND",
+                            operands[0],
+                            operands[1]
+                        ]
+                    ),
+                    "/ 1000.0 AS SIGNED INTEGER"
+                ]
+            ]
+        ),
+        [tsql.OperatorType.UNIX_TIMESTAMP_NOW] : ({}) => tsql.functionCall(
+            "UNIX_TIMESTAMP",
+            []
+        ),
+        /**
+         * Assumes,
+         * ```sql
+         * @@session.time_zone = '+00:00'
+         * ```
+         *
+         * This should already be done by `pool.acquire()`
+         *
+         * We **must not** use `CONVERT_TZ()` because it is not Y2038-safe!
+         * + https://github.com/AnyhowStep/tsql/issues/131
+         * + https://bugs.mysql.com/bug.php?id=71758
+         */
+        [tsql.OperatorType.UTC_STRING_TO_TIMESTAMP_CONSTRUCTOR] : ({operands}) => tsql.functionCall(
+            "TIMESTAMP",
+            operands
         ),
 
         /*
