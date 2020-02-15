@@ -27,6 +27,12 @@ export function fromClauseToSql (
             result.push("(", queryToSql(join.tableAst, toSql, true), ")");
             result.push("AS");
             result.push(tsql.escapeIdentifierWithBackticks(join.tableAlias));
+        } else if (tsql.Parentheses.IsParentheses(join.tableAst) && tsql.QueryBaseUtil.isQuery(join.tableAst.ast)) {
+            const subQuery = join.tableAst.ast;
+
+            result.push("(", queryToSql(subQuery, toSql, true), ")");
+            result.push("AS");
+            result.push(tsql.escapeIdentifierWithBackticks(join.tableAlias));
         } else {
             result.push("(", toSql(join.tableAst), ")");
             result.push("AS");

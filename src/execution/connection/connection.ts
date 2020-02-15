@@ -331,6 +331,8 @@ export class Connection implements
                             if (err instanceof Error) {
                                 if (err.code == "ER_DATA_OUT_OF_RANGE") {
                                     reject(new tsql.DataOutOfRangeError(err.message));
+                                } else if (err.code == "ER_PARSE_ERROR") {
+                                    reject(new tsql.ParseError(err.message, sql));
                                 } else {
                                     reject(err);
                                 }

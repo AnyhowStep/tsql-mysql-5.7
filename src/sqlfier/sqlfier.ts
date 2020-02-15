@@ -1,5 +1,8 @@
 import * as tsql from "@tsql/tsql";
-import {queryToSql} from "./query-to-sql";
+import {queryToSql, nonCompoundQueryToSql} from "./query-to-sql";
+import {compoundQueryClauseToSql} from "./compound-query-clause-to-sql";
+import {orderByClauseToSql} from "./order-by-clause-to-sql";
+import {limitClauseToSql} from "./limit-clause-to-sql";
 
 export const sqlfier : tsql.Sqlfier = {
     identifierSqlfier : (identifierNode) => identifierNode.identifiers
@@ -915,5 +918,54 @@ export const sqlfier : tsql.Sqlfier = {
         }
         result.push("END");
         return result;
+    },
+    parenthesesSqlfier : ({ast}, toSql, sqlfier) : string|tsql.AstArray|tsql.Parentheses|tsql.FunctionCall|tsql.LiteralValueNode => {
+        if (!tsql.QueryBaseUtil.isQuery(ast)) {
+            return tsql.AstUtil.toSqlAst(ast, sqlfier);
+        }
+
+        if (
+            ast.compoundQueryClause != undefined ||
+            ast.compoundQueryLimitClause != undefined ||
+            ast.compoundQueryOrderByClause != undefined
+        ) {
+            /**
+             * MySQL is **REALLY** inconsistent with what syntax they do and
+             * do not allow for queries, depending on whether it's a regular SELECT
+             * statement, or a subexpression...
+             */
+            const query = ast;
+
+            const result = [
+                "SELECT * FROM (",
+                nonCompoundQueryToSql(
+                    {
+                        ...query,
+                        compoundQueryClause : undefined,
+                        compoundQueryLimitClause : undefined,
+                        compoundQueryOrderByClause : undefined,
+                    },
+                    toSql,
+                    false
+                ),
+                ") AS tmp"
+            ];
+
+            if (query.compoundQueryClause != undefined) {
+                result.push(compoundQueryClauseToSql(query.compoundQueryClause, toSql).join(" "));
+            }
+
+            if (query.compoundQueryOrderByClause != undefined) {
+                result.push(orderByClauseToSql(query.compoundQueryOrderByClause, undefined, toSql).join(" "));
+            }
+
+            if (query.compoundQueryLimitClause != undefined) {
+                result.push(limitClauseToSql(query.compoundQueryLimitClause, toSql).join(" "));
+            }
+
+            return result;
+        }
+
+        return sqlfier.queryBaseSqlfier(ast, toSql, sqlfier);
     },
 };
