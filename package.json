@@ -47,7 +47,7 @@
     "istanbul-reports": "^2.2.7",
     "tape": "^4.11.0",
     "ts-node": "^8.3.0",
-    "type-mapping": "^1.31.2",
+    "type-mapping": "^1.32.0",
     "typescript": "^3.5.1"
   },
   "dependencies": {

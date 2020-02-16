@@ -17,7 +17,12 @@ export const sqlfier : tsql.Sqlfier = {
             ).ast
         ),
         [tsql.LiteralValueType.STRING] : ({literalValue}) => tsql.cStyleEscapeString(literalValue),
-        [tsql.LiteralValueType.DOUBLE] : ({literalValue}) => tsql.escapeValue(literalValue),
+        [tsql.LiteralValueType.DOUBLE] : ({literalValue}) => {
+            if (!isFinite(literalValue)) {
+                throw new tsql.DataOutOfRangeError(`Literal ${literalValue} not allowed`);
+            }
+            return tsql.escapeValue(literalValue);
+        },
         [tsql.LiteralValueType.BIGINT_SIGNED] : ({literalValue}) => tsql.escapeValue(literalValue),
         [tsql.LiteralValueType.BOOLEAN] : ({literalValue}) => tsql.escapeValue(literalValue),
         [tsql.LiteralValueType.BUFFER] : ({literalValue}) => tsql.escapeValue(literalValue),
