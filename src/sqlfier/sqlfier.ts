@@ -29,7 +29,6 @@ export const sqlfier : tsql.Sqlfier = {
         ),
     },
     operatorSqlfier : {
-        ...tsql.notImplementedSqlfier.operatorSqlfier,
         /*
             Comparison Functions and Operators
             https://dev.mysql.com/doc/refman/8.0/en/comparison-operators.html
@@ -243,6 +242,7 @@ export const sqlfier : tsql.Sqlfier = {
         [tsql.OperatorType.SUBTRACTION]: ({operands}) => tsql.AstUtil.insertBetween(operands, "-"),
         [tsql.OperatorType.MULTIPLICATION]: ({operands}) => tsql.AstUtil.insertBetween(operands, "*"),
         [tsql.OperatorType.INTEGER_DIVISION]: ({operands}) => tsql.AstUtil.insertBetween(operands, "DIV"),
+        [tsql.OperatorType.FRACTIONAL_DIVISION]: ({operands}) => tsql.AstUtil.insertBetween(operands, "/"),
         [tsql.OperatorType.UNARY_MINUS]: ({operands, typeHint}) => {
             if (typeHint == tsql.TypeHint.BIGINT_SIGNED) {
                 /**
@@ -612,6 +612,33 @@ export const sqlfier : tsql.Sqlfier = {
             Cast Functions and Operators
             https://dev.mysql.com/doc/refman/8.0/en/cast-functions.html
         */
+        [tsql.OperatorType.CAST_AS_JSON] : ({operands : [arg]}) => tsql.functionCall(
+            "CAST",
+            [
+                [
+                    arg,
+                    `AS JSON`
+                ]
+            ]
+        ),
+        [tsql.OperatorType.CAST_AS_BYTE_ARRAY] : ({operands : [arg]}) => tsql.functionCall(
+            "CAST",
+            [
+                [
+                    arg,
+                    `AS BINARY`
+                ]
+            ]
+        ),
+        [tsql.OperatorType.CAST_AS_VARCHAR] : ({operands : [arg]}) => tsql.functionCall(
+            "CAST",
+            [
+                [
+                    arg,
+                    `AS CHAR`
+                ]
+            ]
+        ),
         [tsql.OperatorType.CAST_AS_DOUBLE] : ({operands : [x]}, toSql) => `((${toSql(x)}) + 0e0)`,
         [tsql.OperatorType.CAST_AS_DECIMAL] : ({operands : [arg, precision, scale]}, toSql) => tsql.functionCall(
             "CAST",
@@ -847,6 +874,18 @@ export const sqlfier : tsql.Sqlfier = {
                 throw new Error(`${operatorType} only implemented for 2 args`);
             }
         },
+        [tsql.OperatorType.AGGREGATE_POPULATION_STANDARD_DEVIATION] : ({operands}) => {
+            return tsql.functionCall("STDDEV_POP", operands);
+        },
+        [tsql.OperatorType.AGGREGATE_SAMPLE_STANDARD_DEVIATION] : ({operands}) => {
+            return tsql.functionCall("STDDEV_SAMP", operands);
+        },
+        [tsql.OperatorType.AGGREGATE_POPULATION_VARIANCE] : ({operands}) => {
+            return tsql.functionCall("VAR_POP", operands);
+        },
+        [tsql.OperatorType.AGGREGATE_SAMPLE_VARIANCE] : ({operands}) => {
+            return tsql.functionCall("VAR_SAMP", operands);
+        },
         [tsql.OperatorType.AGGREGATE_GROUP_CONCAT_DISTINCT] : ({operands}) => tsql.functionCall(
             "GROUP_CONCAT",
             [
@@ -879,6 +918,20 @@ export const sqlfier : tsql.Sqlfier = {
                 }
             }
         },
+
+        /*
+            https://dev.mysql.com/doc/refman/5.7/en/information-functions.html
+
+            Information Functions
+        */
+        [tsql.OperatorType.CURRENT_DATABASE] : () => tsql.functionCall(
+            "DATABASE",
+            []
+        ),
+        [tsql.OperatorType.CURRENT_USER] : () => tsql.functionCall(
+            "CURRENT_USER",
+            []
+        ),
 
         /*
             Custom library functions
