@@ -924,14 +924,11 @@ export const sqlfier : tsql.Sqlfier = {
 
             Information Functions
         */
-        [tsql.OperatorType.CURRENT_DATABASE] : () => tsql.functionCall(
+        [tsql.OperatorType.CURRENT_SCHEMA] : () => tsql.functionCall(
             "DATABASE",
             []
         ),
-        [tsql.OperatorType.CURRENT_USER] : () => tsql.functionCall(
-            "CURRENT_USER",
-            []
-        ),
+        [tsql.OperatorType.CURRENT_USER] : () => "CURRENT_USER",
 
         /*
             Custom library functions

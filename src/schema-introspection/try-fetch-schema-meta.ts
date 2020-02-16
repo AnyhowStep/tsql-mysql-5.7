@@ -7,7 +7,7 @@ export async function tryFetchSchemaMeta (
     schemaAlias : string|undefined
 ) : Promise<tsql.SchemaMeta|undefined> {
     if (schemaAlias == undefined) {
-        schemaAlias = await tsql.selectValue(() => tsql.currentDatabase())
+        schemaAlias = await tsql.selectValue(() => tsql.throwIfNull(tsql.currentSchema()))
             .fetchValue(connection);
     }
     const tableAliases = await tsql.from(informationSchema.TABLES)

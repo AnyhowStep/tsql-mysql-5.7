@@ -12,7 +12,7 @@ export function tryFetchGeneratedColumnExpression(
             columns.TABLE_SCHEMA,
             (
                 schemaAlias == undefined ?
-                tsql.currentDatabase() :
+                tsql.throwIfNull(tsql.currentSchema()) :
                 schemaAlias
             )
         ))
