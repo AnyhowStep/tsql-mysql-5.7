@@ -621,7 +621,7 @@ export const sqlfier : tsql.Sqlfier = {
                 ]
             ]
         ),
-        [tsql.OperatorType.CAST_AS_BYTE_ARRAY] : ({operands : [arg]}) => tsql.functionCall(
+        [tsql.OperatorType.CAST_AS_BINARY] : ({operands : [arg]}) => tsql.functionCall(
             "CAST",
             [
                 [
@@ -646,7 +646,7 @@ export const sqlfier : tsql.Sqlfier = {
                 toSql(arg) + `AS DECIMAL(${toSql(precision)}, ${toSql(scale)})`
             ]
         ),
-        [tsql.OperatorType.CAST_AS_SIGNED_BIG_INTEGER] : ({operands : [arg]}, toSql) => tsql.functionCall(
+        [tsql.OperatorType.CAST_AS_BIGINT_SIGNED] : ({operands : [arg]}, toSql) => tsql.functionCall(
             "CAST",
             [
                 toSql(arg) + `AS SIGNED INTEGER`
