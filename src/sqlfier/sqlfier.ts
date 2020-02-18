@@ -275,7 +275,20 @@ export const sqlfier : tsql.Sqlfier = {
         [tsql.OperatorType.ARC_SINE] : ({operands}) => tsql.functionCall("ASIN", operands),
         [tsql.OperatorType.ARC_TANGENT] : ({operands}) => tsql.functionCall("ATAN", operands),
         [tsql.OperatorType.ARC_TANGENT_2] : ({operands}) => tsql.functionCall("ATAN2", operands),
-        [tsql.OperatorType.CUBE_ROOT] : ({operands}) => tsql.functionCall("POWER", [...operands, "1.0/3.0"]),
+        [tsql.OperatorType.CUBE_ROOT] : ({operands}) => tsql.functionCall(
+            "IF",
+            [
+                [operands[0], ">= 0"],
+                tsql.functionCall("POWER", [...operands, "1.0/3.0"]),
+                [
+                    "-",
+                    tsql.functionCall("POWER", [
+                        ["-(", operands[0], ")"],
+                        "1.0/3.0"
+                    ])
+                ]
+            ]
+        ),
         [tsql.OperatorType.CEILING] : ({operands}) => tsql.functionCall("CEILING", operands),
         [tsql.OperatorType.COSINE] : ({operands}) => tsql.functionCall("COS", operands),
         [tsql.OperatorType.COTANGENT] : ({operands}) => tsql.functionCall("COT", operands),
@@ -367,6 +380,13 @@ export const sqlfier : tsql.Sqlfier = {
                 return tsql.AstUtil.insertBetween(operands, "%");
             } else {
                 throw new Error(`INTEGER_REMAINDER not implemented for ${typeHint}`);
+            }
+        },
+        [tsql.OperatorType.FRACTIONAL_REMAINDER] : ({operands, typeHint}) => {
+            if (typeHint == tsql.TypeHint.DOUBLE || typeHint == tsql.TypeHint.DECIMAL) {
+                return tsql.AstUtil.insertBetween(operands, "%");
+            } else {
+                throw new Error(`FRACTIONAL_REMAINDER not implemented for ${typeHint}`);
             }
         },
 
