@@ -328,16 +328,31 @@ export class Connection implements
                     sql,
                     (err, results, rawFieldArr) => {
                         if (err != undefined) {
+                            /**
+                             * @todo https://github.com/mysqljs/mysql/blob/1e2c3506de794d18e7c9a5b946089a071f0ea4c7/lib/protocol/constants/errors.js
+                             */
                             if (err instanceof Error) {
                                 if (err.code == "ER_DATA_OUT_OF_RANGE") {
-                                    reject(new tsql.DataOutOfRangeError(err.message));
-                                } else if (err.code == "ER_PARSE_ERROR") {
-                                    reject(new tsql.ParseError(err.message, sql));
+                                    reject(new tsql.DataOutOfRangeError({
+                                        innerError : err,
+                                        sql,
+                                    }));
+                                } else if (err.code == "ER_PARSE_ERROR" || err.code == "ER_SYNTAX_ERROR") {
+                                    reject(new tsql.InvalidSqlError({
+                                        innerError : err,
+                                        sql,
+                                    }));
                                 } else {
-                                    reject(err);
+                                    reject(new tsql.SqlError({
+                                        innerError : err,
+                                        sql,
+                                    }));
                                 }
                             } else {
-                                reject(err);
+                                reject(new tsql.SqlError({
+                                    innerError : err,
+                                    sql,
+                                }));
                             }
                             return;
                         }

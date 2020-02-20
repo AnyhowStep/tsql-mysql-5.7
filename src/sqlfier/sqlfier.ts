@@ -19,7 +19,13 @@ export const sqlfier : tsql.Sqlfier = {
         [tsql.LiteralValueType.STRING] : ({literalValue}) => tsql.cStyleEscapeString(literalValue),
         [tsql.LiteralValueType.DOUBLE] : ({literalValue}) => {
             if (!isFinite(literalValue)) {
-                throw new tsql.DataOutOfRangeError(`Literal ${literalValue} not allowed`);
+                throw new tsql.DataOutOfRangeError({
+                    message : `Literal ${literalValue} not allowed`,
+                    /**
+                     * @todo Figure out how to get the entire SQL, then throw?
+                     */
+                    sql : undefined,
+                });
             }
             return tsql.escapeValue(literalValue);
         },
@@ -299,7 +305,7 @@ export const sqlfier : tsql.Sqlfier = {
         [tsql.OperatorType.LOG] : ({operands}) => tsql.functionCall("LOG", operands),
         [tsql.OperatorType.LOG2] : ({operands}) => tsql.functionCall("LOG2", operands),
         [tsql.OperatorType.LOG10] : ({operands}) => tsql.functionCall("LOG10", operands),
-        [tsql.OperatorType.PI] : () => tsql.functionCall("PI", []),
+        [tsql.OperatorType.PI] : () => `3.141592653589793e0`, //e0 to make it a double
         [tsql.OperatorType.POWER] : ({operands}) => tsql.functionCall("POWER", operands),
         [tsql.OperatorType.RADIANS] : ({operands}) => tsql.functionCall("RADIANS", operands),
         [tsql.OperatorType.RANDOM] : ({operands, typeHint}, toSql) => {
@@ -369,12 +375,12 @@ export const sqlfier : tsql.Sqlfier = {
                 throw new Error(`RANDOM not implemented for ${typeHint}`);
             }
         },
-        [tsql.OperatorType.ROUND] : ({operands}) => tsql.functionCall("ROUND", operands),
+        //[tsql.OperatorType.ROUND] : ({operands}) => tsql.functionCall("ROUND", operands),
         [tsql.OperatorType.SIGN] : ({operands}) => tsql.functionCall("SIGN", operands),
         [tsql.OperatorType.SINE] : ({operands}) => tsql.functionCall("SIN", operands),
         [tsql.OperatorType.SQUARE_ROOT] : ({operands}) => tsql.functionCall("SQRT", operands),
         [tsql.OperatorType.TANGENT] : ({operands}) => tsql.functionCall("TAN", operands),
-        [tsql.OperatorType.TRUNCATE] : ({operands}) => tsql.functionCall("TRUNCATE", operands),
+        //[tsql.OperatorType.TRUNCATE] : ({operands}) => tsql.functionCall("TRUNCATE", operands),
         [tsql.OperatorType.INTEGER_REMAINDER] : ({operands, typeHint}) => {
             if (typeHint == tsql.TypeHint.BIGINT_SIGNED) {
                 return tsql.AstUtil.insertBetween(operands, "%");
