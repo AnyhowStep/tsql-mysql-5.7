@@ -10,7 +10,7 @@ export const sqlfier : tsql.Sqlfier = {
         .join("."),
     literalValueSqlfier : {
         [tsql.LiteralValueType.DECIMAL] : ({literalValue, precision, scale}, toSql) => toSql(
-            tsql.castAsDecimal(
+            tsql.unsafeCastAsDecimal(
                 literalValue,
                 precision,
                 scale
@@ -324,7 +324,7 @@ export const sqlfier : tsql.Sqlfier = {
                 /**
                  * `0.0 <= v < 1.0`
                  */
-                const randomDecimal = tsql.castAsDecimal(
+                const randomDecimal = tsql.unsafeCastAsDecimal(
                     tsql.double.random(),
                     65,
                     30
@@ -366,8 +366,8 @@ export const sqlfier : tsql.Sqlfier = {
                         tsql.double.random(),
                         0.5
                     ),
-                    tsql.castAsBigIntSigned(randomNonNegative),
-                    tsql.castAsBigIntSigned(randomNegative)
+                    tsql.unsafeCastAsBigIntSigned(randomNonNegative),
+                    tsql.unsafeCastAsBigIntSigned(randomNegative)
                 );
 
                 return toSql(randomBigIntSigned.ast);
@@ -900,6 +900,52 @@ export const sqlfier : tsql.Sqlfier = {
                     return tsql.functionCall("SUM", [["DISTINCT", expr]]);
                 } else {
                     return tsql.functionCall("SUM", [expr]);
+                }
+            } else {
+                throw new Error(`${operatorType} only implemented for 2 args`);
+            }
+        },
+        [tsql.OperatorType.AGGREGATE_SUM_AS_DECIMAL] : ({operands, operatorType}) => {
+            if (operands.length == 2) {
+                const [isDistinct, expr] = operands;
+                if (
+                    tsql.LiteralValueNodeUtil.isLiteralValueNode(isDistinct) &&
+                    isDistinct.literalValue === true
+                ) {
+                    return tsql.functionCall("SUM", [["DISTINCT", expr]]);
+                } else {
+                    return tsql.functionCall("SUM", [expr]);
+                }
+            } else {
+                throw new Error(`${operatorType} only implemented for 2 args`);
+            }
+        },
+        [tsql.OperatorType.AGGREGATE_SUM_AS_BIGINT_SIGNED] : ({operands, operatorType}) => {
+            if (operands.length == 2) {
+                const [isDistinct, expr] = operands;
+                if (
+                    tsql.LiteralValueNodeUtil.isLiteralValueNode(isDistinct) &&
+                    isDistinct.literalValue === true
+                ) {
+                    return tsql.functionCall(
+                        "CAST",
+                        [
+                            [
+                                tsql.functionCall("SUM", [["DISTINCT", expr]]),
+                                "AS SIGNED"
+                            ]
+                        ]
+                    );
+                } else {
+                    return tsql.functionCall(
+                        "CAST",
+                        [
+                            [
+                                tsql.functionCall("SUM", [expr]),
+                                "AS SIGNED"
+                            ]
+                        ]
+                    );
                 }
             } else {
                 throw new Error(`${operatorType} only implemented for 2 args`);

@@ -8,14 +8,27 @@ if (process.env.ENV_FILE != undefined) {
     TypedEnv.Load(process.env.ENV_FILE);
 }
 
+const pool = new mysql.Pool({
+    host      : TypedEnv.GetStringOrError("MYSQL_HOST"),
+    database  : TypedEnv.GetStringOrError("MYSQL_DATABASE"),
+    user      : TypedEnv.GetStringOrError("MYSQL_USERNAME"),
+    password  : TypedEnv.GetStringOrError("MYSQL_PASSWORD"),
+    charset   : mysql.CharSet.utf8mb4,
+});
+
+/*
+pool.acquire(async (connection) => {
+    //point [ RowDataPacket { 'POINT(3,4)': { x: 3, y: 4 } } ]
+    console.log("point", (await connection.rawQuery("SELECT POINT(3,4)")).results);
+}).then(
+    () => {},
+    (err) => {
+        console.error(err);
+    }
+);
+*/
 unifiedTest({
-    pool : new mysql.Pool({
-        host      : TypedEnv.GetStringOrError("MYSQL_HOST"),
-        database  : TypedEnv.GetStringOrError("MYSQL_DATABASE"),
-        user      : TypedEnv.GetStringOrError("MYSQL_USERNAME"),
-        password  : TypedEnv.GetStringOrError("MYSQL_PASSWORD"),
-        charset   : mysql.CharSet.utf8mb4,
-    }),
+    pool,
     tape,
     createTemporarySchema : async (
         connection : tsql.IConnection,
