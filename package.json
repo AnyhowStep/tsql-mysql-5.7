@@ -1,9 +1,13 @@
 {
-  "name": "@tsql/mysql-5.7",
-  "version": "0.0.0",
+  "name": "@squill/mysql-5.7",
+  "version": "0.0.1",
   "description": "A MySQL 5.7 query-builder/ORM",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
     "test": "ts-node -P ./test/run-time/tsconfig.json -r ./test/run-time/tape-stream.ts -r ./test/run-time/bluebird-promise.ts",
     "lint": "eslint --ext .ts",
