@@ -1,16 +1,16 @@
-import * as tsql from "@tsql/tsql";
-import {DeletableTable, WhereClause} from "@tsql/tsql";
+import * as squill from "@squill/squill";
+import {DeletableTable, WhereClause} from "@squill/squill";
 import {sqlfier} from "./sqlfier";
 
 export function deleteSqlString (
     table : DeletableTable,
     whereClause : WhereClause
 ) : string {
-    const ast : tsql.Ast[] = [
+    const ast : squill.Ast[] = [
         "DELETE FROM",
         table.unaliasedAst,
         "WHERE",
         whereClause.ast
     ];
-    return tsql.AstUtil.toSql(ast, sqlfier);
+    return squill.AstUtil.toSql(ast, sqlfier);
 }

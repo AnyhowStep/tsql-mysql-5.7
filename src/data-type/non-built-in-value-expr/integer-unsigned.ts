@@ -1,5 +1,5 @@
 import * as tm from "type-mapping";
-import * as tsql from "@tsql/tsql";
+import * as squill from "@squill/squill";
 
 /**
  * 1-byte integer.
@@ -8,7 +8,7 @@ import * as tsql from "@tsql/tsql";
  * + Min:   0;
  * + Max: 255; `(2^8)-1`
  */
-export const dtTinyIntUnsigned = tsql.makeIntegerDataType(tm.mysql.tinyIntUnsigned());
+export const dtTinyIntUnsigned = squill.makeIntegerDataType(tm.mysql.tinyIntUnsigned());
 
 /**
  * 2-byte integer.
@@ -17,7 +17,7 @@ export const dtTinyIntUnsigned = tsql.makeIntegerDataType(tm.mysql.tinyIntUnsign
  * + Min:      0;
  * + Max: 65,535; `(2^16)-1`
  */
-export const dtSmallIntUnsigned = tsql.makeIntegerDataType(tm.mysql.smallIntUnsigned());
+export const dtSmallIntUnsigned = squill.makeIntegerDataType(tm.mysql.smallIntUnsigned());
 
 /**
  * 3-byte integer.
@@ -26,7 +26,7 @@ export const dtSmallIntUnsigned = tsql.makeIntegerDataType(tm.mysql.smallIntUnsi
  * + Min:          0;
  * + Max: 16,777,215; `(2^24)-1`
  */
-export const dtMediumIntUnsigned = tsql.makeIntegerDataType(tm.mysql.mediumIntUnsigned());
+export const dtMediumIntUnsigned = squill.makeIntegerDataType(tm.mysql.mediumIntUnsigned());
 
 /**
  * 4-byte integer.
@@ -35,7 +35,7 @@ export const dtMediumIntUnsigned = tsql.makeIntegerDataType(tm.mysql.mediumIntUn
  * + Min:             0;
  * + Max: 4,294,967,295; `(2^32)-1`
  */
-export const dtIntUnsigned = tsql.makeIntegerDataType(tm.mysql.intUnsigned());
+export const dtIntUnsigned = squill.makeIntegerDataType(tm.mysql.intUnsigned());
 
 /**
  * 8-byte integer.
@@ -44,4 +44,4 @@ export const dtIntUnsigned = tsql.makeIntegerDataType(tm.mysql.intUnsigned());
  * + Min:                          0;
  * + Max: 18,446,744,073,709,551,615; `(2^64)-1`
  */
-export const dtBigIntUnsigned = tsql.makeIntegerDataType(tm.mysql.bigIntUnsigned());
+export const dtBigIntUnsigned = squill.makeIntegerDataType(tm.mysql.bigIntUnsigned());

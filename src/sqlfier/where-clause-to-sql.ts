@@ -1,11 +1,11 @@
-import * as tsql from "@tsql/tsql";
+import * as squill from "@squill/squill";
 
 export function whereClauseToSql (
-    whereClause : tsql.WhereClause,
-    toSql : (ast : tsql.Ast) => string
+    whereClause : squill.WhereClause,
+    toSql : (ast : squill.Ast) => string
 ) : string[] {
     return [
         "WHERE",
-        toSql(tsql.AstUtil.tryUnwrapParentheses(whereClause.ast))
+        toSql(squill.AstUtil.tryUnwrapParentheses(whereClause.ast))
     ];
 }

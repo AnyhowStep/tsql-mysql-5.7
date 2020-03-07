@@ -1,21 +1,21 @@
-import * as tsql from "@tsql/tsql";
+import * as squill from "@squill/squill";
 
-function selectClauseColumnToSql (column : tsql.IColumn, isDerivedTable : boolean) : string[] {
+function selectClauseColumnToSql (column : squill.IColumn, isDerivedTable : boolean) : string[] {
     return [
         [
-            tsql.escapeIdentifierWithBackticks(column.tableAlias),
+            squill.escapeIdentifierWithBackticks(column.tableAlias),
             ".",
-            tsql.escapeIdentifierWithBackticks(column.columnAlias)
+            squill.escapeIdentifierWithBackticks(column.columnAlias)
         ].join(""),
         "AS",
-        tsql.escapeIdentifierWithBackticks(
+        squill.escapeIdentifierWithBackticks(
             isDerivedTable ?
             column.columnAlias :
-            `${column.tableAlias}${tsql.SEPARATOR}${column.columnAlias}`
+            `${column.tableAlias}${squill.SEPARATOR}${column.columnAlias}`
         )
     ];
 }
-function selectClauseColumnArrayToSql (columns : tsql.IColumn[], isDerivedTable : boolean) : string[] {
+function selectClauseColumnArrayToSql (columns : squill.IColumn[], isDerivedTable : boolean) : string[] {
     columns.sort((a, b) => {
         const tableAliasCmp = a.tableAlias.localeCompare(b.tableAlias);
         if (tableAliasCmp != 0) {
@@ -34,18 +34,18 @@ function selectClauseColumnArrayToSql (columns : tsql.IColumn[], isDerivedTable 
     }
     return result;
 }
-function selectClauseColumnMapToSql (map : tsql.ColumnMap, isDerivedTable : boolean) : string[] {
-    const columns = tsql.ColumnUtil.fromColumnMap(map);
+function selectClauseColumnMapToSql (map : squill.ColumnMap, isDerivedTable : boolean) : string[] {
+    const columns = squill.ColumnUtil.fromColumnMap(map);
     return selectClauseColumnArrayToSql(columns, isDerivedTable);
 }
-function selectClauseColumnRefToSql (ref : tsql.ColumnRef, isDerivedTable : boolean) : string[] {
-    const columns = tsql.ColumnUtil.fromColumnRef(ref);
+function selectClauseColumnRefToSql (ref : squill.ColumnRef, isDerivedTable : boolean) : string[] {
+    const columns = squill.ColumnUtil.fromColumnRef(ref);
     return selectClauseColumnArrayToSql(columns, isDerivedTable);
 }
 
 export function selectClauseToSql (
-    selectClause : tsql.SelectClause,
-    toSql : (ast : tsql.Ast) => string,
+    selectClause : squill.SelectClause,
+    toSql : (ast : squill.Ast) => string,
     isDerivedTable : boolean,
     isDistinct : boolean
 ) : string[] {
@@ -54,23 +54,23 @@ export function selectClauseToSql (
         if (result.length > 0) {
             result.push(",");
         }
-        if (tsql.ColumnUtil.isColumn(selectItem)) {
+        if (squill.ColumnUtil.isColumn(selectItem)) {
             result.push(
                 ...selectClauseColumnToSql(selectItem, isDerivedTable)
             );
-        } else if (tsql.ExprSelectItemUtil.isExprSelectItem(selectItem)) {
+        } else if (squill.ExprSelectItemUtil.isExprSelectItem(selectItem)) {
             result.push(
                 toSql(selectItem.unaliasedAst),
                 "AS",
-                tsql.escapeIdentifierWithBackticks(
+                squill.escapeIdentifierWithBackticks(
                     isDerivedTable ?
                     selectItem.alias :
-                    `${selectItem.tableAlias}${tsql.SEPARATOR}${selectItem.alias}`
+                    `${selectItem.tableAlias}${squill.SEPARATOR}${selectItem.alias}`
                 )
             );
-        } else if (tsql.ColumnMapUtil.isColumnMap(selectItem)) {
+        } else if (squill.ColumnMapUtil.isColumnMap(selectItem)) {
             result.push(...selectClauseColumnMapToSql(selectItem, isDerivedTable));
-        } else if (tsql.ColumnRefUtil.isColumnRef(selectItem)) {
+        } else if (squill.ColumnRefUtil.isColumnRef(selectItem)) {
             result.push(...selectClauseColumnRefToSql(selectItem, isDerivedTable));
         } else {
             throw new Error(`Not implemented`);

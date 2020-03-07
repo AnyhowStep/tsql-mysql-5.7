@@ -1,4 +1,4 @@
-import * as tsql from "@tsql/tsql";
+import * as squill from "@squill/squill";
 
 export interface OkPacket {
     readonly insertId : number,
@@ -9,7 +9,7 @@ export interface OkPacket {
 }
 
 export function isOkPacket (mixed : unknown) : mixed is OkPacket {
-    return tsql.TypeUtil.isObjectWithOwnEnumerableKeys<OkPacket>()(
+    return squill.TypeUtil.isObjectWithOwnEnumerableKeys<OkPacket>()(
         mixed,
         [
             "insertId",

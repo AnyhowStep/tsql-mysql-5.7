@@ -1,10 +1,10 @@
-import * as tsql from "@tsql/tsql";
+import * as squill from "@squill/squill";
 import {sqlfier} from "./sqlfier";
 
-export function updateSqlString<TableT extends tsql.ITable> (
+export function updateSqlString<TableT extends squill.ITable> (
     table : TableT,
-    whereClause : tsql.WhereClause,
-    assignmentMap : tsql.BuiltInAssignmentMap<TableT>
+    whereClause : squill.WhereClause,
+    assignmentMap : squill.BuiltInAssignmentMap<TableT>
 ) : string|undefined {
     const mutableColumnAlias = Object.keys(assignmentMap)
         .filter(columnAlias => {
@@ -21,13 +21,13 @@ export function updateSqlString<TableT extends tsql.ITable> (
         return undefined;
     }
 
-    const assignmentList = mutableColumnAlias.reduce<tsql.Ast[]>(
+    const assignmentList = mutableColumnAlias.reduce<squill.Ast[]>(
         (ast, columnAlias) => {
             const value = assignmentMap[columnAlias as keyof typeof assignmentMap];
             const assignment = [
-                tsql.escapeIdentifierWithBackticks(columnAlias),
+                squill.escapeIdentifierWithBackticks(columnAlias),
                 "=",
-                tsql.BuiltInExprUtil.buildAst(value as Exclude<typeof value, undefined>)
+                squill.BuiltInExprUtil.buildAst(value as Exclude<typeof value, undefined>)
             ];
 
             if (ast.length > 0) {
@@ -39,7 +39,7 @@ export function updateSqlString<TableT extends tsql.ITable> (
         []
     );
 
-    const ast : tsql.Ast[] = [
+    const ast : squill.Ast[] = [
         "UPDATE",
         table.unaliasedAst,
         "SET",
@@ -47,5 +47,5 @@ export function updateSqlString<TableT extends tsql.ITable> (
         "WHERE",
         whereClause.ast
     ];
-    return tsql.AstUtil.toSql(ast, sqlfier);
+    return squill.AstUtil.toSql(ast, sqlfier);
 }

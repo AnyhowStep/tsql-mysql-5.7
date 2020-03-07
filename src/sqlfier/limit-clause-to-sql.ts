@@ -1,13 +1,13 @@
-import * as tsql from "@tsql/tsql";
+import * as squill from "@squill/squill";
 
 export function limitClauseToSql (
-    limitClause : tsql.LimitClause,
-    _toSql : (ast : tsql.Ast) => string
+    limitClause : squill.LimitClause,
+    _toSql : (ast : squill.Ast) => string
 ) : string[] {
     return [
         "LIMIT",
-        tsql.escapeValue(limitClause.maxRowCount),
+        squill.escapeValue(limitClause.maxRowCount),
         "OFFSET",
-        tsql.escapeValue(limitClause.offset),
+        squill.escapeValue(limitClause.offset),
     ];
 }

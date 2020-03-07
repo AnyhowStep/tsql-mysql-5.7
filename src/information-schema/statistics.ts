@@ -1,31 +1,31 @@
 import * as tm from "type-mapping";
-import * as tsql from "@tsql/tsql";
+import * as squill from "@squill/squill";
 import {dtBigIntUnsigned} from "../data-type";
 
-export const STATISTICS = tsql.table("STATISTICS")
+export const STATISTICS = squill.table("STATISTICS")
     .addColumns({
-        TABLE_CATALOG : tsql.dtVarChar(512),
-        TABLE_SCHEMA : tsql.dtVarChar(64),
-        TABLE_NAME : tsql.dtVarChar(64),
-        NON_UNIQUE : tsql.dtBoolean(),
-        INDEX_SCHEMA : tsql.dtVarChar(64),
-        INDEX_NAME : tsql.dtVarChar(64),
+        TABLE_CATALOG : squill.dtVarChar(512),
+        TABLE_SCHEMA : squill.dtVarChar(64),
+        TABLE_NAME : squill.dtVarChar(64),
+        NON_UNIQUE : squill.dtBoolean(),
+        INDEX_SCHEMA : squill.dtVarChar(64),
+        INDEX_NAME : squill.dtVarChar(64),
         SEQ_IN_INDEX : dtBigIntUnsigned(),
-        COLUMN_NAME : tsql.dtVarChar(64),
-        COLLATION : tsql.dtVarChar(1).orNull(),
+        COLUMN_NAME : squill.dtVarChar(64),
+        COLLATION : squill.dtVarChar(1).orNull(),
         CARDINALITY : dtBigIntUnsigned().orNull(),
         SUB_PART : dtBigIntUnsigned().orNull(),
-        PACKED : tsql.dtVarChar(10).orNull(),
+        PACKED : squill.dtVarChar(10).orNull(),
         NULLABLE : tm.or(
             tm.literal("YES", "NO"),
-            tsql.dtVarChar(3)
+            squill.dtVarChar(3)
         ),
         INDEX_TYPE : tm.or(
             tm.literal("BTREE"),
-            tsql.dtVarChar(16)
+            squill.dtVarChar(16)
         ),
-        COMMENT : tsql.dtVarChar(16).orNull(),
-        INDEX_COMMENT : tsql.dtVarChar(1024),
+        COMMENT : squill.dtVarChar(16).orNull(),
+        INDEX_COMMENT : squill.dtVarChar(1024),
     })
     .disableInsert()
     .disableDelete()

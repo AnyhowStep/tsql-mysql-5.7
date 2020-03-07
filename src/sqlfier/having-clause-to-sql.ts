@@ -1,11 +1,11 @@
-import * as tsql from "@tsql/tsql";
+import * as squill from "@squill/squill";
 
 export function havingClauseToSql (
-    havingClause : tsql.HavingClause,
-    toSql : (ast : tsql.Ast) => string
+    havingClause : squill.HavingClause,
+    toSql : (ast : squill.Ast) => string
 ) : string[] {
     return [
         "HAVING",
-        toSql(tsql.AstUtil.tryUnwrapParentheses(havingClause.ast))
+        toSql(squill.AstUtil.tryUnwrapParentheses(havingClause.ast))
     ];
 }

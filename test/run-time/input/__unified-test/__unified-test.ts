@@ -1,6 +1,6 @@
 import * as tape from "tape";
-import * as tsql from "@tsql/tsql";
-import {unifiedTest, UnifiedSchema} from "@tsql/tsql/unified-test";
+import * as tsql from "@squill/squill";
+import {unifiedTest, UnifiedSchema} from "@squill/squill/unified-test";
 import * as mysql from "../../../../dist";
 import {TypedEnv} from "@anyhowstep/typed-env";
 

@@ -1,16 +1,16 @@
-import * as tsql from "@tsql/tsql";
+import * as squill from "@squill/squill";
 import * as informationSchema from "../information-schema";
 import {tryFetchTableMeta} from "./try-fetch-table-meta";
 
 export async function tryFetchSchemaMeta (
-    connection : tsql.SelectConnection,
+    connection : squill.SelectConnection,
     schemaAlias : string|undefined
-) : Promise<tsql.SchemaMeta|undefined> {
+) : Promise<squill.SchemaMeta|undefined> {
     if (schemaAlias == undefined) {
-        schemaAlias = await tsql.selectValue(() => tsql.throwIfNull(tsql.currentSchema()))
+        schemaAlias = await squill.selectValue(() => squill.throwIfNull(squill.currentSchema()))
             .fetchValue(connection);
     }
-    const tableAliases = await tsql.from(informationSchema.TABLES)
+    const tableAliases = await squill.from(informationSchema.TABLES)
         .select(columns => [columns.TABLE_NAME])
         .whereEq(
             columns => columns.TABLE_SCHEMA,
@@ -18,7 +18,7 @@ export async function tryFetchSchemaMeta (
         )
         .fetchValueArray(connection);
 
-    const tables : tsql.TableMeta[] = [];
+    const tables : squill.TableMeta[] = [];
 
     for (const tableAlias of tableAliases) {
         const tableMeta = await tryFetchTableMeta(

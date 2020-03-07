@@ -1,8 +1,8 @@
-import * as tsql from "@tsql/tsql";
+import * as squill from "@squill/squill";
 
 export function groupByClauseToSql (
-    groupByClause : tsql.GroupByClause,
-    _toSql : (ast : tsql.Ast) => string
+    groupByClause : squill.GroupByClause,
+    _toSql : (ast : squill.Ast) => string
 ) : string[] {
     if (groupByClause.length == 0) {
         return [];
@@ -13,18 +13,18 @@ export function groupByClauseToSql (
         if (result.length > 0) {
             result.push(",");
         }
-        if (column.tableAlias == tsql.ALIASED) {
+        if (column.tableAlias == squill.ALIASED) {
             result.push(
-                tsql.escapeIdentifierWithBackticks(
-                    `${column.tableAlias}${tsql.SEPARATOR}${column.columnAlias}`
+                squill.escapeIdentifierWithBackticks(
+                    `${column.tableAlias}${squill.SEPARATOR}${column.columnAlias}`
                 )
             );
         } else {
             result.push(
                 [
-                    tsql.escapeIdentifierWithBackticks(column.tableAlias),
+                    squill.escapeIdentifierWithBackticks(column.tableAlias),
                     ".",
-                    tsql.escapeIdentifierWithBackticks(column.columnAlias)
+                    squill.escapeIdentifierWithBackticks(column.columnAlias)
                 ].join("")
             );
         }

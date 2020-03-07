@@ -1,15 +1,15 @@
-import * as tsql from "@tsql/tsql";
+import * as squill from "@squill/squill";
 import {dtBigIntUnsigned} from "../data-type";
 
-export const TABLES = tsql.table("TABLES")
+export const TABLES = squill.table("TABLES")
     .addColumns({
-        TABLE_CATALOG : tsql.dtVarChar(512),
-        TABLE_SCHEMA : tsql.dtVarChar(64),
-        TABLE_NAME : tsql.dtVarChar(64),
-        TABLE_TYPE : tsql.dtVarChar(64),
-        ENGINE : tsql.dtVarChar(64).orNull(),
+        TABLE_CATALOG : squill.dtVarChar(512),
+        TABLE_SCHEMA : squill.dtVarChar(64),
+        TABLE_NAME : squill.dtVarChar(64),
+        TABLE_TYPE : squill.dtVarChar(64),
+        ENGINE : squill.dtVarChar(64).orNull(),
         VERSION : dtBigIntUnsigned().orNull(),
-        ROW_FORMAT : tsql.dtVarChar(10).orNull(),
+        ROW_FORMAT : squill.dtVarChar(10).orNull(),
         TABLE_ROWS : dtBigIntUnsigned().orNull(),
         AVG_ROW_LENGTH : dtBigIntUnsigned().orNull(),
         DATA_LENGTH : dtBigIntUnsigned().orNull(),
@@ -17,13 +17,13 @@ export const TABLES = tsql.table("TABLES")
         INDEX_LENGTH : dtBigIntUnsigned().orNull(),
         DATA_FREE : dtBigIntUnsigned().orNull(),
         AUTO_INCREMENT : dtBigIntUnsigned().orNull(),
-        CREATE_TIME : tsql.dtDateTime(3).orNull(),
-        UPDATE_TIME : tsql.dtDateTime(3).orNull(),
-        CHECK_TIME : tsql.dtDateTime(3).orNull(),
-        TABLE_COLLATION : tsql.dtVarChar(32).orNull(),
+        CREATE_TIME : squill.dtDateTime(3).orNull(),
+        UPDATE_TIME : squill.dtDateTime(3).orNull(),
+        CHECK_TIME : squill.dtDateTime(3).orNull(),
+        TABLE_COLLATION : squill.dtVarChar(32).orNull(),
         CHECKSUM : dtBigIntUnsigned().orNull(),
-        CREATE_OPTIONS : tsql.dtVarChar(255).orNull(),
-        TABLE_COMMENT : tsql.dtVarChar(2048),
+        CREATE_OPTIONS : squill.dtVarChar(255).orNull(),
+        TABLE_COMMENT : squill.dtVarChar(2048),
     })
     .addCandidateKey(columns => [
         columns.TABLE_SCHEMA,

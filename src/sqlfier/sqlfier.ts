@@ -1,25 +1,25 @@
-import * as tsql from "@tsql/tsql";
+import * as squill from "@squill/squill";
 import {queryToSql, nonCompoundQueryToSql} from "./query-to-sql";
 import {compoundQueryClauseToSql} from "./compound-query-clause-to-sql";
 import {orderByClauseToSql} from "./order-by-clause-to-sql";
 import {limitClauseToSql} from "./limit-clause-to-sql";
 
-export const sqlfier : tsql.Sqlfier = {
+export const sqlfier : squill.Sqlfier = {
     identifierSqlfier : (identifierNode) => identifierNode.identifiers
-        .map(tsql.escapeIdentifierWithBackticks)
+        .map(squill.escapeIdentifierWithBackticks)
         .join("."),
     literalValueSqlfier : {
-        [tsql.LiteralValueType.DECIMAL] : ({literalValue, precision, scale}, toSql) => toSql(
-            tsql.unsafeCastAsDecimal(
+        [squill.LiteralValueType.DECIMAL] : ({literalValue, precision, scale}, toSql) => toSql(
+            squill.unsafeCastAsDecimal(
                 literalValue,
                 precision,
                 scale
             ).ast
         ),
-        [tsql.LiteralValueType.STRING] : ({literalValue}) => tsql.cStyleEscapeString(literalValue),
-        [tsql.LiteralValueType.DOUBLE] : ({literalValue}) => {
+        [squill.LiteralValueType.STRING] : ({literalValue}) => squill.cStyleEscapeString(literalValue),
+        [squill.LiteralValueType.DOUBLE] : ({literalValue}) => {
             if (!isFinite(literalValue)) {
-                throw new tsql.DataOutOfRangeError({
+                throw new squill.DataOutOfRangeError({
                     message : `Literal ${literalValue} not allowed`,
                     /**
                      * @todo Figure out how to get the entire SQL, then throw?
@@ -27,15 +27,15 @@ export const sqlfier : tsql.Sqlfier = {
                     sql : undefined,
                 });
             }
-            return tsql.escapeValue(literalValue);
+            return squill.escapeValue(literalValue);
         },
-        [tsql.LiteralValueType.BIGINT_SIGNED] : ({literalValue}) => tsql.escapeValue(literalValue),
-        [tsql.LiteralValueType.BOOLEAN] : ({literalValue}) => tsql.escapeValue(literalValue),
-        [tsql.LiteralValueType.BUFFER] : ({literalValue}) => tsql.escapeValue(literalValue),
-        [tsql.LiteralValueType.NULL] : ({literalValue}) => tsql.escapeValue(literalValue),
-        [tsql.LiteralValueType.DATE_TIME] : ({literalValue}, toSql) => toSql(
-            tsql.utcStringToTimestamp(
-                tsql.DateTimeUtil.toSqlUtc(literalValue, 3)
+        [squill.LiteralValueType.BIGINT_SIGNED] : ({literalValue}) => squill.escapeValue(literalValue),
+        [squill.LiteralValueType.BOOLEAN] : ({literalValue}) => squill.escapeValue(literalValue),
+        [squill.LiteralValueType.BUFFER] : ({literalValue}) => squill.escapeValue(literalValue),
+        [squill.LiteralValueType.NULL] : ({literalValue}) => squill.escapeValue(literalValue),
+        [squill.LiteralValueType.DATE_TIME] : ({literalValue}, toSql) => toSql(
+            squill.utcStringToTimestamp(
+                squill.DateTimeUtil.toSqlUtc(literalValue, 3)
             ).ast
         ),
     },
@@ -44,51 +44,51 @@ export const sqlfier : tsql.Sqlfier = {
             Comparison Functions and Operators
             https://dev.mysql.com/doc/refman/8.0/en/comparison-operators.html
         */
-        [tsql.OperatorType.BETWEEN_AND] : ({operands}) => [
+        [squill.OperatorType.BETWEEN_AND] : ({operands}) => [
             operands[0],
             "BETWEEN",
             operands[1],
             "AND",
             operands[2]
         ],
-        [tsql.OperatorType.NOT_BETWEEN_AND] : ({operands}) => [
+        [squill.OperatorType.NOT_BETWEEN_AND] : ({operands}) => [
             operands[0],
             "NOT BETWEEN",
             operands[1],
             "AND",
             operands[2]
         ],
-        [tsql.OperatorType.COALESCE] : ({operatorType, operands}) => tsql.functionCall(operatorType, operands),
-        [tsql.OperatorType.EQUAL] : ({operands}) => tsql.AstUtil.insertBetween(operands, "="),
-        [tsql.OperatorType.NULL_SAFE_EQUAL] : ({operands}) => tsql.AstUtil.insertBetween(operands, "<=>"),
-        [tsql.OperatorType.NOT_NULL_SAFE_EQUAL] : ({operands}) => [
+        [squill.OperatorType.COALESCE] : ({operatorType, operands}) => squill.functionCall(operatorType, operands),
+        [squill.OperatorType.EQUAL] : ({operands}) => squill.AstUtil.insertBetween(operands, "="),
+        [squill.OperatorType.NULL_SAFE_EQUAL] : ({operands}) => squill.AstUtil.insertBetween(operands, "<=>"),
+        [squill.OperatorType.NOT_NULL_SAFE_EQUAL] : ({operands}) => [
             "NOT",
             "(",
-            tsql.AstUtil.insertBetween(operands, "<=>"),
+            squill.AstUtil.insertBetween(operands, "<=>"),
             ")"
         ],
-        [tsql.OperatorType.LESS_THAN] : ({operands}) => tsql.AstUtil.insertBetween(operands, "<"),
-        [tsql.OperatorType.GREATER_THAN] : ({operands}) => tsql.AstUtil.insertBetween(operands, ">"),
-        [tsql.OperatorType.LESS_THAN_OR_EQUAL] : ({operands}) => tsql.AstUtil.insertBetween(operands, "<="),
-        [tsql.OperatorType.GREATER_THAN_OR_EQUAL] : ({operands}) => tsql.AstUtil.insertBetween(operands, ">="),
-        [tsql.OperatorType.IN_ARRAY] : ({operands : [x, ...rest]}) => {
+        [squill.OperatorType.LESS_THAN] : ({operands}) => squill.AstUtil.insertBetween(operands, "<"),
+        [squill.OperatorType.GREATER_THAN] : ({operands}) => squill.AstUtil.insertBetween(operands, ">"),
+        [squill.OperatorType.LESS_THAN_OR_EQUAL] : ({operands}) => squill.AstUtil.insertBetween(operands, "<="),
+        [squill.OperatorType.GREATER_THAN_OR_EQUAL] : ({operands}) => squill.AstUtil.insertBetween(operands, ">="),
+        [squill.OperatorType.IN_ARRAY] : ({operands : [x, ...rest]}) => {
             return [
                 x,
-                tsql.functionCall("IN", [...rest])
+                squill.functionCall("IN", [...rest])
             ];
         },
-        [tsql.OperatorType.IN_QUERY] : ({operands : [x, y]}) => {
+        [squill.OperatorType.IN_QUERY] : ({operands : [x, y]}) => {
             /**
-             * https://github.com/AnyhowStep/tsql/issues/198
+             * https://github.com/AnyhowStep/squill/issues/198
              *
              * Not a MySQL problem, but nice to have some consistency
              *
-             * @todo https://github.com/AnyhowStep/tsql/issues/227
+             * @todo https://github.com/AnyhowStep/squill/issues/227
              */
-            let query = tsql.Parentheses.IsParentheses(y) ?
+            let query = squill.Parentheses.IsParentheses(y) ?
                 y.ast :
                 y;
-            if (!tsql.QueryBaseUtil.isQuery(query)) {
+            if (!squill.QueryBaseUtil.isQuery(query)) {
                 throw new Error(`Expected query for IN_QUERY`);
             }
             if (
@@ -97,45 +97,45 @@ export const sqlfier : tsql.Sqlfier = {
                 query.compoundQueryLimitClause != undefined ||
                 query.compoundQueryOrderByClause != undefined
             ) {
-                const derivedTable = tsql.QueryBaseUtil.as(
-                    query as tsql.QueryBaseUtil.AfterSelectClause,
+                const derivedTable = squill.QueryBaseUtil.as(
+                    query as squill.QueryBaseUtil.AfterSelectClause,
                     "tmp"
                 );
                 query = (
-                    tsql.QueryUtil.newInstance()
+                    squill.QueryUtil.newInstance()
                     .from(derivedTable)
                     .select(columns => [
                         columns[
                             Object.keys(columns)[0] as keyof typeof columns
                         ]
                     ] as any)
-                ) as unknown as tsql.IQueryBase;
+                ) as unknown as squill.IQueryBase;
             }
             return [
                 x,
-                tsql.functionCall("IN", [
+                squill.functionCall("IN", [
                     query
                 ])
             ];
         },
-        [tsql.OperatorType.NOT_IN_ARRAY] : ({operands : [x, ...rest]}) => {
+        [squill.OperatorType.NOT_IN_ARRAY] : ({operands : [x, ...rest]}) => {
             return [
                 x,
-                tsql.functionCall("NOT IN", [...rest])
+                squill.functionCall("NOT IN", [...rest])
             ];
         },
-        [tsql.OperatorType.NOT_IN_QUERY] : ({operands : [x, y]}) => {
+        [squill.OperatorType.NOT_IN_QUERY] : ({operands : [x, y]}) => {
             /**
-             * https://github.com/AnyhowStep/tsql/issues/198
+             * https://github.com/AnyhowStep/squill/issues/198
              *
              * Not a MySQL problem, but nice to have some consistency
              *
-             * @todo https://github.com/AnyhowStep/tsql/issues/227
+             * @todo https://github.com/AnyhowStep/squill/issues/227
              */
-            let query = tsql.Parentheses.IsParentheses(y) ?
+            let query = squill.Parentheses.IsParentheses(y) ?
                 y.ast :
                 y;
-            if (!tsql.QueryBaseUtil.isQuery(query)) {
+            if (!squill.QueryBaseUtil.isQuery(query)) {
                 throw new Error(`Expected query for NOT_IN_QUERY`);
             }
             if (
@@ -144,62 +144,62 @@ export const sqlfier : tsql.Sqlfier = {
                 query.compoundQueryLimitClause != undefined ||
                 query.compoundQueryOrderByClause != undefined
             ) {
-                const derivedTable = tsql.QueryBaseUtil.as(
-                    query as tsql.QueryBaseUtil.AfterSelectClause,
+                const derivedTable = squill.QueryBaseUtil.as(
+                    query as squill.QueryBaseUtil.AfterSelectClause,
                     "tmp"
                 );
                 query = (
-                    tsql.QueryUtil.newInstance()
+                    squill.QueryUtil.newInstance()
                     .from(derivedTable)
                     .select(columns => [
                         columns[
                             Object.keys(columns)[0] as keyof typeof columns
                         ]
                     ] as any)
-                ) as unknown as tsql.IQueryBase;
+                ) as unknown as squill.IQueryBase;
             }
             return [
                 x,
-                tsql.functionCall("NOT IN", [
+                squill.functionCall("NOT IN", [
                     query
                 ])
             ];
         },
-        [tsql.OperatorType.IS_NOT_NULL] : ({operands}) => [operands[0], "IS NOT NULL"],
-        [tsql.OperatorType.IS_NULL] : ({operands}) => [operands[0], "IS NULL"],
-        [tsql.OperatorType.IS_UNKNOWN] : ({operands}) => [operands[0], "IS UNKNOWN"],
-        [tsql.OperatorType.IS_NOT_UNKNOWN] : ({operands}) => [operands[0], "IS NOT UNKNOWN"],
-        [tsql.OperatorType.IS_TRUE] : ({operands}) => [operands[0], "IS TRUE"],
-        [tsql.OperatorType.IS_NOT_TRUE] : ({operands}) => [operands[0], "IS NOT TRUE"],
-        [tsql.OperatorType.IS_FALSE] : ({operands}) => [operands[0], "IS FALSE"],
-        [tsql.OperatorType.IS_NOT_FALSE] : ({operands}) => [operands[0], "IS NOT FALSE"],
-        [tsql.OperatorType.LIKE_ESCAPE] : ({operands : [expr, pattern, escapeChar]}) => [
+        [squill.OperatorType.IS_NOT_NULL] : ({operands}) => [operands[0], "IS NOT NULL"],
+        [squill.OperatorType.IS_NULL] : ({operands}) => [operands[0], "IS NULL"],
+        [squill.OperatorType.IS_UNKNOWN] : ({operands}) => [operands[0], "IS UNKNOWN"],
+        [squill.OperatorType.IS_NOT_UNKNOWN] : ({operands}) => [operands[0], "IS NOT UNKNOWN"],
+        [squill.OperatorType.IS_TRUE] : ({operands}) => [operands[0], "IS TRUE"],
+        [squill.OperatorType.IS_NOT_TRUE] : ({operands}) => [operands[0], "IS NOT TRUE"],
+        [squill.OperatorType.IS_FALSE] : ({operands}) => [operands[0], "IS FALSE"],
+        [squill.OperatorType.IS_NOT_FALSE] : ({operands}) => [operands[0], "IS NOT FALSE"],
+        [squill.OperatorType.LIKE_ESCAPE] : ({operands : [expr, pattern, escapeChar]}) => [
             expr, "LIKE", pattern, "ESCAPE", escapeChar
         ],
-        [tsql.OperatorType.NOT_LIKE_ESCAPE] : ({operands : [expr, pattern, escapeChar]}) => [
+        [squill.OperatorType.NOT_LIKE_ESCAPE] : ({operands : [expr, pattern, escapeChar]}) => [
             expr, "NOT LIKE", pattern, "ESCAPE", escapeChar
         ],
-        [tsql.OperatorType.NOT_EQUAL] : ({operands}) => tsql.AstUtil.insertBetween(operands, "<>"),
-        [tsql.OperatorType.LEAST] : ({operatorType, operands}) => tsql.functionCall(operatorType, operands),
-        [tsql.OperatorType.GREATEST] : ({operatorType, operands}) => tsql.functionCall(operatorType, operands),
+        [squill.OperatorType.NOT_EQUAL] : ({operands}) => squill.AstUtil.insertBetween(operands, "<>"),
+        [squill.OperatorType.LEAST] : ({operatorType, operands}) => squill.functionCall(operatorType, operands),
+        [squill.OperatorType.GREATEST] : ({operatorType, operands}) => squill.functionCall(operatorType, operands),
 
         /*
             Logical Operators
             https://dev.mysql.com/doc/refman/8.0/en/logical-operators.html
         */
-       [tsql.OperatorType.AND] : ({operands}) => tsql.AstUtil.insertBetween(operands, "AND"),
-       [tsql.OperatorType.OR] : ({operands}) => tsql.AstUtil.insertBetween(operands, "OR"),
-       [tsql.OperatorType.NOT] : ({operands}) => [
+       [squill.OperatorType.AND] : ({operands}) => squill.AstUtil.insertBetween(operands, "AND"),
+       [squill.OperatorType.OR] : ({operands}) => squill.AstUtil.insertBetween(operands, "OR"),
+       [squill.OperatorType.NOT] : ({operands}) => [
            "NOT",
            operands[0]
        ],
-       [tsql.OperatorType.XOR] : ({operands}) => tsql.AstUtil.insertBetween(operands, "XOR"),
+       [squill.OperatorType.XOR] : ({operands}) => squill.AstUtil.insertBetween(operands, "XOR"),
 
         /*
             Control Flow Functions
             https://dev.mysql.com/doc/refman/8.0/en/control-flow-functions.html
         */
-        [tsql.OperatorType.IF] : ({operands : [a, b, c]}) => [
+        [squill.OperatorType.IF] : ({operands : [a, b, c]}) => [
             "CASE WHEN",
             a,
             "THEN",
@@ -208,54 +208,54 @@ export const sqlfier : tsql.Sqlfier = {
             c,
             "END"
         ],
-        [tsql.OperatorType.IF_NULL] : ({operands}) => tsql.functionCall("IFNULL", operands),
-        [tsql.OperatorType.NULL_IF_EQUAL] : ({operands}) => tsql.functionCall("NULLIF", operands),
+        [squill.OperatorType.IF_NULL] : ({operands}) => squill.functionCall("IFNULL", operands),
+        [squill.OperatorType.NULL_IF_EQUAL] : ({operands}) => squill.functionCall("NULLIF", operands),
 
         /*
             String Functions and Operators
             https://dev.mysql.com/doc/refman/8.0/en/string-functions.html
         */
-        [tsql.OperatorType.ASCII] : ({operands}) => tsql.functionCall("ASCII", operands),
-        [tsql.OperatorType.BIN] : ({operands}) => tsql.functionCall("BIN", operands),
-        [tsql.OperatorType.BIT_LENGTH] : ({operands}) => tsql.functionCall("BIT_LENGTH", operands),
-        [tsql.OperatorType.CHAR_LENGTH] : ({operands}) => tsql.functionCall("CHAR_LENGTH", operands),
-        [tsql.OperatorType.OCTET_LENGTH] : ({operands}) => tsql.functionCall("OCTET_LENGTH", operands),
-        [tsql.OperatorType.CONCAT] : ({operands}) => tsql.functionCall("CONCAT", operands),
-        [tsql.OperatorType.NULL_SAFE_CONCAT] : ({operands}) => tsql.functionCall(
+        [squill.OperatorType.ASCII] : ({operands}) => squill.functionCall("ASCII", operands),
+        [squill.OperatorType.BIN] : ({operands}) => squill.functionCall("BIN", operands),
+        [squill.OperatorType.BIT_LENGTH] : ({operands}) => squill.functionCall("BIT_LENGTH", operands),
+        [squill.OperatorType.CHAR_LENGTH] : ({operands}) => squill.functionCall("CHAR_LENGTH", operands),
+        [squill.OperatorType.OCTET_LENGTH] : ({operands}) => squill.functionCall("OCTET_LENGTH", operands),
+        [squill.OperatorType.CONCAT] : ({operands}) => squill.functionCall("CONCAT", operands),
+        [squill.OperatorType.NULL_SAFE_CONCAT] : ({operands}) => squill.functionCall(
             "CONCAT",
-            operands.map(operand => tsql.functionCall("COALESCE", [operand, "''"]))
+            operands.map(operand => squill.functionCall("COALESCE", [operand, "''"]))
         ),
-        [tsql.OperatorType.CONCAT_WS] : ({operands}) => tsql.functionCall("CONCAT_WS", operands),
-        [tsql.OperatorType.FROM_BASE64] : ({operands}) => tsql.functionCall("FROM_BASE64", operands),
-        [tsql.OperatorType.HEX] : ({operands}) => tsql.functionCall("HEX", operands),
-        [tsql.OperatorType.IN_STR] : ({operands}) => tsql.functionCall("INSTR", operands),
-        [tsql.OperatorType.LPAD] : ({operands}) => tsql.functionCall("LPAD", operands),
-        [tsql.OperatorType.RPAD] : ({operands}) => tsql.functionCall("RPAD", operands),
-        [tsql.OperatorType.LTRIM] : ({operands}) => tsql.functionCall("LTRIM", operands),
-        [tsql.OperatorType.RTRIM] : ({operands}) => tsql.functionCall("RTRIM", operands),
-        [tsql.OperatorType.TRIM] : ({operands}) => tsql.functionCall("TRIM", operands),
-        [tsql.OperatorType.POSITION] : ({operands}) => tsql.functionCall("POSITION", [
-            tsql.AstUtil.insertBetween(operands, "IN")
+        [squill.OperatorType.CONCAT_WS] : ({operands}) => squill.functionCall("CONCAT_WS", operands),
+        [squill.OperatorType.FROM_BASE64] : ({operands}) => squill.functionCall("FROM_BASE64", operands),
+        [squill.OperatorType.HEX] : ({operands}) => squill.functionCall("HEX", operands),
+        [squill.OperatorType.IN_STR] : ({operands}) => squill.functionCall("INSTR", operands),
+        [squill.OperatorType.LPAD] : ({operands}) => squill.functionCall("LPAD", operands),
+        [squill.OperatorType.RPAD] : ({operands}) => squill.functionCall("RPAD", operands),
+        [squill.OperatorType.LTRIM] : ({operands}) => squill.functionCall("LTRIM", operands),
+        [squill.OperatorType.RTRIM] : ({operands}) => squill.functionCall("RTRIM", operands),
+        [squill.OperatorType.TRIM] : ({operands}) => squill.functionCall("TRIM", operands),
+        [squill.OperatorType.POSITION] : ({operands}) => squill.functionCall("POSITION", [
+            squill.AstUtil.insertBetween(operands, "IN")
         ]),
-        [tsql.OperatorType.REPEAT] : ({operands}) => tsql.functionCall("REPEAT", operands),
-        [tsql.OperatorType.REPLACE] : ({operands}) => tsql.functionCall("REPLACE", operands),
-        [tsql.OperatorType.REVERSE] : ({operands}) => tsql.functionCall("REVERSE", operands),
-        [tsql.OperatorType.TO_BASE64] : ({operands}) => tsql.functionCall("TO_BASE64", operands),
-        [tsql.OperatorType.UNHEX] : ({operands}) => tsql.functionCall("UNHEX", operands),
-        [tsql.OperatorType.UPPER] : ({operands}) => tsql.functionCall("UPPER", operands),
-        [tsql.OperatorType.LOWER] : ({operands}) => tsql.functionCall("LOWER", operands),
+        [squill.OperatorType.REPEAT] : ({operands}) => squill.functionCall("REPEAT", operands),
+        [squill.OperatorType.REPLACE] : ({operands}) => squill.functionCall("REPLACE", operands),
+        [squill.OperatorType.REVERSE] : ({operands}) => squill.functionCall("REVERSE", operands),
+        [squill.OperatorType.TO_BASE64] : ({operands}) => squill.functionCall("TO_BASE64", operands),
+        [squill.OperatorType.UNHEX] : ({operands}) => squill.functionCall("UNHEX", operands),
+        [squill.OperatorType.UPPER] : ({operands}) => squill.functionCall("UPPER", operands),
+        [squill.OperatorType.LOWER] : ({operands}) => squill.functionCall("LOWER", operands),
 
         /*
             Arithmetic Operators
             https://dev.mysql.com/doc/refman/8.0/en/arithmetic-functions.html
         */
-        [tsql.OperatorType.ADDITION]: ({operands}) => tsql.AstUtil.insertBetween(operands, "+"),
-        [tsql.OperatorType.SUBTRACTION]: ({operands}) => tsql.AstUtil.insertBetween(operands, "-"),
-        [tsql.OperatorType.MULTIPLICATION]: ({operands}) => tsql.AstUtil.insertBetween(operands, "*"),
-        [tsql.OperatorType.INTEGER_DIVISION]: ({operands}) => tsql.AstUtil.insertBetween(operands, "DIV"),
-        [tsql.OperatorType.FRACTIONAL_DIVISION]: ({operands}) => tsql.AstUtil.insertBetween(operands, "/"),
-        [tsql.OperatorType.UNARY_MINUS]: ({operands, typeHint}) => {
-            if (typeHint == tsql.TypeHint.BIGINT_SIGNED) {
+        [squill.OperatorType.ADDITION]: ({operands}) => squill.AstUtil.insertBetween(operands, "+"),
+        [squill.OperatorType.SUBTRACTION]: ({operands}) => squill.AstUtil.insertBetween(operands, "-"),
+        [squill.OperatorType.MULTIPLICATION]: ({operands}) => squill.AstUtil.insertBetween(operands, "*"),
+        [squill.OperatorType.INTEGER_DIVISION]: ({operands}) => squill.AstUtil.insertBetween(operands, "DIV"),
+        [squill.OperatorType.FRACTIONAL_DIVISION]: ({operands}) => squill.AstUtil.insertBetween(operands, "/"),
+        [squill.OperatorType.UNARY_MINUS]: ({operands, typeHint}) => {
+            if (typeHint == squill.TypeHint.BIGINT_SIGNED) {
                 /**
                  * @todo Decide how to handle,
                  * ```sql
@@ -276,42 +276,42 @@ export const sqlfier : tsql.Sqlfier = {
             Mathematical Functions
             https://dev.mysql.com/doc/refman/8.0/en/mathematical-functions.html
         */
-        [tsql.OperatorType.ABSOLUTE_VALUE] : ({operands}) => tsql.functionCall("ABS", operands),
-        [tsql.OperatorType.ARC_COSINE] : ({operands}) => tsql.functionCall("ACOS", operands),
-        [tsql.OperatorType.ARC_SINE] : ({operands}) => tsql.functionCall("ASIN", operands),
-        [tsql.OperatorType.ARC_TANGENT] : ({operands}) => tsql.functionCall("ATAN", operands),
-        [tsql.OperatorType.ARC_TANGENT_2] : ({operands}) => tsql.functionCall("ATAN2", operands),
-        [tsql.OperatorType.CUBE_ROOT] : ({operands}) => tsql.functionCall(
+        [squill.OperatorType.ABSOLUTE_VALUE] : ({operands}) => squill.functionCall("ABS", operands),
+        [squill.OperatorType.ARC_COSINE] : ({operands}) => squill.functionCall("ACOS", operands),
+        [squill.OperatorType.ARC_SINE] : ({operands}) => squill.functionCall("ASIN", operands),
+        [squill.OperatorType.ARC_TANGENT] : ({operands}) => squill.functionCall("ATAN", operands),
+        [squill.OperatorType.ARC_TANGENT_2] : ({operands}) => squill.functionCall("ATAN2", operands),
+        [squill.OperatorType.CUBE_ROOT] : ({operands}) => squill.functionCall(
             "IF",
             [
                 [operands[0], ">= 0"],
-                tsql.functionCall("POWER", [...operands, "1.0/3.0"]),
+                squill.functionCall("POWER", [...operands, "1.0/3.0"]),
                 [
                     "-",
-                    tsql.functionCall("POWER", [
+                    squill.functionCall("POWER", [
                         ["-(", operands[0], ")"],
                         "1.0/3.0"
                     ])
                 ]
             ]
         ),
-        [tsql.OperatorType.CEILING] : ({operands}) => tsql.functionCall("CEILING", operands),
-        [tsql.OperatorType.COSINE] : ({operands}) => tsql.functionCall("COS", operands),
-        [tsql.OperatorType.COTANGENT] : ({operands}) => tsql.functionCall("COT", operands),
-        [tsql.OperatorType.DEGREES] : ({operands}) => tsql.functionCall("DEGREES", operands),
-        [tsql.OperatorType.NATURAL_EXPONENTIATION] : ({operands}) => tsql.functionCall("EXP", operands),
-        [tsql.OperatorType.FLOOR] : ({operands}) => tsql.functionCall("FLOOR", operands),
-        [tsql.OperatorType.LN] : ({operands}) => tsql.functionCall("LN", operands),
-        [tsql.OperatorType.LOG] : ({operands}) => tsql.functionCall("LOG", operands),
-        [tsql.OperatorType.LOG2] : ({operands}) => tsql.functionCall("LOG2", operands),
-        [tsql.OperatorType.LOG10] : ({operands}) => tsql.functionCall("LOG10", operands),
-        [tsql.OperatorType.PI] : () => `3.141592653589793e0`, //e0 to make it a double
-        [tsql.OperatorType.POWER] : ({operands}) => tsql.functionCall("POWER", operands),
-        [tsql.OperatorType.RADIANS] : ({operands}) => tsql.functionCall("RADIANS", operands),
-        [tsql.OperatorType.RANDOM] : ({operands, typeHint}, toSql) => {
-            if (typeHint == tsql.TypeHint.DOUBLE) {
-                return tsql.functionCall("RAND", operands);
-            } else if (typeHint == tsql.TypeHint.BIGINT_SIGNED) {
+        [squill.OperatorType.CEILING] : ({operands}) => squill.functionCall("CEILING", operands),
+        [squill.OperatorType.COSINE] : ({operands}) => squill.functionCall("COS", operands),
+        [squill.OperatorType.COTANGENT] : ({operands}) => squill.functionCall("COT", operands),
+        [squill.OperatorType.DEGREES] : ({operands}) => squill.functionCall("DEGREES", operands),
+        [squill.OperatorType.NATURAL_EXPONENTIATION] : ({operands}) => squill.functionCall("EXP", operands),
+        [squill.OperatorType.FLOOR] : ({operands}) => squill.functionCall("FLOOR", operands),
+        [squill.OperatorType.LN] : ({operands}) => squill.functionCall("LN", operands),
+        [squill.OperatorType.LOG] : ({operands}) => squill.functionCall("LOG", operands),
+        [squill.OperatorType.LOG2] : ({operands}) => squill.functionCall("LOG2", operands),
+        [squill.OperatorType.LOG10] : ({operands}) => squill.functionCall("LOG10", operands),
+        [squill.OperatorType.PI] : () => `3.141592653589793e0`, //e0 to make it a double
+        [squill.OperatorType.POWER] : ({operands}) => squill.functionCall("POWER", operands),
+        [squill.OperatorType.RADIANS] : ({operands}) => squill.functionCall("RADIANS", operands),
+        [squill.OperatorType.RANDOM] : ({operands, typeHint}, toSql) => {
+            if (typeHint == squill.TypeHint.DOUBLE) {
+                return squill.functionCall("RAND", operands);
+            } else if (typeHint == squill.TypeHint.BIGINT_SIGNED) {
                 /**
                  * `RAND()` returns `0.0 <= v < 1.0`.
                  *
@@ -324,18 +324,18 @@ export const sqlfier : tsql.Sqlfier = {
                 /**
                  * `0.0 <= v < 1.0`
                  */
-                const randomDecimal = tsql.unsafeCastAsDecimal(
-                    tsql.double.random(),
+                const randomDecimal = squill.unsafeCastAsDecimal(
+                    squill.double.random(),
                     65,
                     30
                 );
                 /**
                  * `0 <= v < 9223372036854775807`
                  */
-                const randomNonNegative = tsql.decimal.floor(
-                    tsql.decimal.mul(
+                const randomNonNegative = squill.decimal.floor(
+                    squill.decimal.mul(
                         randomDecimal,
-                        tsql.decimalLiteral(
+                        squill.decimalLiteral(
                             "9223372036854775807",
                             65,
                             30
@@ -345,29 +345,29 @@ export const sqlfier : tsql.Sqlfier = {
                 /**
                  * `-9223372036854775808 <= v < 0`
                  */
-                const randomNegative = tsql.decimal.sub(
+                const randomNegative = squill.decimal.sub(
                     /**
                      * `-9223372036854775808 < v <= 0`
                      */
-                    tsql.decimal.floor(
-                        tsql.decimal.mul(
+                    squill.decimal.floor(
+                        squill.decimal.mul(
                             randomDecimal,
-                            tsql.decimalLiteral(
+                            squill.decimalLiteral(
                                 "-9223372036854775808",
                                 65,
                                 30
                             )
                         )
                     ),
-                    tsql.decimalLiteral(1, 65, 30)
+                    squill.decimalLiteral(1, 65, 30)
                 );
-                const randomBigIntSigned = tsql.if(
-                    tsql.lt(
-                        tsql.double.random(),
+                const randomBigIntSigned = squill.if(
+                    squill.lt(
+                        squill.double.random(),
                         0.5
                     ),
-                    tsql.unsafeCastAsBigIntSigned(randomNonNegative),
-                    tsql.unsafeCastAsBigIntSigned(randomNegative)
+                    squill.unsafeCastAsBigIntSigned(randomNonNegative),
+                    squill.unsafeCastAsBigIntSigned(randomNegative)
                 );
 
                 return toSql(randomBigIntSigned.ast);
@@ -375,22 +375,22 @@ export const sqlfier : tsql.Sqlfier = {
                 throw new Error(`RANDOM not implemented for ${typeHint}`);
             }
         },
-        //[tsql.OperatorType.ROUND] : ({operands}) => tsql.functionCall("ROUND", operands),
-        [tsql.OperatorType.SIGN] : ({operands}) => tsql.functionCall("SIGN", operands),
-        [tsql.OperatorType.SINE] : ({operands}) => tsql.functionCall("SIN", operands),
-        [tsql.OperatorType.SQUARE_ROOT] : ({operands}) => tsql.functionCall("SQRT", operands),
-        [tsql.OperatorType.TANGENT] : ({operands}) => tsql.functionCall("TAN", operands),
-        //[tsql.OperatorType.TRUNCATE] : ({operands}) => tsql.functionCall("TRUNCATE", operands),
-        [tsql.OperatorType.INTEGER_REMAINDER] : ({operands, typeHint}) => {
-            if (typeHint == tsql.TypeHint.BIGINT_SIGNED) {
-                return tsql.AstUtil.insertBetween(operands, "%");
+        //[squill.OperatorType.ROUND] : ({operands}) => squill.functionCall("ROUND", operands),
+        [squill.OperatorType.SIGN] : ({operands}) => squill.functionCall("SIGN", operands),
+        [squill.OperatorType.SINE] : ({operands}) => squill.functionCall("SIN", operands),
+        [squill.OperatorType.SQUARE_ROOT] : ({operands}) => squill.functionCall("SQRT", operands),
+        [squill.OperatorType.TANGENT] : ({operands}) => squill.functionCall("TAN", operands),
+        //[squill.OperatorType.TRUNCATE] : ({operands}) => squill.functionCall("TRUNCATE", operands),
+        [squill.OperatorType.INTEGER_REMAINDER] : ({operands, typeHint}) => {
+            if (typeHint == squill.TypeHint.BIGINT_SIGNED) {
+                return squill.AstUtil.insertBetween(operands, "%");
             } else {
                 throw new Error(`INTEGER_REMAINDER not implemented for ${typeHint}`);
             }
         },
-        [tsql.OperatorType.FRACTIONAL_REMAINDER] : ({operands, typeHint}) => {
-            if (typeHint == tsql.TypeHint.DOUBLE || typeHint == tsql.TypeHint.DECIMAL) {
-                return tsql.AstUtil.insertBetween(operands, "%");
+        [squill.OperatorType.FRACTIONAL_REMAINDER] : ({operands, typeHint}) => {
+            if (typeHint == squill.TypeHint.DOUBLE || typeHint == squill.TypeHint.DECIMAL) {
+                return squill.AstUtil.insertBetween(operands, "%");
             } else {
                 throw new Error(`FRACTIONAL_REMAINDER not implemented for ${typeHint}`);
             }
@@ -400,27 +400,27 @@ export const sqlfier : tsql.Sqlfier = {
             Date and Time Functions
             https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html
         */
-        [tsql.OperatorType.CURRENT_DATE] : () => tsql.functionCall(
+        [squill.OperatorType.CURRENT_DATE] : () => squill.functionCall(
             "CURRENT_DATE",
             []
         ),
-        [tsql.OperatorType.CURRENT_TIMESTAMP_0] : () => tsql.functionCall(
+        [squill.OperatorType.CURRENT_TIMESTAMP_0] : () => squill.functionCall(
             "CURRENT_TIMESTAMP",
             ["0"]
         ),
-        [tsql.OperatorType.CURRENT_TIMESTAMP_1] : () => tsql.functionCall(
+        [squill.OperatorType.CURRENT_TIMESTAMP_1] : () => squill.functionCall(
             "CURRENT_TIMESTAMP",
             ["1"]
         ),
-        [tsql.OperatorType.CURRENT_TIMESTAMP_2] : () => tsql.functionCall(
+        [squill.OperatorType.CURRENT_TIMESTAMP_2] : () => squill.functionCall(
             "CURRENT_TIMESTAMP",
             ["2"]
         ),
-        [tsql.OperatorType.CURRENT_TIMESTAMP_3] : () => tsql.functionCall(
+        [squill.OperatorType.CURRENT_TIMESTAMP_3] : () => squill.functionCall(
             "CURRENT_TIMESTAMP",
             ["3"]
         ),
-        [tsql.OperatorType.EXTRACT_YEAR] : ({operands}) => tsql.functionCall(
+        [squill.OperatorType.EXTRACT_YEAR] : ({operands}) => squill.functionCall(
             "EXTRACT",
             [
                 [
@@ -429,7 +429,7 @@ export const sqlfier : tsql.Sqlfier = {
                 ]
             ]
         ),
-        [tsql.OperatorType.EXTRACT_MONTH] : ({operands}) => tsql.functionCall(
+        [squill.OperatorType.EXTRACT_MONTH] : ({operands}) => squill.functionCall(
             "EXTRACT",
             [
                 [
@@ -438,7 +438,7 @@ export const sqlfier : tsql.Sqlfier = {
                 ]
             ]
         ),
-        [tsql.OperatorType.EXTRACT_DAY] : ({operands}) => tsql.functionCall(
+        [squill.OperatorType.EXTRACT_DAY] : ({operands}) => squill.functionCall(
             "EXTRACT",
             [
                 [
@@ -447,7 +447,7 @@ export const sqlfier : tsql.Sqlfier = {
                 ]
             ]
         ),
-        [tsql.OperatorType.EXTRACT_HOUR] : ({operands}) => tsql.functionCall(
+        [squill.OperatorType.EXTRACT_HOUR] : ({operands}) => squill.functionCall(
             "EXTRACT",
             [
                 [
@@ -456,7 +456,7 @@ export const sqlfier : tsql.Sqlfier = {
                 ]
             ]
         ),
-        [tsql.OperatorType.EXTRACT_MINUTE] : ({operands}) => tsql.functionCall(
+        [squill.OperatorType.EXTRACT_MINUTE] : ({operands}) => squill.functionCall(
             "EXTRACT",
             [
                 [
@@ -465,7 +465,7 @@ export const sqlfier : tsql.Sqlfier = {
                 ]
             ]
         ),
-        [tsql.OperatorType.EXTRACT_INTEGER_SECOND] : ({operands}) => tsql.functionCall(
+        [squill.OperatorType.EXTRACT_INTEGER_SECOND] : ({operands}) => squill.functionCall(
             "EXTRACT",
             [
                 [
@@ -474,8 +474,8 @@ export const sqlfier : tsql.Sqlfier = {
                 ]
             ]
         ),
-        [tsql.OperatorType.EXTRACT_FRACTIONAL_SECOND_3] : ({operands}) => [
-            tsql.functionCall(
+        [squill.OperatorType.EXTRACT_FRACTIONAL_SECOND_3] : ({operands}) => [
+            squill.functionCall(
                 "EXTRACT",
                 [
                     [
@@ -485,11 +485,11 @@ export const sqlfier : tsql.Sqlfier = {
                 ]
             ),
             "+",
-            tsql.functionCall(
+            squill.functionCall(
                 "FLOOR",
                 [
                     [
-                        tsql.functionCall(
+                        squill.functionCall(
                             "EXTRACT",
                             [
                                 [
@@ -506,11 +506,11 @@ export const sqlfier : tsql.Sqlfier = {
             "/",
             "1000e0"
         ],
-        [tsql.OperatorType.LAST_DAY] : ({operands}) => tsql.functionCall(
+        [squill.OperatorType.LAST_DAY] : ({operands}) => squill.functionCall(
             "LAST_DAY",
             operands
         ),
-        [tsql.OperatorType.TIMESTAMPADD_YEAR] : ({operands}) => tsql.functionCall(
+        [squill.OperatorType.TIMESTAMPADD_YEAR] : ({operands}) => squill.functionCall(
             "TIMESTAMPADD",
             [
                 "YEAR",
@@ -518,7 +518,7 @@ export const sqlfier : tsql.Sqlfier = {
                 operands[1]
             ]
         ),
-        [tsql.OperatorType.TIMESTAMPADD_MONTH] : ({operands}) => tsql.functionCall(
+        [squill.OperatorType.TIMESTAMPADD_MONTH] : ({operands}) => squill.functionCall(
             "TIMESTAMPADD",
             [
                 "MONTH",
@@ -526,7 +526,7 @@ export const sqlfier : tsql.Sqlfier = {
                 operands[1]
             ]
         ),
-        [tsql.OperatorType.TIMESTAMPADD_DAY] : ({operands}) => tsql.functionCall(
+        [squill.OperatorType.TIMESTAMPADD_DAY] : ({operands}) => squill.functionCall(
             "TIMESTAMPADD",
             [
                 "DAY",
@@ -534,7 +534,7 @@ export const sqlfier : tsql.Sqlfier = {
                 operands[1]
             ]
         ),
-        [tsql.OperatorType.TIMESTAMPADD_HOUR] : ({operands}) => tsql.functionCall(
+        [squill.OperatorType.TIMESTAMPADD_HOUR] : ({operands}) => squill.functionCall(
             "TIMESTAMPADD",
             [
                 "HOUR",
@@ -542,7 +542,7 @@ export const sqlfier : tsql.Sqlfier = {
                 operands[1]
             ]
         ),
-        [tsql.OperatorType.TIMESTAMPADD_MINUTE] : ({operands}) => tsql.functionCall(
+        [squill.OperatorType.TIMESTAMPADD_MINUTE] : ({operands}) => squill.functionCall(
             "TIMESTAMPADD",
             [
                 "MINUTE",
@@ -550,7 +550,7 @@ export const sqlfier : tsql.Sqlfier = {
                 operands[1]
             ]
         ),
-        [tsql.OperatorType.TIMESTAMPADD_SECOND] : ({operands}) => tsql.functionCall(
+        [squill.OperatorType.TIMESTAMPADD_SECOND] : ({operands}) => squill.functionCall(
             "TIMESTAMPADD",
             [
                 "SECOND",
@@ -558,7 +558,7 @@ export const sqlfier : tsql.Sqlfier = {
                 operands[1]
             ]
         ),
-        [tsql.OperatorType.TIMESTAMPADD_MILLISECOND] : ({operands}) => tsql.functionCall(
+        [squill.OperatorType.TIMESTAMPADD_MILLISECOND] : ({operands}) => squill.functionCall(
             "TIMESTAMPADD",
             [
                 "MICROSECOND",
@@ -570,7 +570,7 @@ export const sqlfier : tsql.Sqlfier = {
                 operands[1]
             ]
         ),
-        [tsql.OperatorType.TIMESTAMPDIFF_DAY] : ({operands}) => tsql.functionCall(
+        [squill.OperatorType.TIMESTAMPDIFF_DAY] : ({operands}) => squill.functionCall(
             "TIMESTAMPDIFF",
             [
                 "DAY",
@@ -578,7 +578,7 @@ export const sqlfier : tsql.Sqlfier = {
                 operands[1]
             ]
         ),
-        [tsql.OperatorType.TIMESTAMPDIFF_HOUR] : ({operands}) => tsql.functionCall(
+        [squill.OperatorType.TIMESTAMPDIFF_HOUR] : ({operands}) => squill.functionCall(
             "TIMESTAMPDIFF",
             [
                 "HOUR",
@@ -586,7 +586,7 @@ export const sqlfier : tsql.Sqlfier = {
                 operands[1]
             ]
         ),
-        [tsql.OperatorType.TIMESTAMPDIFF_MINUTE] : ({operands}) => tsql.functionCall(
+        [squill.OperatorType.TIMESTAMPDIFF_MINUTE] : ({operands}) => squill.functionCall(
             "TIMESTAMPDIFF",
             [
                 "MINUTE",
@@ -594,7 +594,7 @@ export const sqlfier : tsql.Sqlfier = {
                 operands[1]
             ]
         ),
-        [tsql.OperatorType.TIMESTAMPDIFF_SECOND] : ({operands}) => tsql.functionCall(
+        [squill.OperatorType.TIMESTAMPDIFF_SECOND] : ({operands}) => squill.functionCall(
             "TIMESTAMPDIFF",
             [
                 "SECOND",
@@ -602,11 +602,11 @@ export const sqlfier : tsql.Sqlfier = {
                 operands[1]
             ]
         ),
-        [tsql.OperatorType.TIMESTAMPDIFF_MILLISECOND] : ({operands}) => tsql.functionCall(
+        [squill.OperatorType.TIMESTAMPDIFF_MILLISECOND] : ({operands}) => squill.functionCall(
             "CAST",
             [
                 [
-                    tsql.functionCall(
+                    squill.functionCall(
                         "TIMESTAMPDIFF",
                         [
                             "MICROSECOND",
@@ -618,7 +618,7 @@ export const sqlfier : tsql.Sqlfier = {
                 ]
             ]
         ),
-        [tsql.OperatorType.UNIX_TIMESTAMP_NOW] : ({}) => tsql.functionCall(
+        [squill.OperatorType.UNIX_TIMESTAMP_NOW] : ({}) => squill.functionCall(
             "UNIX_TIMESTAMP",
             []
         ),
@@ -631,10 +631,10 @@ export const sqlfier : tsql.Sqlfier = {
          * This should already be done by `pool.acquire()`
          *
          * We **must not** use `CONVERT_TZ()` because it is not Y2038-safe!
-         * + https://github.com/AnyhowStep/tsql/issues/131
+         * + https://github.com/AnyhowStep/squill/issues/131
          * + https://bugs.mysql.com/bug.php?id=71758
          */
-        [tsql.OperatorType.UTC_STRING_TO_TIMESTAMP_CONSTRUCTOR] : ({operands}) => tsql.functionCall(
+        [squill.OperatorType.UTC_STRING_TO_TIMESTAMP_CONSTRUCTOR] : ({operands}) => squill.functionCall(
             "TIMESTAMP",
             operands
         ),
@@ -643,7 +643,7 @@ export const sqlfier : tsql.Sqlfier = {
             Cast Functions and Operators
             https://dev.mysql.com/doc/refman/8.0/en/cast-functions.html
         */
-        [tsql.OperatorType.CAST_AS_JSON] : ({operands : [arg]}) => tsql.functionCall(
+        [squill.OperatorType.CAST_AS_JSON] : ({operands : [arg]}) => squill.functionCall(
             "CAST",
             [
                 [
@@ -652,7 +652,7 @@ export const sqlfier : tsql.Sqlfier = {
                 ]
             ]
         ),
-        [tsql.OperatorType.CAST_AS_BINARY] : ({operands : [arg]}) => tsql.functionCall(
+        [squill.OperatorType.CAST_AS_BINARY] : ({operands : [arg]}) => squill.functionCall(
             "CAST",
             [
                 [
@@ -661,7 +661,7 @@ export const sqlfier : tsql.Sqlfier = {
                 ]
             ]
         ),
-        [tsql.OperatorType.CAST_AS_VARCHAR] : ({operands : [arg]}) => tsql.functionCall(
+        [squill.OperatorType.CAST_AS_VARCHAR] : ({operands : [arg]}) => squill.functionCall(
             "CAST",
             [
                 [
@@ -670,14 +670,14 @@ export const sqlfier : tsql.Sqlfier = {
                 ]
             ]
         ),
-        [tsql.OperatorType.CAST_AS_DOUBLE] : ({operands : [x]}, toSql) => `((${toSql(x)}) + 0e0)`,
-        [tsql.OperatorType.CAST_AS_DECIMAL] : ({operands : [arg, precision, scale]}, toSql) => tsql.functionCall(
+        [squill.OperatorType.CAST_AS_DOUBLE] : ({operands : [x]}, toSql) => `((${toSql(x)}) + 0e0)`,
+        [squill.OperatorType.CAST_AS_DECIMAL] : ({operands : [arg, precision, scale]}, toSql) => squill.functionCall(
             "CAST",
             [
                 toSql(arg) + `AS DECIMAL(${toSql(precision)}, ${toSql(scale)})`
             ]
         ),
-        [tsql.OperatorType.CAST_AS_BIGINT_SIGNED] : ({operands : [arg]}, toSql) => tsql.functionCall(
+        [squill.OperatorType.CAST_AS_BIGINT_SIGNED] : ({operands : [arg]}, toSql) => squill.functionCall(
             "CAST",
             [
                 toSql(arg) + `AS SIGNED INTEGER`
@@ -688,17 +688,17 @@ export const sqlfier : tsql.Sqlfier = {
             Bit Functions and Operators
             https://dev.mysql.com/doc/refman/8.0/en/bit-functions.html
         */
-        [tsql.OperatorType.BITWISE_AND] : ({operands, typeHint}) => {
-            if (typeHint == tsql.TypeHint.BIGINT_SIGNED) {
+        [squill.OperatorType.BITWISE_AND] : ({operands, typeHint}) => {
+            if (typeHint == squill.TypeHint.BIGINT_SIGNED) {
                 /**
                  * MySQL does the bitwise-and, then casts to unsigned.
                  * But we do not want that.
                  */
-                return tsql.functionCall(
+                return squill.functionCall(
                     "CAST",
                     [
                         [
-                            tsql.AstUtil.insertBetween(operands, "&"),
+                            squill.AstUtil.insertBetween(operands, "&"),
                             "AS SIGNED INTEGER"
                         ]
                     ]
@@ -707,17 +707,17 @@ export const sqlfier : tsql.Sqlfier = {
                 throw new Error(`BITWISE_AND not implemented for typeHint ${typeHint}`);
             }
         },
-        [tsql.OperatorType.BITWISE_OR] : ({operands, typeHint}) => {
-            if (typeHint == tsql.TypeHint.BIGINT_SIGNED) {
+        [squill.OperatorType.BITWISE_OR] : ({operands, typeHint}) => {
+            if (typeHint == squill.TypeHint.BIGINT_SIGNED) {
                 /**
                  * MySQL does the bitwise-or, then casts to unsigned.
                  * But we do not want that.
                  */
-                return tsql.functionCall(
+                return squill.functionCall(
                     "CAST",
                     [
                         [
-                            tsql.AstUtil.insertBetween(operands, "|"),
+                            squill.AstUtil.insertBetween(operands, "|"),
                             "AS SIGNED INTEGER"
                         ]
                     ]
@@ -726,17 +726,17 @@ export const sqlfier : tsql.Sqlfier = {
                 throw new Error(`BITWISE_OR not implemented for typeHint ${typeHint}`);
             }
         },
-        [tsql.OperatorType.BITWISE_XOR] : ({operands, typeHint}) => {
-            if (typeHint == tsql.TypeHint.BIGINT_SIGNED) {
+        [squill.OperatorType.BITWISE_XOR] : ({operands, typeHint}) => {
+            if (typeHint == squill.TypeHint.BIGINT_SIGNED) {
                 /**
                  * MySQL does the bitwise-xor, then casts to unsigned.
                  * But we do not want that.
                  */
-                return tsql.functionCall(
+                return squill.functionCall(
                     "CAST",
                     [
                         [
-                            tsql.AstUtil.insertBetween(operands, "^"),
+                            squill.AstUtil.insertBetween(operands, "^"),
                             "AS SIGNED INTEGER"
                         ]
                     ]
@@ -745,13 +745,13 @@ export const sqlfier : tsql.Sqlfier = {
                 throw new Error(`BITWISE_XOR not implemented for typeHint ${typeHint}`);
             }
         },
-        [tsql.OperatorType.BITWISE_NOT] : ({operands, typeHint}) => {
-            if (typeHint == tsql.TypeHint.BIGINT_SIGNED) {
+        [squill.OperatorType.BITWISE_NOT] : ({operands, typeHint}) => {
+            if (typeHint == squill.TypeHint.BIGINT_SIGNED) {
                 /**
                  * MySQL does the bitwise-not, then casts to unsigned.
                  * But we do not want that.
                  */
-                return tsql.functionCall(
+                return squill.functionCall(
                     "CAST",
                     [
                         [
@@ -764,17 +764,17 @@ export const sqlfier : tsql.Sqlfier = {
                 throw new Error(`BITWISE_NOT not implemented for typeHint ${typeHint}`);
             }
         },
-        [tsql.OperatorType.BITWISE_LEFT_SHIFT] : ({operands, typeHint}) => {
-            if (typeHint == tsql.TypeHint.BIGINT_SIGNED) {
+        [squill.OperatorType.BITWISE_LEFT_SHIFT] : ({operands, typeHint}) => {
+            if (typeHint == squill.TypeHint.BIGINT_SIGNED) {
                 /**
                  * MySQL does the bitwise-left-shift, then casts to unsigned.
                  * But we do not want that.
                  */
-                return tsql.functionCall(
+                return squill.functionCall(
                     "CAST",
                     [
                         [
-                            tsql.AstUtil.insertBetween(operands, "<<"),
+                            squill.AstUtil.insertBetween(operands, "<<"),
                             "AS SIGNED INTEGER"
                         ]
                     ]
@@ -783,18 +783,18 @@ export const sqlfier : tsql.Sqlfier = {
                 throw new Error(`BITWISE_LEFT_SHIFT not implemented for typeHint ${typeHint}`);
             }
         },
-        [tsql.OperatorType.BITWISE_RIGHT_SHIFT] : ({operands, typeHint}) => {
-            if (typeHint == tsql.TypeHint.BIGINT_SIGNED) {
+        [squill.OperatorType.BITWISE_RIGHT_SHIFT] : ({operands, typeHint}) => {
+            if (typeHint == squill.TypeHint.BIGINT_SIGNED) {
                 /**
                  * MySQL does the bitwise-right-shift, then casts to unsigned.
                  * But we do not want that.
                  */
                 /*
-                return tsql.functionCall(
+                return squill.functionCall(
                     "CAST",
                     [
                         [
-                            tsql.AstUtil.insertBetween(operands, ">>"),
+                            squill.AstUtil.insertBetween(operands, ">>"),
                             "AS SIGNED INTEGER"
                         ]
                     ]
@@ -805,28 +805,28 @@ export const sqlfier : tsql.Sqlfier = {
                  *
                  * @see https://www.tutorialspoint.com/Bitwise-right-shift-operator-in-Java
                  */
-                const unsignedRightShift = tsql.functionCall(
+                const unsignedRightShift = squill.functionCall(
                     "CAST",
                     [
                         [
-                            tsql.AstUtil.insertBetween(operands, ">>"),
+                            squill.AstUtil.insertBetween(operands, ">>"),
                             "AS SIGNED INTEGER"
                         ]
                     ]
                 );
-                const signedRightShift = tsql.functionCall(
+                const signedRightShift = squill.functionCall(
                     "CAST",
                     [
                         [
                             [
-                                tsql.parentheses(
-                                    tsql.AstUtil.insertBetween(operands, ">>"),
+                                squill.parentheses(
+                                    squill.AstUtil.insertBetween(operands, ">>"),
                                     false
                                 ),
                                 "|",
                                 [
                                     "~",
-                                    tsql.parentheses(
+                                    squill.parentheses(
                                         ["18446744073709551615", ">>", operands[1]],
                                         false
                                     )
@@ -836,7 +836,7 @@ export const sqlfier : tsql.Sqlfier = {
                         ]
                     ]
                 );
-                return tsql.functionCall(
+                return squill.functionCall(
                     "IF",
                     [
                         [operands[0], ">= 0"],
@@ -853,95 +853,95 @@ export const sqlfier : tsql.Sqlfier = {
             Aggregate (GROUP BY) Function Descriptions
             https://dev.mysql.com/doc/refman/8.0/en/group-by-functions.html
         */
-        [tsql.OperatorType.AGGREGATE_COUNT_ALL] : () => tsql.functionCall("COUNT", ["*"]),
-        [tsql.OperatorType.AGGREGATE_COUNT_EXPR] : ({operands, operatorType}) => {
+        [squill.OperatorType.AGGREGATE_COUNT_ALL] : () => squill.functionCall("COUNT", ["*"]),
+        [squill.OperatorType.AGGREGATE_COUNT_EXPR] : ({operands, operatorType}) => {
             if (operands.length == 2) {
                 const [isDistinct, expr] = operands;
                 if (
-                    tsql.LiteralValueNodeUtil.isLiteralValueNode(isDistinct) &&
+                    squill.LiteralValueNodeUtil.isLiteralValueNode(isDistinct) &&
                     isDistinct.literalValue === true
                 ) {
-                    return tsql.functionCall("COUNT", [["DISTINCT", expr]]);
+                    return squill.functionCall("COUNT", [["DISTINCT", expr]]);
                 } else {
-                    return tsql.functionCall("COUNT", [expr]);
+                    return squill.functionCall("COUNT", [expr]);
                 }
             } else {
                 throw new Error(`${operatorType} only implemented for 2 args`);
             }
         },
-        [tsql.OperatorType.AGGREGATE_AVERAGE] : ({operands, operatorType}) => {
+        [squill.OperatorType.AGGREGATE_AVERAGE] : ({operands, operatorType}) => {
             if (operands.length == 2) {
                 const [isDistinct, expr] = operands;
                 if (
-                    tsql.LiteralValueNodeUtil.isLiteralValueNode(isDistinct) &&
+                    squill.LiteralValueNodeUtil.isLiteralValueNode(isDistinct) &&
                     isDistinct.literalValue === true
                 ) {
-                    return tsql.functionCall("AVG", [["DISTINCT", expr]]);
+                    return squill.functionCall("AVG", [["DISTINCT", expr]]);
                 } else {
-                    return tsql.functionCall("AVG", [expr]);
+                    return squill.functionCall("AVG", [expr]);
                 }
             } else {
                 throw new Error(`${operatorType} only implemented for 2 args`);
             }
         },
-        [tsql.OperatorType.AGGREGATE_MAX] : ({operands}) => {
-            return tsql.functionCall("MAX", operands);
+        [squill.OperatorType.AGGREGATE_MAX] : ({operands}) => {
+            return squill.functionCall("MAX", operands);
         },
-        [tsql.OperatorType.AGGREGATE_MIN] : ({operands}) => {
-            return tsql.functionCall("MIN", operands);
+        [squill.OperatorType.AGGREGATE_MIN] : ({operands}) => {
+            return squill.functionCall("MIN", operands);
         },
-        [tsql.OperatorType.AGGREGATE_SUM] : ({operands, operatorType}) => {
+        [squill.OperatorType.AGGREGATE_SUM] : ({operands, operatorType}) => {
             if (operands.length == 2) {
                 const [isDistinct, expr] = operands;
                 if (
-                    tsql.LiteralValueNodeUtil.isLiteralValueNode(isDistinct) &&
+                    squill.LiteralValueNodeUtil.isLiteralValueNode(isDistinct) &&
                     isDistinct.literalValue === true
                 ) {
-                    return tsql.functionCall("SUM", [["DISTINCT", expr]]);
+                    return squill.functionCall("SUM", [["DISTINCT", expr]]);
                 } else {
-                    return tsql.functionCall("SUM", [expr]);
+                    return squill.functionCall("SUM", [expr]);
                 }
             } else {
                 throw new Error(`${operatorType} only implemented for 2 args`);
             }
         },
-        [tsql.OperatorType.AGGREGATE_SUM_AS_DECIMAL] : ({operands, operatorType}) => {
+        [squill.OperatorType.AGGREGATE_SUM_AS_DECIMAL] : ({operands, operatorType}) => {
             if (operands.length == 2) {
                 const [isDistinct, expr] = operands;
                 if (
-                    tsql.LiteralValueNodeUtil.isLiteralValueNode(isDistinct) &&
+                    squill.LiteralValueNodeUtil.isLiteralValueNode(isDistinct) &&
                     isDistinct.literalValue === true
                 ) {
-                    return tsql.functionCall("SUM", [["DISTINCT", expr]]);
+                    return squill.functionCall("SUM", [["DISTINCT", expr]]);
                 } else {
-                    return tsql.functionCall("SUM", [expr]);
+                    return squill.functionCall("SUM", [expr]);
                 }
             } else {
                 throw new Error(`${operatorType} only implemented for 2 args`);
             }
         },
-        [tsql.OperatorType.AGGREGATE_SUM_AS_BIGINT_SIGNED] : ({operands, operatorType}) => {
+        [squill.OperatorType.AGGREGATE_SUM_AS_BIGINT_SIGNED] : ({operands, operatorType}) => {
             if (operands.length == 2) {
                 const [isDistinct, expr] = operands;
                 if (
-                    tsql.LiteralValueNodeUtil.isLiteralValueNode(isDistinct) &&
+                    squill.LiteralValueNodeUtil.isLiteralValueNode(isDistinct) &&
                     isDistinct.literalValue === true
                 ) {
-                    return tsql.functionCall(
+                    return squill.functionCall(
                         "CAST",
                         [
                             [
-                                tsql.functionCall("SUM", [["DISTINCT", expr]]),
+                                squill.functionCall("SUM", [["DISTINCT", expr]]),
                                 "AS SIGNED"
                             ]
                         ]
                     );
                 } else {
-                    return tsql.functionCall(
+                    return squill.functionCall(
                         "CAST",
                         [
                             [
-                                tsql.functionCall("SUM", [expr]),
+                                squill.functionCall("SUM", [expr]),
                                 "AS SIGNED"
                             ]
                         ]
@@ -951,45 +951,45 @@ export const sqlfier : tsql.Sqlfier = {
                 throw new Error(`${operatorType} only implemented for 2 args`);
             }
         },
-        [tsql.OperatorType.AGGREGATE_POPULATION_STANDARD_DEVIATION] : ({operands}) => {
-            return tsql.functionCall("STDDEV_POP", operands);
+        [squill.OperatorType.AGGREGATE_POPULATION_STANDARD_DEVIATION] : ({operands}) => {
+            return squill.functionCall("STDDEV_POP", operands);
         },
-        [tsql.OperatorType.AGGREGATE_SAMPLE_STANDARD_DEVIATION] : ({operands}) => {
-            return tsql.functionCall("STDDEV_SAMP", operands);
+        [squill.OperatorType.AGGREGATE_SAMPLE_STANDARD_DEVIATION] : ({operands}) => {
+            return squill.functionCall("STDDEV_SAMP", operands);
         },
-        [tsql.OperatorType.AGGREGATE_POPULATION_VARIANCE] : ({operands}) => {
-            return tsql.functionCall("VAR_POP", operands);
+        [squill.OperatorType.AGGREGATE_POPULATION_VARIANCE] : ({operands}) => {
+            return squill.functionCall("VAR_POP", operands);
         },
-        [tsql.OperatorType.AGGREGATE_SAMPLE_VARIANCE] : ({operands}) => {
-            return tsql.functionCall("VAR_SAMP", operands);
+        [squill.OperatorType.AGGREGATE_SAMPLE_VARIANCE] : ({operands}) => {
+            return squill.functionCall("VAR_SAMP", operands);
         },
-        [tsql.OperatorType.AGGREGATE_GROUP_CONCAT_DISTINCT] : ({operands}) => tsql.functionCall(
+        [squill.OperatorType.AGGREGATE_GROUP_CONCAT_DISTINCT] : ({operands}) => squill.functionCall(
             "GROUP_CONCAT",
             [
                 ["DISTINCT", operands[0]]
             ]
         ),
-        [tsql.OperatorType.AGGREGATE_GROUP_CONCAT_ALL] : ({operands}) => tsql.functionCall(
+        [squill.OperatorType.AGGREGATE_GROUP_CONCAT_ALL] : ({operands}) => squill.functionCall(
             "GROUP_CONCAT",
             operands
         ),
 
-        [tsql.OperatorType.EXISTS] : ({operands : [query]}, toSql) => {
-            if (tsql.QueryBaseUtil.isAfterFromClause(query)) {
+        [squill.OperatorType.EXISTS] : ({operands : [query]}, toSql) => {
+            if (squill.QueryBaseUtil.isAfterFromClause(query)) {
                 //EXISTS(... FROM table)
-                if (tsql.QueryBaseUtil.isAfterSelectClause(query)) {
+                if (squill.QueryBaseUtil.isAfterSelectClause(query)) {
                     //EXISTS(SELECT x FROM table)
-                    return tsql.functionCall("EXISTS", [query]);
+                    return squill.functionCall("EXISTS", [query]);
                 } else {
                     //EXISTS(FROM table)
-                    return tsql.functionCall("EXISTS", [
+                    return squill.functionCall("EXISTS", [
                         "SELECT 1 " + toSql(query)
                     ]);
                 }
             } else {
-                if (tsql.QueryBaseUtil.isAfterSelectClause(query)) {
+                if (squill.QueryBaseUtil.isAfterSelectClause(query)) {
                     //EXISTS(SELECT x)
-                    return tsql.functionCall("EXISTS", [query]);
+                    return squill.functionCall("EXISTS", [query]);
                 } else {
                     throw new Error(`Query should have either FROM or SELECT clause`);
                 }
@@ -1001,11 +1001,11 @@ export const sqlfier : tsql.Sqlfier = {
 
             Information Functions
         */
-        [tsql.OperatorType.CURRENT_SCHEMA] : () => tsql.functionCall(
+        [squill.OperatorType.CURRENT_SCHEMA] : () => squill.functionCall(
             "DATABASE",
             []
         ),
-        [tsql.OperatorType.CURRENT_USER] : () => "CURRENT_USER",
+        [squill.OperatorType.CURRENT_USER] : () => "CURRENT_USER",
 
         /*
             Custom library functions
@@ -1013,15 +1013,15 @@ export const sqlfier : tsql.Sqlfier = {
             These functions are not standard SQL,
             but can be implemented using standard SQL.
         */
-        [tsql.OperatorType.THROW_IF_NULL] : ({operands : [arg]}) => {
-            return tsql.functionCall("COALESCE", [arg, "(SELECT NULL UNION ALL SELECT NULL)"]);
+        [squill.OperatorType.THROW_IF_NULL] : ({operands : [arg]}) => {
+            return squill.functionCall("COALESCE", [arg, "(SELECT NULL UNION ALL SELECT NULL)"]);
         },
     },
     queryBaseSqlfier : (rawQuery, toSql) => {
         return queryToSql(rawQuery, toSql, false);
     },
     caseValueSqlfier : (node) => {
-        const result : tsql.Ast[] = [
+        const result : squill.Ast[] = [
             "CASE", node.value,
         ];
         for (const [compareValue, thenResult] of node.cases) {
@@ -1034,7 +1034,7 @@ export const sqlfier : tsql.Sqlfier = {
         return result;
     },
     caseConditionSqlfier : (node) => {
-        const result : tsql.Ast[] = [
+        const result : squill.Ast[] = [
             "CASE"
         ];
         for (const [condition, thenResult] of node.branches) {
@@ -1046,9 +1046,9 @@ export const sqlfier : tsql.Sqlfier = {
         result.push("END");
         return result;
     },
-    parenthesesSqlfier : ({ast}, toSql, sqlfier) : string|tsql.AstArray|tsql.Parentheses|tsql.FunctionCall|tsql.LiteralValueNode => {
-        if (!tsql.QueryBaseUtil.isQuery(ast)) {
-            return tsql.AstUtil.toSqlAst(ast, sqlfier);
+    parenthesesSqlfier : ({ast}, toSql, sqlfier) : string|squill.AstArray|squill.Parentheses|squill.FunctionCall|squill.LiteralValueNode => {
+        if (!squill.QueryBaseUtil.isQuery(ast)) {
+            return squill.AstUtil.toSqlAst(ast, sqlfier);
         }
 
         if (

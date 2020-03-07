@@ -1,9 +1,9 @@
-import * as tsql from "@tsql/tsql";
+import * as squill from "@squill/squill";
 import {queryToSql} from "./query-to-sql";
 
 export function compoundQueryClauseToSql (
-    compoundQueryClause : tsql.CompoundQueryClause,
-    toSql : (ast : tsql.Ast) => string
+    compoundQueryClause : squill.CompoundQueryClause,
+    toSql : (ast : squill.Ast) => string
 ) : string[] {
     const result : string[] = [];
     for (const compoundQuery of compoundQueryClause) {

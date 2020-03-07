@@ -1,12 +1,12 @@
-import * as tsql from "@tsql/tsql";
+import * as squill from "@squill/squill";
 import * as informationSchema from "../information-schema";
 
 export async function tryFetchTableMeta (
-    connection : tsql.SelectConnection,
+    connection : squill.SelectConnection,
     schemaAlias : string,
     tableAlias : string
-) : Promise<tsql.TableMeta|undefined> {
-    const columns = await tsql.from(informationSchema.COLUMNS)
+) : Promise<squill.TableMeta|undefined> {
+    const columns = await squill.from(informationSchema.COLUMNS)
         .whereEqColumns(
             tables => tables.COLUMNS,
             {
@@ -20,7 +20,7 @@ export async function tryFetchTableMeta (
         .select(columns => [columns])
         .fetchAll(connection)
         .then((rows) => {
-            return rows.map((row) : tsql.ColumnMeta => {
+            return rows.map((row) : squill.ColumnMeta => {
                 return {
                     columnAlias : row.COLUMN_NAME,
                     isAutoIncrement : row.EXTRA.includes("auto_increment"),
@@ -42,7 +42,7 @@ export async function tryFetchTableMeta (
             });
         });
 
-    const candidateKeys = await tsql.from(informationSchema.STATISTICS)
+    const candidateKeys = await squill.from(informationSchema.STATISTICS)
         .whereEqColumns(
             tables => tables.STATISTICS,
             {
@@ -50,7 +50,7 @@ export async function tryFetchTableMeta (
                 TABLE_NAME : tableAlias,
             }
         )
-        .where(columns => tsql.not(columns.NON_UNIQUE))
+        .where(columns => squill.not(columns.NON_UNIQUE))
         .select(columns => [
             columns.INDEX_NAME,
             columns.COLUMN_NAME,
@@ -60,7 +60,7 @@ export async function tryFetchTableMeta (
             columns.SEQ_IN_INDEX.asc(),
         ])
         .fetchAll(connection)
-        .then((columns) : tsql.CandidateKeyMeta[] => {
+        .then((columns) : squill.CandidateKeyMeta[] => {
             const result : {
                 readonly candidateKeyName : string,
                 readonly columnAliases : string[],

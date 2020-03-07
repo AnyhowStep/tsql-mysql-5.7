@@ -1,5 +1,5 @@
 import * as mysql from "mysql";
-import * as tsql from "@tsql/tsql";
+import * as squill from "@squill/squill";
 import {CharSet} from "../../char-set";
 import {Connection} from "../connection";
 
@@ -17,7 +17,7 @@ export interface PoolArgs extends Omit<
     password  : string;
     charset   : CharSet;
 }
-export class Pool implements tsql.IPool {
+export class Pool implements squill.IPool {
     private poolImpl : mysql.Pool;
 
     constructor (args : PoolArgs) {
@@ -40,7 +40,7 @@ export class Pool implements tsql.IPool {
         });
     }
 
-    acquire<ResultT>(callback: (connection: tsql.IConnection) => Promise<ResultT>): Promise<ResultT> {
+    acquire<ResultT>(callback: (connection: squill.IConnection) => Promise<ResultT>): Promise<ResultT> {
         if (this.isDeallocated()) {
             return Promise.reject(new Error(`Pool has been deallocated`));
         }
@@ -53,7 +53,7 @@ export class Pool implements tsql.IPool {
 
                 const connection = new Connection({
                     pool : this,
-                    eventEmitters : new tsql.ConnectionEventEmitterCollection(this),
+                    eventEmitters : new squill.ConnectionEventEmitterCollection(this),
                     connectionImpl,
                     asyncQueue : undefined,
                     sharedConnectionInformation : {
@@ -123,16 +123,16 @@ export class Pool implements tsql.IPool {
     }
 
     acquireTransaction<ResultT>(
-        callback: tsql.LockCallback<tsql.ITransactionConnection, ResultT>
+        callback: squill.LockCallback<squill.ITransactionConnection, ResultT>
     ): Promise<ResultT>;
     acquireTransaction<ResultT>(
-        minimumIsolationLevel: tsql.IsolationLevel,
-        callback: tsql.LockCallback<tsql.ITransactionConnection, ResultT>
+        minimumIsolationLevel: squill.IsolationLevel,
+        callback: squill.LockCallback<squill.ITransactionConnection, ResultT>
     ): Promise<ResultT>;
     acquireTransaction<ResultT>(
         ...args : (
-            | [tsql.LockCallback<tsql.ITransactionConnection, ResultT>]
-            | [tsql.IsolationLevel, tsql.LockCallback<tsql.ITransactionConnection, ResultT>]
+            | [squill.LockCallback<squill.ITransactionConnection, ResultT>]
+            | [squill.IsolationLevel, squill.LockCallback<squill.ITransactionConnection, ResultT>]
         )
     ): Promise<ResultT> {
         return this.acquire((connection) => {
@@ -148,16 +148,16 @@ export class Pool implements tsql.IPool {
     }
 
     acquireReadOnlyTransaction<ResultT>(
-        callback: tsql.LockCallback<tsql.IsolatedSelectConnection, ResultT>
+        callback: squill.LockCallback<squill.IsolatedSelectConnection, ResultT>
     ): Promise<ResultT>;
     acquireReadOnlyTransaction<ResultT>(
-        minimumIsolationLevel: tsql.IsolationLevel,
-        callback: tsql.LockCallback<tsql.IsolatedSelectConnection, ResultT>
+        minimumIsolationLevel: squill.IsolationLevel,
+        callback: squill.LockCallback<squill.IsolatedSelectConnection, ResultT>
     ): Promise<ResultT>;
     acquireReadOnlyTransaction<ResultT>(
         ...args : (
-            | [tsql.LockCallback<tsql.IsolatedSelectConnection, ResultT>]
-            | [tsql.IsolationLevel, tsql.LockCallback<tsql.IsolatedSelectConnection, ResultT>]
+            | [squill.LockCallback<squill.IsolatedSelectConnection, ResultT>]
+            | [squill.IsolationLevel, squill.LockCallback<squill.IsolatedSelectConnection, ResultT>]
         )
     ): Promise<ResultT> {
         return this.acquire((connection) => {
@@ -188,17 +188,17 @@ export class Pool implements tsql.IPool {
         return this.shouldDisconnect;
     }
 
-    readonly onInsert = new tsql.PoolEventEmitter<tsql.IInsertEvent<tsql.ITable<tsql.TableData>>>();
-    readonly onInsertOne = new tsql.PoolEventEmitter<tsql.IInsertOneEvent<tsql.ITable<tsql.TableData>>>();
-    readonly onInsertAndFetch = new tsql.PoolEventEmitter<tsql.IInsertAndFetchEvent<tsql.ITable<tsql.TableData>>>();
-    readonly onInsertSelect = new tsql.PoolEventEmitter<tsql.IInsertSelectEvent<tsql.ITable<tsql.TableData>>>();
+    readonly onInsert = new squill.PoolEventEmitter<squill.IInsertEvent<squill.ITable<squill.TableData>>>();
+    readonly onInsertOne = new squill.PoolEventEmitter<squill.IInsertOneEvent<squill.ITable<squill.TableData>>>();
+    readonly onInsertAndFetch = new squill.PoolEventEmitter<squill.IInsertAndFetchEvent<squill.ITable<squill.TableData>>>();
+    readonly onInsertSelect = new squill.PoolEventEmitter<squill.IInsertSelectEvent<squill.ITable<squill.TableData>>>();
 
-    readonly onReplace = new tsql.PoolEventEmitter<tsql.IReplaceEvent<tsql.ITable<tsql.TableData>>>();
-    readonly onReplaceOne = new tsql.PoolEventEmitter<tsql.IReplaceOneEvent<tsql.ITable<tsql.TableData>>>();
-    readonly onReplaceSelect = new tsql.PoolEventEmitter<tsql.IReplaceSelectEvent<tsql.ITable<tsql.TableData>>>();
+    readonly onReplace = new squill.PoolEventEmitter<squill.IReplaceEvent<squill.ITable<squill.TableData>>>();
+    readonly onReplaceOne = new squill.PoolEventEmitter<squill.IReplaceOneEvent<squill.ITable<squill.TableData>>>();
+    readonly onReplaceSelect = new squill.PoolEventEmitter<squill.IReplaceSelectEvent<squill.ITable<squill.TableData>>>();
 
-    readonly onUpdate = new tsql.PoolEventEmitter<tsql.IUpdateEvent<tsql.ITable<tsql.TableData>>>();
-    readonly onUpdateAndFetch = new tsql.PoolEventEmitter<tsql.IUpdateAndFetchEvent<tsql.ITable<tsql.TableData>>>();
+    readonly onUpdate = new squill.PoolEventEmitter<squill.IUpdateEvent<squill.ITable<squill.TableData>>>();
+    readonly onUpdateAndFetch = new squill.PoolEventEmitter<squill.IUpdateAndFetchEvent<squill.ITable<squill.TableData>>>();
 
-    readonly onDelete = new tsql.PoolEventEmitter<tsql.IDeleteEvent<tsql.ITable<tsql.TableData>>>();
+    readonly onDelete = new squill.PoolEventEmitter<squill.IDeleteEvent<squill.ITable<squill.TableData>>>();
 }

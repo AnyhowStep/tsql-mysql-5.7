@@ -1,4 +1,4 @@
-import * as tsql from "@tsql/tsql";
+import * as squill from "@squill/squill";
 import {selectClauseToSql} from "./select-clause-to-sql";
 import {fromClauseToSql} from "./from-clause-to-sql";
 import {whereClauseToSql} from "./where-clause-to-sql";
@@ -10,7 +10,7 @@ import {compoundQueryClauseToSql} from "./compound-query-clause-to-sql";
 
 export function nonCompoundQueryToSql (
     query : (
-        & tsql.IQueryBase
+        & squill.IQueryBase
         & {
             readonly compoundQueryClause : undefined;
 
@@ -18,7 +18,7 @@ export function nonCompoundQueryToSql (
             readonly compoundQueryOrderByClause : undefined;
         }
     ),
-    toSql : (ast : tsql.Ast) => string,
+    toSql : (ast : squill.Ast) => string,
     isDerivedTable : boolean
 ) : string {
     const result : string[] = [];
@@ -58,8 +58,8 @@ export function nonCompoundQueryToSql (
  * @todo More complicated processing
  */
 export function queryToSql (
-    query : tsql.IQueryBase,
-    toSql : (ast : tsql.Ast) => string,
+    query : squill.IQueryBase,
+    toSql : (ast : squill.Ast) => string,
     isDerivedTable : boolean
 ) {
     if (

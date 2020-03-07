@@ -1,5 +1,5 @@
-import * as tsql from "@tsql/tsql";
-import {InsertableTable} from "@tsql/tsql";
+import * as squill from "@squill/squill";
+import {InsertableTable} from "@squill/squill";
 import {sqlfier} from "./sqlfier";
 
 export function insertManySqlString<
@@ -7,9 +7,9 @@ export function insertManySqlString<
 > (
     insertType : string,
     table : TableT,
-    insertRows : readonly [tsql.BuiltInInsertRow<TableT>, ...tsql.BuiltInInsertRow<TableT>[]]
+    insertRows : readonly [squill.BuiltInInsertRow<TableT>, ...squill.BuiltInInsertRow<TableT>[]]
 ) : string {
-    const columnAliases = tsql.TableUtil.columnAlias(table)
+    const columnAliases = squill.TableUtil.columnAlias(table)
         .sort();
 
     const values = insertRows.reduce(
@@ -20,10 +20,10 @@ export function insertManySqlString<
                     if (v === undefined) {
                         return "DEFAULT";
                     } else {
-                        return tsql.BuiltInExprUtil.buildAst(v);
+                        return squill.BuiltInExprUtil.buildAst(v);
                     }
                 })
-                .reduce<tsql.Ast[]>(
+                .reduce<squill.Ast[]>(
                     (values, ast) => {
                         if (values.length > 0) {
                             values.push(", ");
@@ -31,7 +31,7 @@ export function insertManySqlString<
                         values.push(ast);
                         return values;
                     },
-                    [] as tsql.Ast[]
+                    [] as squill.Ast[]
                 );
             value.unshift("(");
             value.push(")");
@@ -42,19 +42,19 @@ export function insertManySqlString<
             values.push(value);
             return values;
         },
-        [] as tsql.Ast[]
+        [] as squill.Ast[]
     );
 
-    const ast : tsql.Ast[] = [
+    const ast : squill.Ast[] = [
         `${insertType} INTO`,
         /**
          * We use the `unaliasedAst` because the user may have called `setSchemaName()`
          */
         table.unaliasedAst,
         "(",
-        columnAliases.map(tsql.escapeIdentifierWithBackticks).join(", "),
+        columnAliases.map(squill.escapeIdentifierWithBackticks).join(", "),
         ") VALUES",
         values,
     ];
-    return tsql.AstUtil.toSql(ast, sqlfier);
+    return squill.AstUtil.toSql(ast, sqlfier);
 }

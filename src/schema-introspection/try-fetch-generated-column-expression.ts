@@ -1,18 +1,18 @@
-import * as tsql from "@tsql/tsql";
+import * as squill from "@squill/squill";
 import * as informationSchema from "../information-schema";
 
 export function tryFetchGeneratedColumnExpression(
-    connection : tsql.SelectConnection,
+    connection : squill.SelectConnection,
     schemaAlias: string | undefined,
     tableAlias: string,
     columnAlias: string
 ): Promise<string | undefined> {
-    return tsql.from(informationSchema.COLUMNS)
-        .where(columns => tsql.eq(
+    return squill.from(informationSchema.COLUMNS)
+        .where(columns => squill.eq(
             columns.TABLE_SCHEMA,
             (
                 schemaAlias == undefined ?
-                tsql.throwIfNull(tsql.currentSchema()) :
+                squill.throwIfNull(squill.currentSchema()) :
                 schemaAlias
             )
         ))

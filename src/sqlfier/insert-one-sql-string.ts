@@ -1,5 +1,5 @@
-import * as tsql from "@tsql/tsql";
-import {InsertableTable} from "@tsql/tsql";
+import * as squill from "@squill/squill";
+import {InsertableTable} from "@squill/squill";
 import {sqlfier} from "./sqlfier";
 
 export function insertOneSqlString<
@@ -7,19 +7,19 @@ export function insertOneSqlString<
 > (
     insertType : string,
     table : TableT,
-    insertRow : tsql.BuiltInInsertRow<TableT>
+    insertRow : squill.BuiltInInsertRow<TableT>
 ) : string {
-    const columnAliases = tsql.TableUtil.columnAlias(table)
+    const columnAliases = squill.TableUtil.columnAlias(table)
         .filter(columnAlias => {
             return (insertRow as Record<string, unknown>)[columnAlias] !== undefined;
         })
         .sort();
 
     const value = columnAliases
-        .map(columnAlias => tsql.BuiltInExprUtil.buildAst(
+        .map(columnAlias => squill.BuiltInExprUtil.buildAst(
             insertRow[columnAlias as unknown as keyof typeof insertRow]
         ))
-        .reduce<tsql.Ast[]>(
+        .reduce<squill.Ast[]>(
             (values, ast) => {
                 if (values.length > 0) {
                     values.push(", ");
@@ -27,21 +27,21 @@ export function insertOneSqlString<
                 values.push(ast);
                 return values;
             },
-            [] as tsql.Ast[]
+            [] as squill.Ast[]
         );
     value.unshift("(");
     value.push(")");
 
-    const ast : tsql.Ast[] = [
+    const ast : squill.Ast[] = [
         `${insertType} INTO`,
         /**
          * We use the `unaliasedAst` because the user may have called `setSchemaName()`
          */
         table.unaliasedAst,
         "(",
-        columnAliases.map(tsql.escapeIdentifierWithBackticks).join(", "),
+        columnAliases.map(squill.escapeIdentifierWithBackticks).join(", "),
         ") VALUES",
         value,
     ];
-    return tsql.AstUtil.toSql(ast, sqlfier);
+    return squill.AstUtil.toSql(ast, sqlfier);
 }

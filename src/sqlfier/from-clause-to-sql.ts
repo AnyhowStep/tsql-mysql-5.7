@@ -1,18 +1,18 @@
-import * as tsql from "@tsql/tsql";
+import * as squill from "@squill/squill";
 import {queryToSql} from "./query-to-sql";
 
 export function fromClauseToSql (
-    currentJoins : tsql.FromClauseUtil.AfterFromClause["currentJoins"],
-    toSql : (ast : tsql.Ast) => string
+    currentJoins : squill.FromClauseUtil.AfterFromClause["currentJoins"],
+    toSql : (ast : squill.Ast) => string
 ) : string[] {
     const result : string[] = [];
     for (const join of currentJoins) {
-        if (join.joinType == tsql.JoinType.FROM) {
+        if (join.joinType == squill.JoinType.FROM) {
             result.push("FROM");
         } else {
             result.push(join.joinType, "JOIN");
         }
-        if (tsql.isIdentifierNode(join.tableAst)) {
+        if (squill.isIdentifierNode(join.tableAst)) {
             const lastIdentifier = join.tableAst.identifiers[join.tableAst.identifiers.length-1];
             if (lastIdentifier == join.tableAlias) {
                 result.push(toSql(join.tableAst));
@@ -20,27 +20,27 @@ export function fromClauseToSql (
                 result.push(
                     toSql(join.tableAst),
                     "AS",
-                    tsql.escapeIdentifierWithBackticks(join.tableAlias)
+                    squill.escapeIdentifierWithBackticks(join.tableAlias)
                 );
             }
-        } else if (tsql.QueryBaseUtil.isQuery(join.tableAst)) {
+        } else if (squill.QueryBaseUtil.isQuery(join.tableAst)) {
             result.push("(", queryToSql(join.tableAst, toSql, true), ")");
             result.push("AS");
-            result.push(tsql.escapeIdentifierWithBackticks(join.tableAlias));
-        } else if (tsql.Parentheses.IsParentheses(join.tableAst) && tsql.QueryBaseUtil.isQuery(join.tableAst.ast)) {
+            result.push(squill.escapeIdentifierWithBackticks(join.tableAlias));
+        } else if (squill.Parentheses.IsParentheses(join.tableAst) && squill.QueryBaseUtil.isQuery(join.tableAst.ast)) {
             const subQuery = join.tableAst.ast;
 
             result.push("(", queryToSql(subQuery, toSql, true), ")");
             result.push("AS");
-            result.push(tsql.escapeIdentifierWithBackticks(join.tableAlias));
+            result.push(squill.escapeIdentifierWithBackticks(join.tableAlias));
         } else {
             result.push("(", toSql(join.tableAst), ")");
             result.push("AS");
-            result.push(tsql.escapeIdentifierWithBackticks(join.tableAlias));
+            result.push(squill.escapeIdentifierWithBackticks(join.tableAlias));
         }
         if (join.onClause != undefined) {
             result.push("ON");
-            result.push(toSql(tsql.AstUtil.tryUnwrapParentheses(join.onClause.ast)));
+            result.push(toSql(squill.AstUtil.tryUnwrapParentheses(join.onClause.ast)));
         }
     }
     return result;

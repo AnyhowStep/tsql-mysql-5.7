@@ -1,6 +1,6 @@
 import * as tm from "type-mapping";
 import * as mysql from "mysql";
-import * as tsql from "@tsql/tsql";
+import * as squill from "@squill/squill";
 import {sqlfier, insertOneSqlString, insertManySqlString, deleteSqlString, updateSqlString, insertSelectSqlString} from "../../sqlfier";
 import {isOkPacket} from "./ok-packet";
 import {tryFetchSchemaMeta, tryFetchGeneratedColumnExpression} from "../../schema-introspection";
@@ -12,8 +12,8 @@ export interface SharedConnectionInformation {
     transactionData : (
         | undefined
         | {
-            minimumIsolationLevel : tsql.IsolationLevel,
-            accessMode : tsql.TransactionAccessMode,
+            minimumIsolationLevel : squill.IsolationLevel,
+            accessMode : squill.TransactionAccessMode,
         }
     );
     /**
@@ -23,16 +23,16 @@ export interface SharedConnectionInformation {
 }
 
 export class Connection implements
-    tsql.IConnection,
-    tsql.ConnectionComponent.InTransaction,
-    tsql.ConnectionComponent.Savepoint<tsql.ITransactionConnection>,
-    tsql.ConnectionComponent.InSavepoint
+    squill.IConnection,
+    squill.ConnectionComponent.InTransaction,
+    squill.ConnectionComponent.Savepoint<squill.ITransactionConnection>,
+    squill.ConnectionComponent.InSavepoint
 {
-    readonly pool: tsql.IPool;
-    readonly eventEmitters: tsql.IConnectionEventEmitterCollection;
+    readonly pool: squill.IPool;
+    readonly eventEmitters: squill.IConnectionEventEmitterCollection;
 
     private readonly connectionImpl : mysql.PoolConnection;
-    private readonly asyncQueue : tsql.AsyncQueue<mysql.PoolConnection>;
+    private readonly asyncQueue : squill.AsyncQueue<mysql.PoolConnection>;
     private readonly sharedConnectionInformation : SharedConnectionInformation;
 
     constructor (
@@ -44,10 +44,10 @@ export class Connection implements
             sharedConnectionInformation,
         } :
         {
-            pool : tsql.IPool,
-            eventEmitters : tsql.IConnectionEventEmitterCollection,
+            pool : squill.IPool,
+            eventEmitters : squill.IConnectionEventEmitterCollection,
             connectionImpl : mysql.PoolConnection,
-            asyncQueue : undefined|tsql.AsyncQueue<mysql.PoolConnection>,
+            asyncQueue : undefined|squill.AsyncQueue<mysql.PoolConnection>,
             sharedConnectionInformation : SharedConnectionInformation,
         }
     ) {
@@ -55,9 +55,9 @@ export class Connection implements
         this.eventEmitters = eventEmitters;
 
         this.connectionImpl = connectionImpl;
-        this.asyncQueue = asyncQueue instanceof tsql.AsyncQueue ?
+        this.asyncQueue = asyncQueue instanceof squill.AsyncQueue ?
             asyncQueue :
-            new tsql.AsyncQueue<mysql.PoolConnection>(() => {
+            new squill.AsyncQueue<mysql.PoolConnection>(() => {
                 return {
                     item : connectionImpl,
                     deallocate : async () => {},
@@ -68,10 +68,10 @@ export class Connection implements
     }
 
 
-    tryGetFullConnection(): tsql.IConnection | undefined {
+    tryGetFullConnection(): squill.IConnection | undefined {
         if (
             this.sharedConnectionInformation.transactionData != undefined &&
-            this.sharedConnectionInformation.transactionData.accessMode == tsql.TransactionAccessMode.READ_ONLY
+            this.sharedConnectionInformation.transactionData.accessMode == squill.TransactionAccessMode.READ_ONLY
         ) {
             /**
              * Can't give a full connection if we are in a readonly transaction.
@@ -79,10 +79,10 @@ export class Connection implements
              */
             return undefined;
         } else {
-            return this as unknown as tsql.IConnection;
+            return this as unknown as squill.IConnection;
         }
     }
-    lock<ResultT>(callback: tsql.LockCallback<tsql.IConnection, ResultT>): Promise<ResultT> {
+    lock<ResultT>(callback: squill.LockCallback<squill.IConnection, ResultT>): Promise<ResultT> {
         return this.asyncQueue.lock((nestedAsyncQueue) => {
             const nestedConnection = new Connection({
                 pool : this.pool,
@@ -92,7 +92,7 @@ export class Connection implements
                 sharedConnectionInformation : this.sharedConnectionInformation
             });
             return callback(
-                nestedConnection as unknown as tsql.IConnection
+                nestedConnection as unknown as squill.IConnection
             );
         });
     }
@@ -126,13 +126,13 @@ export class Connection implements
             });
     }
 
-    getMinimumIsolationLevel () : tsql.IsolationLevel {
+    getMinimumIsolationLevel () : squill.IsolationLevel {
         if (this.sharedConnectionInformation.transactionData == undefined) {
             throw new Error(`Not in transaction`);
         }
         return this.sharedConnectionInformation.transactionData.minimumIsolationLevel;
     }
-    getTransactionAccessMode () : tsql.TransactionAccessMode {
+    getTransactionAccessMode () : squill.TransactionAccessMode {
         if (this.sharedConnectionInformation.transactionData == undefined) {
             throw new Error(`Not in transaction`);
         }
@@ -140,9 +140,9 @@ export class Connection implements
     }
 
     private transactionImpl<ResultT> (
-        minimumIsolationLevel : tsql.IsolationLevel,
-        accessMode : tsql.TransactionAccessMode,
-        callback : tsql.LockCallback<tsql.ITransactionConnection, ResultT>|tsql.LockCallback<tsql.IsolatedSelectConnection, ResultT>
+        minimumIsolationLevel : squill.IsolationLevel,
+        accessMode : squill.TransactionAccessMode,
+        callback : squill.LockCallback<squill.ITransactionConnection, ResultT>|squill.LockCallback<squill.IsolatedSelectConnection, ResultT>
     ) : Promise<ResultT> {
         if (this.sharedConnectionInformation.transactionData != undefined) {
             return Promise.reject(new Error(`Transaction already started or starting`));
@@ -162,13 +162,13 @@ export class Connection implements
 
         return new Promise<ResultT>((resolve, reject) => {
             const isolationLevelSql = (
-                minimumIsolationLevel == tsql.IsolationLevel.READ_UNCOMMITTED ?
+                minimumIsolationLevel == squill.IsolationLevel.READ_UNCOMMITTED ?
                 "READ UNCOMMITTED" :
-                minimumIsolationLevel == tsql.IsolationLevel.READ_COMMITTED ?
+                minimumIsolationLevel == squill.IsolationLevel.READ_COMMITTED ?
                 "READ COMMITTED" :
-                minimumIsolationLevel == tsql.IsolationLevel.REPEATABLE_READ ?
+                minimumIsolationLevel == squill.IsolationLevel.REPEATABLE_READ ?
                 "REPEATABLE READ" :
-                minimumIsolationLevel == tsql.IsolationLevel.SERIALIZABLE ?
+                minimumIsolationLevel == squill.IsolationLevel.SERIALIZABLE ?
                 "SERIALIZABLE" :
                 "UNKNOWN ISOLATION LEVEL"
             );
@@ -176,7 +176,7 @@ export class Connection implements
                 throw new Error(`Invalid isolation level ${minimumIsolationLevel}`);
             }
             const accessModeSql = (
-                accessMode == tsql.TransactionAccessMode.READ_ONLY ?
+                accessMode == squill.TransactionAccessMode.READ_ONLY ?
                 "READ ONLY" :
                 "READ WRITE"
             );
@@ -196,7 +196,7 @@ export class Connection implements
                          */
                         throw new Error(`Expected to be in transaction`);
                     }
-                    return callback(this as unknown as tsql.ITransactionConnection);
+                    return callback(this as unknown as squill.ITransactionConnection);
                 })
                 .then((result) => {
                     if (!this.isInTransaction()) {
@@ -237,13 +237,13 @@ export class Connection implements
         });
     }
     private transactionIfNotInOneImpl<ResultT> (
-        minimumIsolationLevel : tsql.IsolationLevel,
-        accessMode : tsql.TransactionAccessMode,
-        callback : tsql.LockCallback<tsql.ITransactionConnection, ResultT>|tsql.LockCallback<tsql.IsolatedSelectConnection, ResultT>
+        minimumIsolationLevel : squill.IsolationLevel,
+        accessMode : squill.TransactionAccessMode,
+        callback : squill.LockCallback<squill.ITransactionConnection, ResultT>|squill.LockCallback<squill.IsolatedSelectConnection, ResultT>
     ) : Promise<ResultT> {
         return this.lock(async (nestedConnection) => {
             if (nestedConnection.isInTransaction()) {
-                if (tsql.IsolationLevelUtil.isWeakerThan(
+                if (squill.IsolationLevelUtil.isWeakerThan(
                     this.getMinimumIsolationLevel(),
                     minimumIsolationLevel
                 )) {
@@ -261,7 +261,7 @@ export class Connection implements
                      */
                     return Promise.reject(new Error(`Current isolation level is ${this.getMinimumIsolationLevel()}; cannot guarantee ${minimumIsolationLevel}`));
                 }
-                if (tsql.TransactionAccessModeUtil.isLessPermissiveThan(
+                if (squill.TransactionAccessModeUtil.isLessPermissiveThan(
                     this.getTransactionAccessMode(),
                     accessMode
                 )) {
@@ -283,46 +283,46 @@ export class Connection implements
     }
 
     transactionIfNotInOne<ResultT>(
-        callback: tsql.LockCallback<tsql.ITransactionConnection, ResultT>
+        callback: squill.LockCallback<squill.ITransactionConnection, ResultT>
     ): Promise<ResultT>;
     transactionIfNotInOne<ResultT>(
-        minimumIsolationLevel: tsql.IsolationLevel,
-        callback: tsql.LockCallback<tsql.ITransactionConnection, ResultT>
+        minimumIsolationLevel: squill.IsolationLevel,
+        callback: squill.LockCallback<squill.ITransactionConnection, ResultT>
     ): Promise<ResultT>;
     transactionIfNotInOne<ResultT>(
         ...args : (
-            | [tsql.LockCallback<tsql.ITransactionConnection, ResultT>]
-            | [tsql.IsolationLevel, tsql.LockCallback<tsql.ITransactionConnection, ResultT>]
+            | [squill.LockCallback<squill.ITransactionConnection, ResultT>]
+            | [squill.IsolationLevel, squill.LockCallback<squill.ITransactionConnection, ResultT>]
         )
     ): Promise<ResultT> {
         return this.transactionIfNotInOneImpl(
-            args.length == 1 ? tsql.IsolationLevel.SERIALIZABLE : args[0],
-            tsql.TransactionAccessMode.READ_WRITE,
+            args.length == 1 ? squill.IsolationLevel.SERIALIZABLE : args[0],
+            squill.TransactionAccessMode.READ_WRITE,
             args.length == 1 ? args[0] : args[1]
         );
     }
     readOnlyTransactionIfNotInOne<ResultT>(
-        callback: tsql.LockCallback<tsql.IsolatedSelectConnection, ResultT>
+        callback: squill.LockCallback<squill.IsolatedSelectConnection, ResultT>
     ): Promise<ResultT>;
     readOnlyTransactionIfNotInOne<ResultT>(
-        minimumIsolationLevel: tsql.IsolationLevel,
-        callback: tsql.LockCallback<tsql.IsolatedSelectConnection, ResultT>
+        minimumIsolationLevel: squill.IsolationLevel,
+        callback: squill.LockCallback<squill.IsolatedSelectConnection, ResultT>
     ): Promise<ResultT>;
     readOnlyTransactionIfNotInOne<ResultT>(
         ...args : (
-            | [tsql.LockCallback<tsql.IsolatedSelectConnection, ResultT>]
-            | [tsql.IsolationLevel, tsql.LockCallback<tsql.IsolatedSelectConnection, ResultT>]
+            | [squill.LockCallback<squill.IsolatedSelectConnection, ResultT>]
+            | [squill.IsolationLevel, squill.LockCallback<squill.IsolatedSelectConnection, ResultT>]
         )
     ): Promise<ResultT> {
         return this.transactionIfNotInOneImpl(
-            args.length == 1 ? tsql.IsolationLevel.SERIALIZABLE : args[0],
-            tsql.TransactionAccessMode.READ_ONLY,
+            args.length == 1 ? squill.IsolationLevel.SERIALIZABLE : args[0],
+            squill.TransactionAccessMode.READ_ONLY,
             args.length == 1 ? args[0] : args[1]
         );
     }
-    rawQuery(sql: string): Promise<tsql.RawQueryResult> {
-        return this.asyncQueue.enqueue<tsql.RawQueryResult>((connectionImpl) => {
-            return new Promise<tsql.RawQueryResult>((resolve, reject) => {
+    rawQuery(sql: string): Promise<squill.RawQueryResult> {
+        return this.asyncQueue.enqueue<squill.RawQueryResult>((connectionImpl) => {
+            return new Promise<squill.RawQueryResult>((resolve, reject) => {
                 //console.log("sql", sql);
                 connectionImpl.query(
                     sql,
@@ -333,23 +333,23 @@ export class Connection implements
                              */
                             if (err instanceof Error) {
                                 if (err.code == "ER_DATA_OUT_OF_RANGE") {
-                                    reject(new tsql.DataOutOfRangeError({
+                                    reject(new squill.DataOutOfRangeError({
                                         innerError : err,
                                         sql,
                                     }));
                                 } else if (err.code == "ER_PARSE_ERROR" || err.code == "ER_SYNTAX_ERROR") {
-                                    reject(new tsql.InvalidSqlError({
+                                    reject(new squill.InvalidSqlError({
                                         innerError : err,
                                         sql,
                                     }));
                                 } else {
-                                    reject(new tsql.SqlError({
+                                    reject(new squill.SqlError({
                                         innerError : err,
                                         sql,
                                     }));
                                 }
                             } else {
-                                reject(new tsql.SqlError({
+                                reject(new squill.SqlError({
                                     innerError : err,
                                     sql,
                                 }));
@@ -381,10 +381,10 @@ export class Connection implements
             });
         });
     }
-    async select(query: tsql.IQueryBase<tsql.QueryBaseData>): Promise<tsql.SelectResult> {
-        const sql = tsql.AstUtil.toSql(query, sqlfier);
+    async select(query: squill.IQueryBase<squill.QueryBaseData>): Promise<squill.SelectResult> {
+        const sql = squill.AstUtil.toSql(query, sqlfier);
         return this.rawQuery(sql)
-            .then((resultSet): tsql.SelectResult => {
+            .then((resultSet): squill.SelectResult => {
                 if (resultSet.columns == undefined) {
                     throw new Error(`Expected at least one column to be selected`);
                 } else {
@@ -396,10 +396,10 @@ export class Connection implements
                 }
             });
     }
-    async insertOne<TableT extends tsql.InsertableTable>(
+    async insertOne<TableT extends squill.InsertableTable>(
         table: TableT,
-        row: tsql.BuiltInInsertRow<TableT>
-    ): Promise<tsql.InsertOneResult> {
+        row: squill.BuiltInInsertRow<TableT>
+    ): Promise<squill.InsertOneResult> {
         const sql = insertOneSqlString("INSERT", table, row);
         return this.lock((rawNestedConnection) => {
             const nestedConnection = (rawNestedConnection as unknown as Connection);
@@ -416,11 +416,11 @@ export class Connection implements
                         (table.autoIncrement == undefined) ?
                         undefined :
                         (row[table.autoIncrement as keyof typeof row] === undefined) ?
-                        await tsql
-                            .selectValue(() => tsql.expr(
+                        await squill
+                            .selectValue(() => squill.expr(
                                 {
                                     mapper : tm.mysql.bigIntSigned(),
-                                    usedRef : tsql.UsedRefUtil.fromColumnRef({}),
+                                    usedRef : squill.UsedRefUtil.fromColumnRef({}),
                                     isAggregate : false,
                                 },
                                 "LAST_INSERT_ID()"
@@ -432,7 +432,7 @@ export class Connection implements
                         BigInt(0)
                     );
 
-                    const insertOneResult : tsql.InsertOneResult = {
+                    const insertOneResult : squill.InsertOneResult = {
                         query : { sql, },
                         insertedRowCount : BigInt(1) as 1n,
                         autoIncrementId : (
@@ -452,12 +452,12 @@ export class Connection implements
                 });
         });
     }
-    insertMany<TableT extends tsql.InsertableTable>(
+    insertMany<TableT extends squill.InsertableTable>(
         table: TableT,
-        rows: readonly [tsql.BuiltInInsertRow<TableT>, ...tsql.BuiltInInsertRow<TableT>[]]
-    ): Promise<tsql.InsertManyResult> {
+        rows: readonly [squill.BuiltInInsertRow<TableT>, ...squill.BuiltInInsertRow<TableT>[]]
+    ): Promise<squill.InsertManyResult> {
         const sql = insertManySqlString("INSERT", table, rows);
-        return this.lock(async (rawNestedConnection) : Promise<tsql.InsertManyResult> => {
+        return this.lock(async (rawNestedConnection) : Promise<squill.InsertManyResult> => {
             const nestedConnection = rawNestedConnection as unknown as Connection;
             return nestedConnection.rawQuery(sql)
                 .then(async (result) => {
@@ -481,10 +481,10 @@ export class Connection implements
                 });
         });
     }
-    insertIgnoreOne<TableT extends tsql.InsertableTable>(
+    insertIgnoreOne<TableT extends squill.InsertableTable>(
         table: TableT,
-        row: tsql.BuiltInInsertRow<TableT>
-    ): Promise<tsql.InsertIgnoreOneResult> {
+        row: squill.BuiltInInsertRow<TableT>
+    ): Promise<squill.InsertIgnoreOneResult> {
         const sql = insertOneSqlString("INSERT IGNORE", table, row);
         return this.lock((rawNestedConnection) => {
             const nestedConnection = (rawNestedConnection as unknown as Connection);
@@ -511,11 +511,11 @@ export class Connection implements
                         (table.autoIncrement == undefined) ?
                         undefined :
                         (row[table.autoIncrement as keyof typeof row] === undefined) ?
-                        await tsql
-                            .selectValue(() => tsql.expr(
+                        await squill
+                            .selectValue(() => squill.expr(
                                 {
                                     mapper : tm.mysql.bigIntSigned(),
-                                    usedRef : tsql.UsedRefUtil.fromColumnRef({}),
+                                    usedRef : squill.UsedRefUtil.fromColumnRef({}),
                                     isAggregate : false,
                                 },
                                 "LAST_INSERT_ID()"
@@ -547,12 +547,12 @@ export class Connection implements
                 });
         });
     }
-    insertIgnoreMany<TableT extends tsql.InsertableTable>(
+    insertIgnoreMany<TableT extends squill.InsertableTable>(
         table: TableT,
-        rows: readonly [tsql.BuiltInInsertRow<TableT>, ...tsql.BuiltInInsertRow<TableT>[]]
-    ): Promise<tsql.InsertIgnoreManyResult> {
+        rows: readonly [squill.BuiltInInsertRow<TableT>, ...squill.BuiltInInsertRow<TableT>[]]
+    ): Promise<squill.InsertIgnoreManyResult> {
         const sql = insertManySqlString("INSERT IGNORE", table, rows);
-        return this.lock(async (rawNestedConnection) : Promise<tsql.InsertIgnoreManyResult> => {
+        return this.lock(async (rawNestedConnection) : Promise<squill.InsertIgnoreManyResult> => {
             const nestedConnection = rawNestedConnection as unknown as Connection;
             return nestedConnection.rawQuery(sql)
                 .then(async (result) => {
@@ -576,10 +576,10 @@ export class Connection implements
                 });
         });
     }
-    replaceOne<TableT extends tsql.InsertableTable & tsql.DeletableTable>(
+    replaceOne<TableT extends squill.InsertableTable & squill.DeletableTable>(
         table: TableT,
-        row: tsql.BuiltInInsertRow<TableT>
-    ): Promise<tsql.ReplaceOneResult> {
+        row: squill.BuiltInInsertRow<TableT>
+    ): Promise<squill.ReplaceOneResult> {
         const sql = insertOneSqlString("REPLACE", table, row);
         return this.lock((rawNestedConnection) => {
             const nestedConnection = (rawNestedConnection as unknown as Connection);
@@ -596,11 +596,11 @@ export class Connection implements
                         (table.autoIncrement == undefined) ?
                         undefined :
                         (row[table.autoIncrement as keyof typeof row] === undefined) ?
-                        await tsql
-                            .selectValue(() => tsql.expr(
+                        await squill
+                            .selectValue(() => squill.expr(
                                 {
                                     mapper : tm.mysql.bigIntSigned(),
-                                    usedRef : tsql.UsedRefUtil.fromColumnRef({}),
+                                    usedRef : squill.UsedRefUtil.fromColumnRef({}),
                                     isAggregate : false,
                                 },
                                 "LAST_INSERT_ID()"
@@ -612,7 +612,7 @@ export class Connection implements
                         BigInt(0)
                     );
 
-                    const replaceOneResult : tsql.ReplaceOneResult = {
+                    const replaceOneResult : squill.ReplaceOneResult = {
                         query : { sql, },
                         insertedOrReplacedRowCount : BigInt(1) as 1n,
                         autoIncrementId : (
@@ -632,12 +632,12 @@ export class Connection implements
                 });
         });
     }
-    replaceMany<TableT extends tsql.InsertableTable & tsql.DeletableTable>(
+    replaceMany<TableT extends squill.InsertableTable & squill.DeletableTable>(
         table: TableT,
-        rows : readonly [tsql.BuiltInInsertRow<TableT>, ...tsql.BuiltInInsertRow<TableT>[]]
-    ): Promise<tsql.ReplaceManyResult> {
+        rows : readonly [squill.BuiltInInsertRow<TableT>, ...squill.BuiltInInsertRow<TableT>[]]
+    ): Promise<squill.ReplaceManyResult> {
         const sql = insertManySqlString("REPLACE", table, rows);
-        return this.lock(async (rawNestedConnection) : Promise<tsql.ReplaceManyResult> => {
+        return this.lock(async (rawNestedConnection) : Promise<squill.ReplaceManyResult> => {
             const nestedConnection = rawNestedConnection as unknown as Connection;
             return nestedConnection.rawQuery(sql)
                 .then(async (result) => {
@@ -662,15 +662,15 @@ export class Connection implements
         });
     }
     insertSelect<
-        QueryT extends tsql.QueryBaseUtil.AfterSelectClause & tsql.QueryBaseUtil.NonCorrelated,
-        TableT extends tsql.InsertableTable
+        QueryT extends squill.QueryBaseUtil.AfterSelectClause & squill.QueryBaseUtil.NonCorrelated,
+        TableT extends squill.InsertableTable
     >(
         query: QueryT,
         table: TableT,
-        insertSelectRow: tsql.InsertSelectRow<QueryT, TableT>
-    ): Promise<tsql.InsertManyResult> {
+        insertSelectRow: squill.InsertSelectRow<QueryT, TableT>
+    ): Promise<squill.InsertManyResult> {
         const sql = insertSelectSqlString("INSERT", query, table, insertSelectRow);
-        return this.lock(async (rawNestedConnection) : Promise<tsql.InsertManyResult> => {
+        return this.lock(async (rawNestedConnection) : Promise<squill.InsertManyResult> => {
             const nestedConnection = rawNestedConnection as unknown as Connection;
             return nestedConnection.rawQuery(sql)
                 .then(async (result) => {
@@ -695,15 +695,15 @@ export class Connection implements
         });
     }
     insertIgnoreSelect<
-        QueryT extends tsql.QueryBaseUtil.AfterSelectClause & tsql.QueryBaseUtil.NonCorrelated,
-        TableT extends tsql.InsertableTable
+        QueryT extends squill.QueryBaseUtil.AfterSelectClause & squill.QueryBaseUtil.NonCorrelated,
+        TableT extends squill.InsertableTable
     >(
         query: QueryT,
         table: TableT,
-        insertSelectRow: tsql.InsertSelectRow<QueryT, TableT>
-    ): Promise<tsql.InsertIgnoreManyResult> {
+        insertSelectRow: squill.InsertSelectRow<QueryT, TableT>
+    ): Promise<squill.InsertIgnoreManyResult> {
         const sql = insertSelectSqlString("INSERT IGNORE", query, table, insertSelectRow);
-        return this.lock(async (rawNestedConnection) : Promise<tsql.InsertManyResult> => {
+        return this.lock(async (rawNestedConnection) : Promise<squill.InsertManyResult> => {
             const nestedConnection = rawNestedConnection as unknown as Connection;
             return nestedConnection.rawQuery(sql)
                 .then(async (result) => {
@@ -728,15 +728,15 @@ export class Connection implements
         });
     }
     replaceSelect<
-        QueryT extends tsql.QueryBaseUtil.AfterSelectClause & tsql.QueryBaseUtil.NonCorrelated,
-        TableT extends tsql.InsertableTable
+        QueryT extends squill.QueryBaseUtil.AfterSelectClause & squill.QueryBaseUtil.NonCorrelated,
+        TableT extends squill.InsertableTable
     >(
         query: QueryT,
         table: TableT,
-        insertSelectRow: tsql.InsertSelectRow<QueryT, TableT>
-    ): Promise<tsql.ReplaceManyResult> {
+        insertSelectRow: squill.InsertSelectRow<QueryT, TableT>
+    ): Promise<squill.ReplaceManyResult> {
         const sql = insertSelectSqlString("REPLACE", query, table, insertSelectRow);
-        return this.lock(async (rawNestedConnection) : Promise<tsql.ReplaceManyResult> => {
+        return this.lock(async (rawNestedConnection) : Promise<squill.ReplaceManyResult> => {
             const nestedConnection = rawNestedConnection as unknown as Connection;
             return nestedConnection.rawQuery(sql)
                 .then(async (result) => {
@@ -763,14 +763,14 @@ export class Connection implements
                 });
         });
     }
-    update<TableT extends tsql.ITable> (
+    update<TableT extends squill.ITable> (
         table : TableT,
-        whereClause : tsql.WhereClause,
-        assignmentMap : tsql.BuiltInAssignmentMap<TableT>
-    ) : Promise<tsql.UpdateResult> {
+        whereClause : squill.WhereClause,
+        assignmentMap : squill.BuiltInAssignmentMap<TableT>
+    ) : Promise<squill.UpdateResult> {
         const sql = updateSqlString(table, whereClause, assignmentMap);
         if (sql == undefined) {
-            return tsql.from(table as any)
+            return squill.from(table as any)
                 .where(() => whereClause as any)
                 .count(this)
                 .then((count) => {
@@ -811,7 +811,7 @@ export class Connection implements
                 throw err;
             });
     }
-    delete(table: tsql.DeletableTable, whereClause: tsql.WhereClause): Promise<tsql.DeleteResult> {
+    delete(table: squill.DeletableTable, whereClause: squill.WhereClause): Promise<squill.DeleteResult> {
         const sql = deleteSqlString(table, whereClause);
         return this.rawQuery(sql)
             .then(async (result) => {
@@ -833,7 +833,7 @@ export class Connection implements
                 throw err;
             });
     }
-    tryFetchSchemaMeta(schemaAlias: string | undefined): Promise<tsql.SchemaMeta | undefined> {
+    tryFetchSchemaMeta(schemaAlias: string | undefined): Promise<squill.SchemaMeta | undefined> {
         return tryFetchSchemaMeta(this, schemaAlias);
     }
     tryFetchGeneratedColumnExpression(
@@ -849,48 +849,48 @@ export class Connection implements
         );
     }
     transaction<ResultT>(
-        callback: tsql.LockCallback<tsql.ITransactionConnection, ResultT>
+        callback: squill.LockCallback<squill.ITransactionConnection, ResultT>
     ): Promise<ResultT>;
     transaction<ResultT>(
-        minimumIsolationLevel: tsql.IsolationLevel,
-        callback: tsql.LockCallback<tsql.ITransactionConnection, ResultT>
+        minimumIsolationLevel: squill.IsolationLevel,
+        callback: squill.LockCallback<squill.ITransactionConnection, ResultT>
     ): Promise<ResultT>;
     transaction<ResultT>(
         ...args : (
-            | [tsql.LockCallback<tsql.ITransactionConnection, ResultT>]
-            | [tsql.IsolationLevel, tsql.LockCallback<tsql.ITransactionConnection, ResultT>]
+            | [squill.LockCallback<squill.ITransactionConnection, ResultT>]
+            | [squill.IsolationLevel, squill.LockCallback<squill.ITransactionConnection, ResultT>]
         )
     ): Promise<ResultT> {
         return this.lock(async (nestedConnection) => {
             return (nestedConnection as unknown as Connection).transactionImpl(
-                args.length == 1 ? tsql.IsolationLevel.SERIALIZABLE : args[0],
-                tsql.TransactionAccessMode.READ_WRITE,
+                args.length == 1 ? squill.IsolationLevel.SERIALIZABLE : args[0],
+                squill.TransactionAccessMode.READ_WRITE,
                 args.length == 1 ? args[0] : args[1]
             );
         });
     }
     readOnlyTransaction<ResultT>(
-        callback: tsql.LockCallback<tsql.IsolatedSelectConnection, ResultT>
+        callback: squill.LockCallback<squill.IsolatedSelectConnection, ResultT>
     ): Promise<ResultT>;
     readOnlyTransaction<ResultT>(
-        minimumIsolationLevel: tsql.IsolationLevel,
-        callback: tsql.LockCallback<tsql.IsolatedSelectConnection, ResultT>
+        minimumIsolationLevel: squill.IsolationLevel,
+        callback: squill.LockCallback<squill.IsolatedSelectConnection, ResultT>
     ): Promise<ResultT>;
     readOnlyTransaction<ResultT>(
         ...args : (
-            | [tsql.LockCallback<tsql.IsolatedSelectConnection, ResultT>]
-            | [tsql.IsolationLevel, tsql.LockCallback<tsql.IsolatedSelectConnection, ResultT>]
+            | [squill.LockCallback<squill.IsolatedSelectConnection, ResultT>]
+            | [squill.IsolationLevel, squill.LockCallback<squill.IsolatedSelectConnection, ResultT>]
         )
     ): Promise<ResultT> {
         return this.lock(async (nestedConnection) => {
             return (nestedConnection as unknown as Connection).transactionImpl(
-                args.length == 1 ? tsql.IsolationLevel.SERIALIZABLE : args[0],
-                tsql.TransactionAccessMode.READ_ONLY,
+                args.length == 1 ? squill.IsolationLevel.SERIALIZABLE : args[0],
+                squill.TransactionAccessMode.READ_ONLY,
                 args.length == 1 ? args[0] : args[1]
             );
         });
     }
-    isInTransaction(): this is tsql.ITransactionConnection {
+    isInTransaction(): this is squill.ITransactionConnection {
         return this.sharedConnectionInformation.transactionData != undefined;
     }
 
@@ -901,7 +901,7 @@ export class Connection implements
         }
     ) = undefined;
     private savepointImpl<ResultT> (
-        callback : tsql.LockCallback<tsql.ITransactionConnection & tsql.ConnectionComponent.InSavepoint, ResultT>
+        callback : squill.LockCallback<squill.ITransactionConnection & squill.ConnectionComponent.InSavepoint, ResultT>
     ) : Promise<ResultT> {
         if (this.sharedConnectionInformation.transactionData == undefined) {
             return Promise.reject(new Error(`Cannot use savepoint outside transaction`));
@@ -910,7 +910,7 @@ export class Connection implements
             return Promise.reject(new Error(`A savepoint is already in progress`));
         }
         const savepointData = {
-            savepointName : `tsql_savepoint_${++this.sharedConnectionInformation.savepointId}`,
+            savepointName : `squill_savepoint_${++this.sharedConnectionInformation.savepointId}`,
         };
         this.savepointData = savepointData;
         this.eventEmitters.savepoint();
@@ -927,7 +927,7 @@ export class Connection implements
                          */
                         throw new Error(`Expected to be in savepoint ${savepointData.savepointName}`);
                     }
-                    return callback(this as tsql.ITransactionConnection & tsql.ConnectionComponent.InSavepoint);
+                    return callback(this as squill.ITransactionConnection & squill.ConnectionComponent.InSavepoint);
                 })
                 .then((result) => {
                     if (!this.isInTransaction()) {
@@ -1025,7 +1025,7 @@ export class Connection implements
             });
     }
     savepoint<ResultT> (
-        callback : tsql.LockCallback<tsql.ITransactionConnection & tsql.ConnectionComponent.InSavepoint, ResultT>
+        callback : squill.LockCallback<squill.ITransactionConnection & squill.ConnectionComponent.InSavepoint, ResultT>
     ) : Promise<ResultT> {
         return this.lock(async (nestedConnection) => {
             return (nestedConnection as unknown as Connection).savepointImpl(
