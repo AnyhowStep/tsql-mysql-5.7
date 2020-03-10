@@ -9,13 +9,13 @@ This is a MySQL 5.7 adapter for [`@squill/squill`](https://github.com/AnyhowStep
 + Detailed usage instructions
 
 ```ts
-import * as squill from "@squill/squill";
+import * as sql from "@squill/squill";
 import * as mysql from "@squill/mysql-5.7";
 
-const myTable = squill.table("myTable")
+const myTable = sql.table("myTable")
     .addColumns({
-        myTableId : squill.dtBigIntSigned(),
-        description : squill.dtVarChar(1024),
+        myTableId : sql.dtBigIntSigned(),
+        description : sql.dtVarChar(1024),
     })
     .setAutoIncrement(columns => columns.myTableId);
 
@@ -27,7 +27,7 @@ const pool = new mysql.Pool({
     charset   : mysql.CharSet.utf8mb4,
 });
 
-pool
+await pool
     .acquire(connection => myTable
         .whereEqPrimaryKey({
             myTableId : 1337n,
@@ -40,7 +40,7 @@ pool
             console.log(row.description);
         },
         (err) => {
-            if (squill.isSqlError(err)) {
+            if (sql.isSqlError(err)) {
                 //Probably some error related to executing a SQL query
                 //Maybe a RowNotFoundError
             } else {
@@ -52,16 +52,16 @@ pool
 /**
  * Build a query that may be used later.
  */
-const myQuery = squill.from(myTable)
+const myQuery = sql.from(myTable)
     .select(columns => [
         columns.myTableId
-        squill.concat(
+        sql.concat(
             "Description: ",
             columns.description
         ).as("labeledDescription"),
     ]);
 
-pool
+await pool
     .acquire(connection => myQuery
         .whereEqPrimaryKey(
             tables => tables.myTable,
@@ -77,7 +77,7 @@ pool
             console.log(row.labeledDescription);
         },
         (err) => {
-            if (squill.isSqlError(err)) {
+            if (sql.isSqlError(err)) {
                 //Probably some error related to executing a SQL query
                 //Maybe a RowNotFoundError
             } else {
