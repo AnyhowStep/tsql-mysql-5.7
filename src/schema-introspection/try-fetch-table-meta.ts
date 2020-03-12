@@ -1,6 +1,40 @@
 import * as squill from "@squill/squill";
 import * as informationSchema from "../information-schema";
 
+export interface MySqlColumnMeta {
+    columnAlias : string,
+    isAutoIncrement : boolean,
+    isNullable : boolean,
+    /**
+     * If `undefined`, there is no explicit default value.
+     */
+    explicitDefaultValue : string|undefined,
+    /**
+     * If `undefined`, there is no generation expression.
+     */
+    generationExpression : string|undefined,
+
+    /**
+     * The data type without any modifiers.
+     * Like `BIGINT` or `VARCHAR`
+     */
+    dataType : string,
+    /**
+     * The data type with modifiers.
+     * Like `BIGINT UNSIGNED` or `VARCHAR(32)`
+     */
+    columnType : string,
+}
+
+export interface MySqlTableMeta {
+    tableAlias : string,
+
+    columns : readonly MySqlColumnMeta[],
+    candidateKeys : readonly squill.CandidateKeyMeta[],
+
+    primaryKey : squill.CandidateKeyMeta|undefined,
+}
+
 export async function tryFetchTableMeta (
     connection : squill.SelectConnection,
     schemaAlias : string,
@@ -20,7 +54,7 @@ export async function tryFetchTableMeta (
         .select(columns => [columns])
         .fetchAll(connection)
         .then((rows) => {
-            return rows.map((row) : squill.ColumnMeta => {
+            return rows.map((row) : MySqlColumnMeta => {
                 return {
                     columnAlias : row.COLUMN_NAME,
                     isAutoIncrement : row.EXTRA.includes("auto_increment"),
@@ -38,6 +72,8 @@ export async function tryFetchTableMeta (
                         undefined :
                         row.GENERATION_EXPRESSION
                     ),
+                    dataType : row.DATA_TYPE,
+                    columnType : row.COLUMN_TYPE,
                 };
             });
         });
