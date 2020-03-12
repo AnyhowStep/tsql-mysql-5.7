@@ -1,11 +1,17 @@
 import * as squill from "@squill/squill";
 import * as informationSchema from "../information-schema";
-import {tryFetchTableMeta} from "./try-fetch-table-meta";
+import {tryFetchTableMeta, MySqlTableMeta} from "./try-fetch-table-meta";
+
+export interface MySqlSchemaMeta {
+    schemaAlias : string,
+
+    tables : readonly MySqlTableMeta[],
+}
 
 export async function tryFetchSchemaMeta (
     connection : squill.SelectConnection,
     schemaAlias : string|undefined
-) : Promise<squill.SchemaMeta|undefined> {
+) : Promise<MySqlSchemaMeta|undefined> {
     if (schemaAlias == undefined) {
         schemaAlias = await squill.selectValue(() => squill.throwIfNull(squill.currentSchema()))
             .fetchValue(connection);
@@ -18,7 +24,7 @@ export async function tryFetchSchemaMeta (
         )
         .fetchValueArray(connection);
 
-    const tables : squill.TableMeta[] = [];
+    const tables : MySqlTableMeta[] = [];
 
     for (const tableAlias of tableAliases) {
         const tableMeta = await tryFetchTableMeta(

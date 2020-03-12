@@ -39,7 +39,7 @@ export async function tryFetchTableMeta (
     connection : squill.SelectConnection,
     schemaAlias : string,
     tableAlias : string
-) : Promise<squill.TableMeta|undefined> {
+) : Promise<MySqlTableMeta|undefined> {
     const columns = await squill.from(informationSchema.COLUMNS)
         .whereEqColumns(
             tables => tables.COLUMNS,
