@@ -1,3 +1,5 @@
+[![npm version](https://badge.fury.io/js/%40squill%2Fmysql-5.7.svg)](https://badge.fury.io/js/%40squill%2Fmysql-5.7)
+
 At the moment, written with MySQL 5.7.26 in mind.
 
 This is a MySQL 5.7 adapter for [`@squill/squill`](https://github.com/AnyhowStep/tsql)
